@@ -253,14 +253,14 @@
   } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
   // GANTI DENGAN KONFIGURASI FIREBASE KAMU
-  const firebaseConfig = {
-    apiKey: "ISI_API_KEY",
-    authDomain: "ISI_AUTH_DOMAIN",
-    projectId: "ISI_PROJECT_ID",
-    storageBucket: "ISI_STORAGE_BUCKET",
-    messagingSenderId: "ISI_MESSAGING_SENDER_ID",
-    appId: "ISI_APP_ID"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
+  authDomain: "nyachatt-a262c.firebaseapp.com",
+  projectId: "nyachatt-a262c",
+  storageBucket: "nyachatt-a262c.firebasestorage.app",
+  messagingSenderId: "1081303400744",
+  appId: "1:1081303400744:web:981fd5f46c53eb2dce101d"
+};
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -398,15 +398,6 @@
       await signOut(auth);
     });
 </script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
-  authDomain: "nyachatt-a262c.firebaseapp.com",
-  projectId: "nyachatt-a262c",
-  storageBucket: "nyachatt-a262c.firebasestorage.app",
-  messagingSenderId: "1081303400744",
-  appId: "1:1081303400744:web:981fd5f46c53eb2dce101d"
-};
-</script>
+
 </body>
 </html>
