@@ -99,7 +99,40 @@ if(result.empty){area.innerHTML='<div class="empty">Belum ada pesan. Mulai perca
 result.forEach(d=>{const m=d.data(),bubble=document.createElement("div");bubble.className="bubble"+(m.senderId===currentUser.uid?" mine":"");
 const sender=document.createElement("div");sender.className="sender";sender.textContent=m.senderId===currentUser.uid?"Kamu":(person.displayName||person.email||"Kontak");
 const body=document.createElement("div");body.textContent=m.text||"";bubble.append(sender,body);
-if(m.createdAt?.toDate){const time=document.createElement("div");time.className="time";time.textContent=m.createdAt.toDate().toLocaleString("id-ID",{dateStyle:"short",timeStyle:"short"});bubble.appendChild(time)}area.appendChild(bubble)});
+if(m.createdAt?.toDate){
+  const time=document.createElement("div");
+  time.className="time";
+
+  const messageDate=m.createdAt.toDate();
+  const now=new Date();
+
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const yesterday=new Date(today);
+  yesterday.setDate(yesterday.getDate()-1);
+
+  const dateOnly=new Date(
+    messageDate.getFullYear(),
+    messageDate.getMonth(),
+    messageDate.getDate()
+  );
+
+  if(dateOnly.getTime()===today.getTime()){
+    time.textContent=messageDate.toLocaleTimeString("id-ID",{
+      hour:"2-digit",
+      minute:"2-digit"
+    });
+  }else if(dateOnly.getTime()===yesterday.getTime()){
+    time.textContent="Kemarin";
+  }else{
+    time.textContent=messageDate.toLocaleDateString("id-ID",{
+      day:"2-digit",
+      month:"2-digit",
+      year:"numeric"
+    });
+  }
+
+  bubble.appendChild(time);
+}
 area.scrollTop=area.scrollHeight;
 },e=>showError("appError",e));
 }catch(e){showError("appError",e)}
