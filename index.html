@@ -1,313 +1,114 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NyaChatt</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f7f8;
-      color: #222;
-    }
-    header {
-      background: #008f7a;
-      color: white;
-      padding: 16px;
-      font-size: 22px;
-      font-weight: bold;
-    }
-    main {
-      max-width: 600px;
-      margin: 25px auto;
-      padding: 15px;
-    }
-    .card {
-      background: white;
-      padding: 22px;
-      border-radius: 14px;
-      box-shadow: 0 2px 10px #0001;
-    }
-    h2 { text-align: center; }
-    input, button {
-      width: 100%;
-      padding: 14px;
-      margin: 8px 0;
-      border-radius: 9px;
-      font-size: 16px;
-    }
-    input { border: 1px solid #ccc; }
-    button {
-      border: 0;
-      background: #008f7a;
-      color: white;
-      cursor: pointer;
-    }
-    button:disabled { opacity: .6; }
-    .link {
-      color: #008f7a;
-      text-align: center;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-    #status {
-      color: #c62828;
-      text-align: center;
-      white-space: pre-wrap;
-      margin: 12px 0;
-    }
-    #chat { display: none; }
-    #messages {
-      height: 55vh;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 10px;
-      margin: 12px 0;
-      background: #fafafa;
-    }
-    .msg {
-      background: #e2f4ef;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 8px 0;
-      overflow-wrap: anywhere;
-    }
-    .name { font-weight: bold; color: #007c69; }
-    .small { font-size: 12px; color: #777; }
-    #sendRow { display: flex; gap: 6px; }
-    #sendRow input { flex: 1; min-width: 0; }
-    #sendRow button { width: 90px; }
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NyaChatt - Chat Pribadi</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f8f7;color:#263238}
+header{background:#008f7a;color:white;padding:16px 20px;font-size:25px;font-weight:bold}
+.wrap{max-width:850px;margin:22px auto;padding:0 14px}.card{background:white;border-radius:18px;padding:20px;box-shadow:0 4px 18px #0000000d}
+.hidden{display:none!important}h2{margin:0 0 14px;font-size:21px}input,button{font:inherit}
+input{width:100%;padding:15px;border:1px solid #cbd5d8;border-radius:12px;margin:8px 0;background:white}
+button{border:0;border-radius:12px;padding:13px 18px;background:#008f7a;color:white;cursor:pointer}
+button:disabled{opacity:.55;cursor:default}.secondary{background:#e3f3f0;color:#006b5c}
+.auth-actions{display:flex;gap:10px;margin-top:8px}.auth-actions button{flex:1}.muted{color:#68777c;font-size:14px}
+.error{color:#b3261e;white-space:pre-wrap;margin:10px 0}.topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+.layout{display:grid;grid-template-columns:240px 1fr;gap:14px}.panel{border:1px solid #d8e2e0;border-radius:14px;overflow:hidden;min-width:0}
+.panel-title{background:#e6f5f2;color:#006b5c;padding:13px;font-weight:bold}#contacts{max-height:65vh;overflow-y:auto}
+.contact{width:100%;border-radius:0;background:white;color:#263238;text-align:left;border-bottom:1px solid #edf0f0;padding:14px}
+.contact.active{background:#d9f3ee;color:#006b5c;font-weight:bold}.chat-head{padding:13px;border-bottom:1px solid #e5eaea;font-weight:bold;min-height:48px}
+#messages{height:52vh;min-height:260px;overflow-y:auto;padding:12px;background:#fafcfc}
+.bubble{max-width:85%;padding:10px 12px;border-radius:13px;margin:8px 0;overflow-wrap:anywhere;background:#e2f4f1}
+.bubble.mine{background:#d7e9ff;margin-left:auto}.sender{font-size:12px;font-weight:bold;color:#007765;margin-bottom:4px}
+.time{font-size:11px;color:#6b777b;margin-top:5px;text-align:right}.sendrow{display:flex;gap:8px;padding:10px;border-top:1px solid #e5eaea}
+.sendrow input{margin:0;flex:1;min-width:0}.empty{color:#68777c;text-align:center;padding:30px 12px}
+@media(max-width:620px){.wrap{margin:14px auto}.layout{grid-template-columns:1fr}#contacts{max-height:190px}#messages{height:45vh}.card{padding:14px}}
+</style>
 </head>
 <body>
-  <header>NyaChatt 💬</header>
-
-  <main>
-    <section class="card" id="authBox">
-      <h2 id="formTitle">Login NyaChatt</h2>
-
-      <form id="authForm">
-        <input id="email" type="email" placeholder="Email" required>
-        <input id="password" type="password"
-               placeholder="Password (minimal 6 karakter)"
-               minlength="6" required>
-        <button id="submitBtn" type="submit">Login</button>
-      </form>
-
-      <div id="status" role="status"></div>
-      <div class="link" id="switchMode">
-        Belum punya akun? Daftar
-      </div>
-    </section>
-
-    <section class="card" id="chat">
-      <div>
-        Login sebagai: <b id="userEmail"></b>
-        <button id="logoutBtn" type="button">Logout</button>
-      </div>
-
-      <div id="chatStatus" class="small"></div>
-      <div id="messages"></div>
-
-      <form id="sendForm">
-        <div id="sendRow">
-          <input id="messageInput" placeholder="Tulis pesan..." required>
-          <button type="submit">Kirim</button>
-        </div>
-      </form>
-    </section>
-  </main>
-
-  <script type="module">
-    import { initializeApp } from
-      "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      query,
-      orderBy,
-      limit,
-      onSnapshot,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-    // GANTI dengan konfigurasi dari Firebase Project settings.
-    const firebaseConfig = {
-  apiKey: "AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
-  authDomain: "nyachatt-a262c.firebaseapp.com",
-  projectId: "nyachatt-a262c",
-  storageBucket: "nyachatt-a262c.firebasestorage.app",
-  messagingSenderId: "1081303400744",
-  appId: "1:1081303400744:web:981fd5f46c53eb2dce101d"
+<header>NyaChatt 💬</header>
+<div class="wrap">
+<section id="authCard" class="card">
+<h2>Masuk ke NyaChatt</h2><p class="muted">Gunakan email dan kata sandi akun kamu.</p>
+<input id="email" type="email" placeholder="Email" autocomplete="email">
+<input id="password" type="password" placeholder="Kata sandi (minimal 6 karakter)" autocomplete="current-password">
+<div class="auth-actions"><button id="loginBtn">Login</button><button id="registerBtn" class="secondary">Daftar</button></div>
+<div id="authError" class="error"></div>
+</section>
+<section id="appCard" class="card hidden">
+<div class="topline"><div>Login sebagai: <b id="myEmail"></b></div><button id="logoutBtn" class="secondary">Logout</button></div>
+<div class="layout">
+<div class="panel"><div class="panel-title">Kontak terdaftar</div><div id="contacts"><div class="empty">Memuat kontak...</div></div></div>
+<div class="panel"><div id="chatTitle" class="chat-head">Pilih kontak untuk mulai chat</div>
+<div id="messages"><div class="empty">Pesan pribadi akan tampil di sini.</div></div>
+<form id="sendForm" class="sendrow"><input id="messageInput" type="text" maxlength="2000" placeholder="Tulis pesan..." disabled><button id="sendBtn" type="submit" disabled>Kirim</button></form>
+</div></div><div id="appError" class="error"></div>
+</section></div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+const firebaseConfig={
+apiKey:"AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
+authDomain:"nyachatt-a262c.firebaseapp.com",
+projectId:"nyachatt-a262c",
+storageBucket:"nyachatt-a262c.firebasestorage.app",
+messagingSenderId:"1081303400744",
+appId:"1:1081303400744:web:981fd5f46c53eb2dce101d"
 };
-
-    const authBox = document.getElementById("authBox");
-    const chatBox = document.getElementById("chat");
-    const statusBox = document.getElementById("status");
-    const chatStatus = document.getElementById("chatStatus");
-    const authForm = document.getElementById("authForm");
-    const submitBtn = document.getElementById("submitBtn");
-
-    let isRegister = false;
-    let stopMessages = null;
-
-    function showError(error) {
-      console.error(error);
-      const messages = {
-        "auth/invalid-email": "Format email tidak valid.",
-        "auth/user-not-found": "Akun tidak ditemukan. Silakan daftar dahulu.",
-        "auth/wrong-password": "Password salah.",
-        "auth/invalid-credential": "Email atau password salah.",
-        "auth/email-already-in-use": "Email sudah terdaftar. Silakan login.",
-        "auth/weak-password": "Password minimal 6 karakter.",
-        "auth/operation-not-allowed": "Email/Password belum diaktifkan di Firebase.",
-        "auth/network-request-failed": "Koneksi internet bermasalah.",
-        "auth/too-many-requests": "Terlalu banyak percobaan. Coba lagi nanti."
-      };
-
-      statusBox.textContent =
-        messages[error.code] ||
-        `Gagal: ${error.code || ""}\n${error.message || "Terjadi kesalahan."}`;
-    }
-
-    let app, auth, db;
-
-    try {
-      app = initializeApp(firebaseConfig);
-      auth = getAuth(app);
-      db = getFirestore(app);
-    } catch (error) {
-      statusBox.textContent =
-        "Konfigurasi Firebase bermasalah. Periksa firebaseConfig.";
-      console.error(error);
-    }
-
-    document.getElementById("switchMode").onclick = () => {
-      isRegister = !isRegister;
-      document.getElementById("formTitle").textContent =
-        isRegister ? "Daftar NyaChatt" : "Login NyaChatt";
-      submitBtn.textContent = isRegister ? "Daftar" : "Login";
-      document.getElementById("switchMode").textContent =
-        isRegister ? "Sudah punya akun? Login" : "Belum punya akun? Daftar";
-      statusBox.textContent = "";
-    };
-
-    authForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (!auth) return;
-
-      statusBox.textContent = "";
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Memproses...";
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      try {
-        if (isRegister) {
-          await createUserWithEmailAndPassword(auth, email, password);
-        } else {
-          await signInWithEmailAndPassword(auth, email, password);
-        }
-      } catch (error) {
-        showError(error);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = isRegister ? "Daftar" : "Login";
-      }
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        authBox.style.display = "none";
-        chatBox.style.display = "block";
-        document.getElementById("userEmail").textContent = user.email;
-        loadMessages();
-      } else {
-        authBox.style.display = "block";
-        chatBox.style.display = "none";
-        if (stopMessages) stopMessages();
-      }
-    });
-
-    document.getElementById("logoutBtn").onclick = async () => {
-      try {
-        await signOut(auth);
-      } catch (error) {
-        chatStatus.textContent = error.message;
-      }
-    };
-
-    function loadMessages() {
-      if (stopMessages) stopMessages();
-
-      const q = query(
-        collection(db, "messages"),
-        orderBy("createdAt", "asc"),
-        limit(100)
-      );
-
-      stopMessages = onSnapshot(q, (snapshot) => {
-        const messages = document.getElementById("messages");
-        messages.innerHTML = "";
-
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          const item = document.createElement("div");
-          item.className = "msg";
-
-          const name = document.createElement("div");
-          name.className = "name";
-          name.textContent = data.name || data.uid || "Pengguna";
-
-          const text = document.createElement("div");
-          text.textContent = data.text || "";
-
-          item.append(name, text);
-          messages.appendChild(item);
-        });
-
-        messages.scrollTop = messages.scrollHeight;
-        chatStatus.textContent = "";
-      }, (error) => {
-        chatStatus.textContent =
-          "Login berhasil, tetapi chat gagal dimuat: " + error.message;
-      });
-    }
-
-    document.getElementById("sendForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const input = document.getElementById("messageInput");
-      const text = input.value.trim();
-      if (!text || !auth.currentUser) return;
-
-      try {
-        await addDoc(collection(db, "messages"), {
-          uid: auth.currentUser.uid,
-          name: auth.currentUser.email,
-          text,
-          createdAt: serverTimestamp()
-        });
-        input.value = "";
-        chatStatus.textContent = "";
-      } catch (error) {
-        chatStatus.textContent = "Pesan gagal dikirim: " + error.message;
-      }
-    });
-  </script>
-</body>
-</html>
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+const $=id=>document.getElementById(id);let currentUser=null,selectedUid=null,stopMessages=null;
+function showError(id,e){
+const map={"auth/invalid-credential":"Email atau kata sandi salah.","auth/user-not-found":"Akun tidak ditemukan. Silakan daftar.","auth/wrong-password":"Kata sandi salah.","auth/email-already-in-use":"Email sudah terdaftar. Silakan login.","auth/weak-password":"Kata sandi minimal 6 karakter.","auth/invalid-email":"Format email tidak valid.","auth/network-request-failed":"Koneksi internet bermasalah."};
+$(id).textContent=map[e?.code]||e?.message||"Terjadi kesalahan. Coba lagi.";
+}
+async function ensureProfile(user){
+const ref=doc(db,"users",user.uid),snap=await getDoc(ref);
+if(!snap.exists())await setDoc(ref,{uid:user.uid,email:user.email||"",displayName:(user.email||"Pengguna").split("@")[0],createdAt:serverTimestamp()});
+}
+$("loginBtn").onclick=async()=>{ $("authError").textContent="";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){showError("authError",e)} };
+$("registerBtn").onclick=async()=>{ $("authError").textContent="";try{const c=await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);await ensureProfile(c.user)}catch(e){showError("authError",e)} };
+$("logoutBtn").onclick=()=>signOut(auth);
+onAuthStateChanged(auth,async user=>{
+currentUser=user;$("authError").textContent="";$("appError").textContent="";
+if(!user){$("authCard").classList.remove("hidden");$("appCard").classList.add("hidden");if(stopMessages)stopMessages();selectedUid=null;return}
+$("authCard").classList.add("hidden");$("appCard").classList.remove("hidden");$("myEmail").textContent=user.email||"Pengguna";
+try{await ensureProfile(user);await loadContacts()}catch(e){showError("appError",e)}
+});
+async function loadContacts(){
+const box=$("contacts");box.innerHTML='<div class="empty">Memuat kontak...</div>';
+const snap=await getDocs(collection(db,"users"));
+const people=snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.id!==currentUser.uid).sort((a,b)=>(a.displayName||a.email||"").localeCompare(b.displayName||b.email||""));
+box.innerHTML="";
+if(!people.length){box.innerHTML='<div class="empty">Belum ada pengguna lain. Minta teman daftar terlebih dahulu.</div>';return}
+for(const p of people){const b=document.createElement("button");b.className="contact";b.textContent=p.displayName||p.email||"Pengguna";b.dataset.uid=p.id;b.onclick=()=>openChat(p);box.appendChild(b)}
+}
+function conversationId(a,b){return[a,b].sort().join("_")}
+async function openChat(person){
+$("appError").textContent="";selectedUid=person.id;
+document.querySelectorAll(".contact").forEach(el=>el.classList.toggle("active",el.dataset.uid===selectedUid));
+$("chatTitle").textContent=person.displayName||person.email||"Chat pribadi";$("messages").innerHTML='<div class="empty">Memuat pesan...</div>';
+$("messageInput").disabled=false;$("sendBtn").disabled=false;if(stopMessages)stopMessages();
+const id=conversationId(currentUser.uid,person.id),ref=doc(db,"conversations",id);
+try{
+await setDoc(ref,{members:[currentUser.uid,person.id].sort()},{merge:true});
+const q=query(collection(db,"conversations",id,"messages"),orderBy("createdAt","asc"));
+stopMessages=onSnapshot(q,result=>{
+const area=$("messages");area.innerHTML="";
+if(result.empty){area.innerHTML='<div class="empty">Belum ada pesan. Mulai percakapan!</div>';return}
+result.forEach(d=>{const m=d.data(),bubble=document.createElement("div");bubble.className="bubble"+(m.senderId===currentUser.uid?" mine":"");
+const sender=document.createElement("div");sender.className="sender";sender.textContent=m.senderId===currentUser.uid?"Kamu":(person.displayName||person.email||"Kontak");
+const body=document.createElement("div");body.textContent=m.text||"";bubble.append(sender,body);
+if(m.createdAt?.toDate){const time=document.createElement("div");time.className="time";time.textContent=m.createdAt.toDate().toLocaleString("id-ID",{dateStyle:"short",timeStyle:"short"});bubble.appendChild(time)}area.appendChild(bubble)});
+area.scrollTop=area.scrollHeight;
+},e=>showError("appError",e));
+}catch(e){showError("appError",e)}
+}
+$("sendForm").onsubmit=async event=>{
+event.preventDefault();const text=$("messageInput").value.trim();if(!text||!currentUser||!selectedUid)return;
+$("sendBtn").disabled=true;try{const id=conversationId(currentUser.uid,selectedUid);
+await addDoc(collection(db,"conversations",id,"messages"),{senderId:currentUser.uid,text,createdAt:serverTimestamp()});$("messageInput").value="";
+}catch(e){showError("appError",e)}finally{$("sendBtn").disabled=false}
+};
+</script>
+</body></html>
