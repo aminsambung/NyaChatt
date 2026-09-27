@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NyaChatt</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #e5ddd5;
+      height: 100vh;
+    }
+
+    .app {
+      max-width: 500px;
+      height: 100vh;
+      margin: auto;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: #075e54;
+      color: white;
+      padding: 18px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .chat {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #128c7e;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-right: 15px;
+    }
+
+    .chat-name {
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    .message {
+      color: #777;
+      margin-top: 5px;
+    }
+
+    .bottom {
+      padding: 10px;
+      background: #f0f0f0;
+      display: flex;
+      gap: 8px;
+    }
+
+    .bottom input {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 25px;
+      outline: none;
+    }
+
+    .send {
+      width: 45px;
+      height: 45px;
+      border: none;
+      border-radius: 50%;
+      background: #128c7e;
+      color: white;
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+    NyaChatt
+  </div>
+
+  <div class="chat-list">
+
+    <div class="chat">
+      <div class="avatar">A</div>
+      <div>
+        <div class="chat-name">Admin NyaChatt</div>
+        <div class="message">Selamat datang di NyaChatt 👋</div>
+      </div>
+    </div>
+
+    <div class="chat">
+      <div class="avatar">B</div>
+      <div>
+        <div class="chat-name">Budi</div>
+        <div class="message">Halo, apa kabar?</div>
+      </div>
+    </div>
+
+    <div class="chat">
+      <div class="avatar">S</div>
+      <div>
+        <div class="chat-name">Siti</div>
+        <div class="message">Sampai jumpa nanti</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bottom">
+    <input type="text" placeholder="Ketik pesan...">
+    <button class="send">➤</button>
+  </div>
+
+</div>
+
+</body>
+</html>
