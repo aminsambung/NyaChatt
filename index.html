@@ -140,13 +140,6 @@ body {
   align-self: flex-end;
 }
 
-.sender {
-  color: #075e54;
-  font-size: 13px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
 .message-text {
   font-size: 15px;
   white-space: pre-wrap;
@@ -196,11 +189,14 @@ body {
 </head>
 
 <body>
+
 <div class="app">
 
   <!-- LOGIN -->
   <div id="authPage" class="login-box">
+
     <h1>NyaChatt 💬</h1>
+
     <p class="subtitle" id="formTitle">
       Silakan login ke akun kamu
     </p>
@@ -212,23 +208,38 @@ body {
       class="hidden"
     >
 
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Kata sandi">
+    <input
+      type="email"
+      id="email"
+      placeholder="Email"
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Kata sandi"
+    >
 
     <p id="error" class="error"></p>
 
-    <button id="submitBtn" class="primary">Login</button>
+    <button id="submitBtn" class="primary">
+      Login
+    </button>
 
     <p id="switchBtn" class="switch">
       Belum punya akun? Daftar
     </p>
+
   </div>
 
   <!-- CHAT -->
   <div id="chatPage" class="hidden">
+
     <div class="header">
       <span>NyaChatt 💬</span>
-      <button id="logoutBtn" class="logout">Logout</button>
+      <button id="logoutBtn" class="logout">
+        Logout
+      </button>
     </div>
 
     <div class="chat-info">
@@ -236,7 +247,10 @@ body {
       <b id="userName"></b>
     </div>
 
-    <div id="status" class="status">Menghubungkan...</div>
+    <div id="status" class="status">
+      Menghubungkan...
+    </div>
+
     <div id="messages" class="messages"></div>
 
     <form id="messageForm" class="bottom">
@@ -248,13 +262,21 @@ body {
         autocomplete="off"
         required
       >
-      <button type="submit" class="send">➤</button>
+
+      <button type="submit" class="send">
+        ➤
+      </button>
     </form>
+
   </div>
+
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
   getAuth,
@@ -276,7 +298,7 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-// KONFIGURASI FIREBASE
+// KONFIGURASI FIREBASE KAMU
 const firebaseConfig = {
   apiKey: "AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
   authDomain: "nyachatt-a262c.firebaseapp.com",
@@ -304,7 +326,6 @@ const messages = document.getElementById("messages");
 const messageInput = document.getElementById("messageInput");
 const messageForm = document.getElementById("messageForm");
 const statusText = document.getElementById("status");
-const userName = document.getElementById("userName");
 
 let isRegister = false;
 let stopMessages = null;
@@ -312,13 +333,17 @@ let stopMessages = null;
 // LOGIN / DAFTAR
 switchBtn.addEventListener("click", () => {
   isRegister = !isRegister;
+
   nameInput.classList.toggle("hidden", !isRegister);
 
   formTitle.textContent = isRegister
     ? "Buat akun NyaChatt"
     : "Silakan login ke akun kamu";
 
-  submitBtn.textContent = isRegister ? "Daftar" : "Login";
+  submitBtn.textContent = isRegister
+    ? "Daftar"
+    : "Login";
+
   switchBtn.textContent = isRegister
     ? "Sudah punya akun? Login"
     : "Belum punya akun? Daftar";
@@ -335,7 +360,8 @@ submitBtn.addEventListener("click", async () => {
   errorText.textContent = "";
 
   if (!email || !password) {
-    errorText.textContent = "Email dan kata sandi wajib diisi.";
+    errorText.textContent =
+      "Email dan kata sandi wajib diisi.";
     return;
   }
 
@@ -345,7 +371,8 @@ submitBtn.addEventListener("click", async () => {
   }
 
   if (isRegister && password.length < 6) {
-    errorText.textContent = "Kata sandi minimal 6 karakter.";
+    errorText.textContent =
+      "Kata sandi minimal 6 karakter.";
     return;
   }
 
@@ -354,35 +381,47 @@ submitBtn.addEventListener("click", async () => {
 
   try {
     if (isRegister) {
-      const result = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const result =
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
 
       await updateProfile(result.user, {
         displayName: name
       });
 
-      // Tampilkan nama baru segera setelah pendaftaran.
-      userName.textContent = name;
     } else {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
     }
+
   } catch (error) {
     const errors = {
-      "auth/email-already-in-use": "Email sudah terdaftar.",
-      "auth/invalid-email": "Format email tidak valid.",
-      "auth/weak-password": "Kata sandi terlalu lemah.",
-      "auth/invalid-credential": "Email atau kata sandi salah.",
-      "auth/network-request-failed": "Periksa koneksi internet."
+      "auth/email-already-in-use":
+        "Email sudah terdaftar.",
+      "auth/invalid-email":
+        "Format email tidak valid.",
+      "auth/weak-password":
+        "Kata sandi terlalu lemah.",
+      "auth/invalid-credential":
+        "Email atau kata sandi salah.",
+      "auth/network-request-failed":
+        "Periksa koneksi internet."
     };
 
     errorText.textContent =
-      errors[error.code] || "Terjadi kesalahan: " + error.message;
+      errors[error.code] ||
+      "Terjadi kesalahan: " + error.message;
+
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = isRegister ? "Daftar" : "Login";
+    submitBtn.textContent =
+      isRegister ? "Daftar" : "Login";
   }
 });
 
@@ -392,7 +431,9 @@ onAuthStateChanged(auth, (user) => {
     authPage.classList.add("hidden");
     chatPage.classList.remove("hidden");
 
-    userName.textContent = user.displayName || user.email;
+    document.getElementById("userName").textContent =
+      user.displayName || user.email;
+
     loadMessages();
   } else {
     if (stopMessages) {
@@ -408,7 +449,9 @@ onAuthStateChanged(auth, (user) => {
 
 // AMBIL PESAN DARI FIRESTORE
 function loadMessages() {
-  if (stopMessages) stopMessages();
+  if (stopMessages) {
+    stopMessages();
+  }
 
   statusText.textContent = "Memuat pesan...";
 
@@ -428,10 +471,6 @@ function loadMessages() {
       const box = document.createElement("div");
       box.className = "message" + (mine ? " mine" : "");
 
-      const sender = document.createElement("div");
-      sender.className = "sender";
-      sender.textContent = mine ? "Kamu" : data.name || "Pengguna";
-
       const text = document.createElement("div");
       text.className = "message-text";
       text.textContent = data.text || "";
@@ -440,25 +479,33 @@ function loadMessages() {
       time.className = "time";
 
       if (data.createdAt) {
-        time.textContent = data.createdAt.toDate().toLocaleTimeString(
-          "id-ID",
-          { hour: "2-digit", minute: "2-digit" }
-        );
+        time.textContent =
+          data.createdAt.toDate().toLocaleTimeString(
+            "id-ID",
+            {
+              hour: "2-digit",
+              minute: "2-digit"
+            }
+          );
       }
 
-      box.appendChild(sender);
+      // Nama pengirim tidak ditampilkan di atas pesan.
       box.appendChild(text);
       box.appendChild(time);
+
       messages.appendChild(box);
     });
 
-    statusText.textContent = snapshot.empty
-      ? "Belum ada pesan. Mulai mengobrol!"
-      : "";
+    statusText.textContent =
+      snapshot.empty
+        ? "Belum ada pesan. Mulai mengobrol!"
+        : "";
 
     messages.scrollTop = messages.scrollHeight;
+
   }, (error) => {
-    statusText.textContent = "Gagal memuat pesan: " + error.message;
+    statusText.textContent =
+      "Gagal memuat pesan: " + error.message;
   });
 }
 
@@ -484,17 +531,21 @@ messageForm.addEventListener("submit", async (event) => {
 
     messageInput.value = "";
     messageInput.focus();
+
   } catch (error) {
-    statusText.textContent = "Pesan gagal dikirim: " + error.message;
+    statusText.textContent =
+      "Pesan gagal dikirim: " + error.message;
   } finally {
     button.disabled = false;
   }
 });
 
 // LOGOUT
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  await signOut(auth);
-});
+document.getElementById("logoutBtn")
+  .addEventListener("click", async () => {
+    await signOut(auth);
+  });
+
 </script>
 </body>
 </html>
