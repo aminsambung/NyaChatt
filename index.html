@@ -6,291 +6,307 @@
 <title>NyaChatt</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:Arial,sans-serif
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
-body{
-  background:#e5ddd5;
-  min-height:100vh
+body {
+  background: #e5ddd5;
+  min-height: 100vh;
 }
 
-.app{
-  max-width:500px;
-  height:100dvh;
-  margin:auto;
-  background:#fff;
-  display:flex;
-  flex-direction:column
+.app {
+  max-width: 500px;
+  height: 100dvh;
+  margin: auto;
+  background: white;
+  display: flex;
+  flex-direction: column;
 }
 
-.header{
-  background:#075e54;
-  color:#fff;
-  padding:14px 16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:21px;
-  font-weight:bold;
-  gap:10px
+.header {
+  background: #075e54;
+  color: white;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 21px;
+  font-weight: bold;
 }
 
-.header-left{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
-.header-title{
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap
+.header-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.logout,.back{
-  background:#128c7e;
-  color:#fff;
-  border:0;
-  padding:10px;
-  border-radius:8px
+.logout, .back {
+  background: #128c7e;
+  color: white;
+  border: 0;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-.back{font-size:18px}
-
-.login-box{
-  margin:auto;
-  padding:25px;
-  width:100%
+.back {
+  font-size: 20px;
 }
 
-.login-box h1{
-  text-align:center;
-  color:#075e54;
-  margin-bottom:10px
+.login-box {
+  margin: auto;
+  padding: 25px;
+  width: 100%;
 }
 
-.subtitle{
-  text-align:center;
-  color:#777;
-  margin-bottom:25px
+.login-box h1 {
+  text-align: center;
+  color: #075e54;
+  margin-bottom: 10px;
 }
 
-.login-box input{
-  width:100%;
-  padding:14px;
-  margin-bottom:15px;
-  border:1px solid #ccc;
-  border-radius:10px;
-  font-size:16px
+.subtitle {
+  text-align: center;
+  color: #777;
+  margin-bottom: 25px;
 }
 
-.primary{
-  width:100%;
-  padding:14px;
-  border:0;
-  border-radius:10px;
-  background:#128c7e;
-  color:#fff;
-  font-size:17px;
-  margin-bottom:12px
+.login-box input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
 }
 
-.switch{
-  text-align:center;
-  margin-top:10px;
-  color:#075e54;
-  cursor:pointer
+.primary {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #128c7e;
+  color: white;
+  font-size: 17px;
+  margin-bottom: 12px;
+  cursor: pointer;
 }
 
-.error{
-  color:#c00;
-  text-align:center;
-  margin:10px 0;
-  font-size:13px
+.primary:disabled {
+  opacity: .6;
 }
 
-.hidden{display:none!important}
-
-#chatPage{
-  height:100%;
-  min-height:0;
-  display:flex;
-  flex-direction:column
+.switch {
+  text-align: center;
+  margin-top: 10px;
+  color: #075e54;
+  cursor: pointer;
 }
 
-#peoplePage{
-  flex:1;
-  min-height:0;
-  display:flex;
-  flex-direction:column
+.error {
+  color: #c00;
+  text-align: center;
+  margin: 10px 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
-.people-tools{
-  padding:12px;
-  background:#eee;
-  display:flex;
-  gap:8px
+.hidden {
+  display: none !important;
 }
 
-.people-tools input{
-  flex:1;
-  min-width:0;
-  padding:12px;
-  border:1px solid #ddd;
-  border-radius:20px;
-  font-size:15px
+#chatPage {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.people-tools button{
-  border:0;
-  border-radius:20px;
-  padding:0 12px;
-  background:#128c7e;
-  color:white
+#peoplePage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.people-list{
-  overflow-y:auto;
-  flex:1;
-  background:#fff
+.people-tools {
+  padding: 12px;
+  background: #eee;
+  display: flex;
+  gap: 8px;
 }
 
-.person{
-  width:100%;
-  border:0;
-  border-bottom:1px solid #eee;
-  background:white;
-  padding:14px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  text-align:left;
-  color:#222
+.people-tools input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 15px;
 }
 
-.avatar{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background:#d9fdd3;
-  color:#075e54;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
-  font-size:18px;
-  flex-shrink:0
+.people-tools button {
+  border: 0;
+  border-radius: 20px;
+  padding: 0 12px;
+  background: #128c7e;
+  color: white;
+  cursor: pointer;
 }
 
-.person-info{min-width:0}
-
-.person-name{
-  font-weight:bold;
-  margin-bottom:4px
+.people-list {
+  overflow-y: auto;
+  flex: 1;
+  background: white;
 }
 
-.person-email{
-  font-size:12px;
-  color:#777;
-  overflow:hidden;
-  text-overflow:ellipsis
+.person {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #eee;
+  background: white;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  color: #222;
+  cursor: pointer;
 }
 
-.empty{
-  padding:20px;
-  text-align:center;
-  color:#777;
-  font-size:14px
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #d9fdd3;
+  color: #075e54;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  flex-shrink: 0;
 }
 
-.chat-info{
-  padding:10px 12px;
-  background:#eee;
-  font-size:13px
+.person-info {
+  min-width: 0;
 }
 
-.messages{
-  flex:1;
-  min-height:0;
-  overflow-y:auto;
-  padding:15px;
-  background:#efe7dd;
-  display:flex;
-  flex-direction:column;
-  gap:10px
+.person-name {
+  font-weight: bold;
+  margin-bottom: 4px;
 }
 
-.message{
-  max-width:80%;
-  padding:10px 12px;
-  border-radius:10px;
-  background:white;
-  align-self:flex-start;
-  overflow-wrap:anywhere;
-  box-shadow:0 1px 2px #0002
+.person-email {
+  font-size: 12px;
+  color: #777;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.message.mine{
-  background:#d9fdd3;
-  align-self:flex-end
+.empty {
+  padding: 20px;
+  text-align: center;
+  color: #777;
+  font-size: 14px;
 }
 
-.message-name{
-  font-size:12px;
-  font-weight:bold;
-  color:#075e54;
-  margin-bottom:5px
+.chat-info {
+  padding: 10px 12px;
+  background: #eee;
+  font-size: 13px;
 }
 
-.message-text{
-  font-size:15px;
-  white-space:pre-wrap
+.messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 15px;
+  background: #efe7dd;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.time{
-  text-align:right;
-  color:#777;
-  font-size:10px;
-  margin-top:5px
+.message {
+  max-width: 80%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: white;
+  align-self: flex-start;
+  overflow-wrap: anywhere;
+  box-shadow: 0 1px 2px #0002;
 }
 
-.bottom{
-  padding:10px;
-  background:#f0f0f0;
-  display:flex;
-  gap:8px
+.message.mine {
+  background: #d9fdd3;
+  align-self: flex-end;
 }
 
-.bottom input{
-  flex:1;
-  min-width:0;
-  padding:13px;
-  border:0;
-  border-radius:25px;
-  outline:none;
-  font-size:16px
+.message-name {
+  font-size: 12px;
+  font-weight: bold;
+  color: #075e54;
+  margin-bottom: 5px;
 }
 
-.send{
-  width:48px;
-  height:48px;
-  border:0;
-  border-radius:50%;
-  background:#128c7e;
-  color:white;
-  font-size:20px
+.message-text {
+  font-size: 15px;
+  white-space: pre-wrap;
 }
 
-.status{
-  text-align:center;
-  color:#777;
-  font-size:13px;
-  padding:6px
+.time {
+  text-align: right;
+  color: #777;
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+.bottom {
+  padding: 10px;
+  background: #f0f0f0;
+  display: flex;
+  gap: 8px;
+}
+
+.bottom input {
+  flex: 1;
+  min-width: 0;
+  padding: 13px;
+  border: 0;
+  border-radius: 25px;
+  outline: none;
+  font-size: 16px;
+}
+
+.send {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: #128c7e;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.status {
+  text-align: center;
+  color: #777;
+  font-size: 13px;
+  padding: 6px;
 }
 </style>
 </head>
@@ -298,195 +314,8 @@ body{
 <body>
 <div class="app">
 
-  <!-- HALAMAN LOGIN -->
+  <!-- LOGIN DAN DAFTAR -->
   <div id="authPage" class="login-box">
     <h1>NyaChatt 💬</h1>
 
-    <p class="subtitle" id="formTitle">
-      Silakan login ke akun kamu
-    </p>
-
-    <input
-      type="text"
-      id="name"
-      placeholder="Nama kamu"
-      class="hidden"
-      maxlength="40"
-    >
-
-    <input
-      type="email"
-      id="email"
-      placeholder="Email"
-      autocomplete="email"
-    >
-
-    <input
-      type="password"
-      id="password"
-      placeholder="Kata sandi"
-      autocomplete="current-password"
-    >
-
-    <p id="error" class="error"></p>
-
-    <button id="submitBtn" class="primary">
-      Login
-    </button>
-
-    <p id="switchBtn" class="switch">
-      Belum punya akun? Daftar
-    </p>
-  </div>
-
-  <!-- HALAMAN CHAT -->
-  <div id="chatPage" class="hidden">
-
-    <div class="header">
-      <div class="header-left">
-        <button
-          id="backBtn"
-          class="back hidden"
-          type="button"
-          aria-label="Kembali"
-        >‹</button>
-
-        <span class="header-title" id="headerTitle">
-          NyaChatt 💬
-        </span>
-      </div>
-
-      <button id="logoutBtn" class="logout">
-        Logout
-      </button>
-    </div>
-
-    <!-- DAFTAR PENGGUNA -->
-    <div id="peoplePage">
-      <div class="chat-info">
-        Pilih pengguna untuk memulai chat pribadi.
-      </div>
-
-      <div class="people-tools">
-        <input
-          id="searchPeople"
-          type="search"
-          placeholder="Cari nama atau email..."
-        >
-
-        <button id="generalBtn" type="button">
-          Chat umum
-        </button>
-      </div>
-
-      <div id="peopleStatus" class="status">
-        Memuat pengguna...
-      </div>
-
-      <div id="peopleList" class="people-list"></div>
-    </div>
-
-    <!-- CHAT PRIBADI -->
-    <div
-      id="privatePage"
-      class="hidden"
-      style="flex:1;min-height:0;flex-direction:column"
-    >
-      <div class="chat-info" id="privateInfo">
-        Chat pribadi
-      </div>
-
-      <div id="privateStatus" class="status"></div>
-
-      <div id="privateMessages" class="messages"></div>
-
-      <form id="privateForm" class="bottom">
-        <input
-          id="privateInput"
-          type="text"
-          placeholder="Ketik pesan..."
-          maxlength="2000"
-          autocomplete="off"
-          required
-        >
-
-        <button
-          type="submit"
-          class="send"
-          aria-label="Kirim"
-        >➤</button>
-      </form>
-    </div>
-
-    <!-- CHAT UMUM -->
-    <div
-      id="generalPage"
-      class="hidden"
-      style="flex:1;min-height:0;flex-direction:column"
-    >
-      <div class="chat-info">
-        Chat umum · Masuk sebagai
-        <b id="userName"></b>
-      </div>
-
-      <div id="generalStatus" class="status"></div>
-
-      <div id="generalMessages" class="messages"></div>
-
-      <form id="generalForm" class="bottom">
-        <input
-          id="generalInput"
-          type="text"
-          placeholder="Ketik pesan..."
-          maxlength="2000"
-          autocomplete="off"
-          required
-        >
-
-        <button
-          type="submit"
-          class="send"
-          aria-label="Kirim"
-        >➤</button>
-      </form>
-    </div>
-
-  </div>
-</div>
-
-<script type="module">
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-  updateProfile
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  query,
-  orderBy,
-  limit,
-  onSnapshot,
-  serverTimestamp,
-  doc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
-  authDomain: "nyachatt-a262c.firebaseapp.com",
-  projectId: "nyachatt-a262c",
-  storageBucket: "nyachatt-a262c.firebasestorage.app",
-  messagingSenderId: "1081303400744",
-  appId: "1:1081303400744:web:981fd5f46c53eb2dce101d"
-};
- 
+   
