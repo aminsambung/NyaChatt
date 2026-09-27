@@ -1,321 +1,313 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt</title>
-
-<style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-}
-
-body {
-  background: #e5ddd5;
-  min-height: 100vh;
-}
-
-.app {
-  max-width: 500px;
-  height: 100dvh;
-  margin: auto;
-  background: white;
-  display: flex;
-  flex-direction: column;
-}
-
-.header {
-  background: #075e54;
-  color: white;
-  padding: 14px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  font-size: 21px;
-  font-weight: bold;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.header-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.logout, .back {
-  background: #128c7e;
-  color: white;
-  border: 0;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.back {
-  font-size: 20px;
-}
-
-.login-box {
-  margin: auto;
-  padding: 25px;
-  width: 100%;
-}
-
-.login-box h1 {
-  text-align: center;
-  color: #075e54;
-  margin-bottom: 10px;
-}
-
-.subtitle {
-  text-align: center;
-  color: #777;
-  margin-bottom: 25px;
-}
-
-.login-box input {
-  width: 100%;
-  padding: 14px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 16px;
-}
-
-.primary {
-  width: 100%;
-  padding: 14px;
-  border: 0;
-  border-radius: 10px;
-  background: #128c7e;
-  color: white;
-  font-size: 17px;
-  margin-bottom: 12px;
-  cursor: pointer;
-}
-
-.primary:disabled {
-  opacity: .6;
-}
-
-.switch {
-  text-align: center;
-  margin-top: 10px;
-  color: #075e54;
-  cursor: pointer;
-}
-
-.error {
-  color: #c00;
-  text-align: center;
-  margin: 10px 0;
-  font-size: 13px;
-  overflow-wrap: anywhere;
-}
-
-.hidden {
-  display: none !important;
-}
-
-#chatPage {
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-#peoplePage {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.people-tools {
-  padding: 12px;
-  background: #eee;
-  display: flex;
-  gap: 8px;
-}
-
-.people-tools input {
-  flex: 1;
-  min-width: 0;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  font-size: 15px;
-}
-
-.people-tools button {
-  border: 0;
-  border-radius: 20px;
-  padding: 0 12px;
-  background: #128c7e;
-  color: white;
-  cursor: pointer;
-}
-
-.people-list {
-  overflow-y: auto;
-  flex: 1;
-  background: white;
-}
-
-.person {
-  width: 100%;
-  border: 0;
-  border-bottom: 1px solid #eee;
-  background: white;
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-align: left;
-  color: #222;
-  cursor: pointer;
-}
-
-.avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #d9fdd3;
-  color: #075e54;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-.person-info {
-  min-width: 0;
-}
-
-.person-name {
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-.person-email {
-  font-size: 12px;
-  color: #777;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.empty {
-  padding: 20px;
-  text-align: center;
-  color: #777;
-  font-size: 14px;
-}
-
-.chat-info {
-  padding: 10px 12px;
-  background: #eee;
-  font-size: 13px;
-}
-
-.messages {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 15px;
-  background: #efe7dd;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.message {
-  max-width: 80%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: white;
-  align-self: flex-start;
-  overflow-wrap: anywhere;
-  box-shadow: 0 1px 2px #0002;
-}
-
-.message.mine {
-  background: #d9fdd3;
-  align-self: flex-end;
-}
-
-.message-name {
-  font-size: 12px;
-  font-weight: bold;
-  color: #075e54;
-  margin-bottom: 5px;
-}
-
-.message-text {
-  font-size: 15px;
-  white-space: pre-wrap;
-}
-
-.time {
-  text-align: right;
-  color: #777;
-  font-size: 10px;
-  margin-top: 5px;
-}
-
-.bottom {
-  padding: 10px;
-  background: #f0f0f0;
-  display: flex;
-  gap: 8px;
-}
-
-.bottom input {
-  flex: 1;
-  min-width: 0;
-  padding: 13px;
-  border: 0;
-  border-radius: 25px;
-  outline: none;
-  font-size: 16px;
-}
-
-.send {
-  width: 48px;
-  height: 48px;
-  border: 0;
-  border-radius: 50%;
-  background: #128c7e;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.status {
-  text-align: center;
-  color: #777;
-  font-size: 13px;
-  padding: 6px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NyaChatt</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7f8;
+      color: #222;
+    }
+    header {
+      background: #008f7a;
+      color: white;
+      padding: 16px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    main {
+      max-width: 600px;
+      margin: 25px auto;
+      padding: 15px;
+    }
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px #0001;
+    }
+    h2 { text-align: center; }
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border-radius: 9px;
+      font-size: 16px;
+    }
+    input { border: 1px solid #ccc; }
+    button {
+      border: 0;
+      background: #008f7a;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; }
+    .link {
+      color: #008f7a;
+      text-align: center;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    #status {
+      color: #c62828;
+      text-align: center;
+      white-space: pre-wrap;
+      margin: 12px 0;
+    }
+    #chat { display: none; }
+    #messages {
+      height: 55vh;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 12px 0;
+      background: #fafafa;
+    }
+    .msg {
+      background: #e2f4ef;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 8px 0;
+      overflow-wrap: anywhere;
+    }
+    .name { font-weight: bold; color: #007c69; }
+    .small { font-size: 12px; color: #777; }
+    #sendRow { display: flex; gap: 6px; }
+    #sendRow input { flex: 1; min-width: 0; }
+    #sendRow button { width: 90px; }
+  </style>
 </head>
-
 <body>
-<div class="app">
+  <header>NyaChatt 💬</header>
 
-  <!-- LOGIN DAN DAFTAR -->
-  <div id="authPage" class="login-box">
-    <h1>NyaChatt 💬</h1>
+  <main>
+    <section class="card" id="authBox">
+      <h2 id="formTitle">Login NyaChatt</h2>
 
-   
+      <form id="authForm">
+        <input id="email" type="email" placeholder="Email" required>
+        <input id="password" type="password"
+               placeholder="Password (minimal 6 karakter)"
+               minlength="6" required>
+        <button id="submitBtn" type="submit">Login</button>
+      </form>
+
+      <div id="status" role="status"></div>
+      <div class="link" id="switchMode">
+        Belum punya akun? Daftar
+      </div>
+    </section>
+
+    <section class="card" id="chat">
+      <div>
+        Login sebagai: <b id="userEmail"></b>
+        <button id="logoutBtn" type="button">Logout</button>
+      </div>
+
+      <div id="chatStatus" class="small"></div>
+      <div id="messages"></div>
+
+      <form id="sendForm">
+        <div id="sendRow">
+          <input id="messageInput" placeholder="Tulis pesan..." required>
+          <button type="submit">Kirim</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from
+      "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      query,
+      orderBy,
+      limit,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    // GANTI dengan konfigurasi dari Firebase Project settings.
+    const firebaseConfig = {
+  apiKey: "AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
+  authDomain: "nyachatt-a262c.firebaseapp.com",
+  projectId: "nyachatt-a262c",
+  storageBucket: "nyachatt-a262c.firebasestorage.app",
+  messagingSenderId: "1081303400744",
+  appId: "1:1081303400744:web:981fd5f46c53eb2dce101d"
+};
+
+    const authBox = document.getElementById("authBox");
+    const chatBox = document.getElementById("chat");
+    const statusBox = document.getElementById("status");
+    const chatStatus = document.getElementById("chatStatus");
+    const authForm = document.getElementById("authForm");
+    const submitBtn = document.getElementById("submitBtn");
+
+    let isRegister = false;
+    let stopMessages = null;
+
+    function showError(error) {
+      console.error(error);
+      const messages = {
+        "auth/invalid-email": "Format email tidak valid.",
+        "auth/user-not-found": "Akun tidak ditemukan. Silakan daftar dahulu.",
+        "auth/wrong-password": "Password salah.",
+        "auth/invalid-credential": "Email atau password salah.",
+        "auth/email-already-in-use": "Email sudah terdaftar. Silakan login.",
+        "auth/weak-password": "Password minimal 6 karakter.",
+        "auth/operation-not-allowed": "Email/Password belum diaktifkan di Firebase.",
+        "auth/network-request-failed": "Koneksi internet bermasalah.",
+        "auth/too-many-requests": "Terlalu banyak percobaan. Coba lagi nanti."
+      };
+
+      statusBox.textContent =
+        messages[error.code] ||
+        `Gagal: ${error.code || ""}\n${error.message || "Terjadi kesalahan."}`;
+    }
+
+    let app, auth, db;
+
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+    } catch (error) {
+      statusBox.textContent =
+        "Konfigurasi Firebase bermasalah. Periksa firebaseConfig.";
+      console.error(error);
+    }
+
+    document.getElementById("switchMode").onclick = () => {
+      isRegister = !isRegister;
+      document.getElementById("formTitle").textContent =
+        isRegister ? "Daftar NyaChatt" : "Login NyaChatt";
+      submitBtn.textContent = isRegister ? "Daftar" : "Login";
+      document.getElementById("switchMode").textContent =
+        isRegister ? "Sudah punya akun? Login" : "Belum punya akun? Daftar";
+      statusBox.textContent = "";
+    };
+
+    authForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!auth) return;
+
+      statusBox.textContent = "";
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Memproses...";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        if (isRegister) {
+          await createUserWithEmailAndPassword(auth, email, password);
+        } else {
+          await signInWithEmailAndPassword(auth, email, password);
+        }
+      } catch (error) {
+        showError(error);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = isRegister ? "Daftar" : "Login";
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        authBox.style.display = "none";
+        chatBox.style.display = "block";
+        document.getElementById("userEmail").textContent = user.email;
+        loadMessages();
+      } else {
+        authBox.style.display = "block";
+        chatBox.style.display = "none";
+        if (stopMessages) stopMessages();
+      }
+    });
+
+    document.getElementById("logoutBtn").onclick = async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        chatStatus.textContent = error.message;
+      }
+    };
+
+    function loadMessages() {
+      if (stopMessages) stopMessages();
+
+      const q = query(
+        collection(db, "messages"),
+        orderBy("createdAt", "asc"),
+        limit(100)
+      );
+
+      stopMessages = onSnapshot(q, (snapshot) => {
+        const messages = document.getElementById("messages");
+        messages.innerHTML = "";
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const item = document.createElement("div");
+          item.className = "msg";
+
+          const name = document.createElement("div");
+          name.className = "name";
+          name.textContent = data.name || data.uid || "Pengguna";
+
+          const text = document.createElement("div");
+          text.textContent = data.text || "";
+
+          item.append(name, text);
+          messages.appendChild(item);
+        });
+
+        messages.scrollTop = messages.scrollHeight;
+        chatStatus.textContent = "";
+      }, (error) => {
+        chatStatus.textContent =
+          "Login berhasil, tetapi chat gagal dimuat: " + error.message;
+      });
+    }
+
+    document.getElementById("sendForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      if (!text || !auth.currentUser) return;
+
+      try {
+        await addDoc(collection(db, "messages"), {
+          uid: auth.currentUser.uid,
+          name: auth.currentUser.email,
+          text,
+          createdAt: serverTimestamp()
+        });
+        input.value = "";
+        chatStatus.textContent = "";
+      } catch (error) {
+        chatStatus.textContent = "Pesan gagal dikirim: " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
