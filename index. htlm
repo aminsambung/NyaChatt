@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
   <title>NyaChatt</title>
 
   <style>
@@ -15,14 +16,14 @@
 
     body {
       background: #e5ddd5;
-      height: 100vh;
+      min-height: 100vh;
     }
 
     .app {
       max-width: 500px;
-      height: 100vh;
+      min-height: 100vh;
       margin: auto;
-      background: #fff;
+      background: white;
       display: flex;
       flex-direction: column;
     }
@@ -30,14 +31,77 @@
     .header {
       background: #075e54;
       color: white;
-      padding: 18px;
-      font-size: 22px;
+      padding: 20px;
+      font-size: 23px;
       font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logout {
+      background: #128c7e;
+      color: white;
+      border: none;
+      padding: 9px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .login-box {
+      margin: auto;
+      padding: 25px;
+      width: 100%;
+    }
+
+    .login-box h1 {
+      text-align: center;
+      color: #075e54;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 25px;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .primary {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #128c7e;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    .switch {
+      text-align: center;
+      margin-top: 10px;
+      color: #075e54;
+      cursor: pointer;
+    }
+
+    .error {
+      color: #d32f2f;
+      text-align: center;
+      margin: 10px 0;
     }
 
     .chat-list {
       flex: 1;
-      overflow-y: auto;
     }
 
     .chat {
@@ -71,29 +135,8 @@
       margin-top: 5px;
     }
 
-    .bottom {
-      padding: 10px;
-      background: #f0f0f0;
-      display: flex;
-      gap: 8px;
-    }
-
-    .bottom input {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 25px;
-      outline: none;
-    }
-
-    .send {
-      width: 45px;
-      height: 45px;
-      border: none;
-      border-radius: 50%;
-      background: #128c7e;
-      color: white;
-      font-size: 18px;
+    .hidden {
+      display: none !important;
     }
   </style>
 </head>
@@ -102,44 +145,259 @@
 
 <div class="app">
 
-  <div class="header">
-    NyaChatt
+  <!-- HALAMAN LOGIN -->
+  <div id="authPage" class="login-box">
+
+    <h1>NyaChatt 💬</h1>
+    <p class="subtitle" id="formTitle">
+      Silakan login ke akun kamu
+    </p>
+
+    <input
+      type="text"
+      id="name"
+      placeholder="Nama kamu"
+      class="hidden"
+    >
+
+    <input
+      type="email"
+      id="email"
+      placeholder="Email"
+      autocomplete="email"
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Kata sandi"
+      autocomplete="current-password"
+    >
+
+    <p id="error" class="error"></p>
+
+    <button id="submitBtn" class="primary">
+      Login
+    </button>
+
+    <p id="switchBtn" class="switch">
+      Belum punya akun? Daftar
+    </p>
+
   </div>
 
-  <div class="chat-list">
+  <!-- HALAMAN CHAT -->
+  <div id="chatPage" class="hidden">
 
-    <div class="chat">
-      <div class="avatar">A</div>
-      <div>
-        <div class="chat-name">Admin NyaChatt</div>
-        <div class="message">Selamat datang di NyaChatt 👋</div>
-      </div>
+    <div class="header">
+      <span>NyaChatt 💬</span>
+      <button id="logoutBtn" class="logout">
+        Logout
+      </button>
     </div>
 
-    <div class="chat">
-      <div class="avatar">B</div>
-      <div>
-        <div class="chat-name">Budi</div>
-        <div class="message">Halo, apa kabar?</div>
-      </div>
+    <div style="padding:15px;background:#eee">
+      Selamat datang,
+      <b id="userName"></b>!
     </div>
 
-    <div class="chat">
-      <div class="avatar">S</div>
-      <div>
-        <div class="chat-name">Siti</div>
-        <div class="message">Sampai jumpa nanti</div>
+    <div class="chat-list">
+
+      <div class="chat">
+        <div class="avatar">A</div>
+        <div>
+          <div class="chat-name">Admin NyaChatt</div>
+          <div class="message">
+            Selamat datang di NyaChatt 👋
+          </div>
+        </div>
       </div>
+
+      <div class="chat">
+        <div class="avatar">B</div>
+        <div>
+          <div class="chat-name">Budi</div>
+          <div class="message">
+            Halo, apa kabar?
+          </div>
+        </div>
+      </div>
+
+      <div class="chat">
+        <div class="avatar">S</div>
+        <div>
+          <div class="chat-name">Siti</div>
+          <div class="message">
+            Sampai jumpa nanti
+          </div>
+        </div>
+      </div>
+
     </div>
-
-  </div>
-
-  <div class="bottom">
-    <input type="text" placeholder="Ketik pesan...">
-    <button class="send">➤</button>
   </div>
 
 </div>
+
+<script type="module">
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut,
+    updateProfile
+  } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+  // GANTI DENGAN KONFIGURASI FIREBASE KAMU
+  const firebaseConfig = {
+    apiKey: "ISI_API_KEY",
+    authDomain: "ISI_AUTH_DOMAIN",
+    projectId: "ISI_PROJECT_ID",
+    storageBucket: "ISI_STORAGE_BUCKET",
+    messagingSenderId: "ISI_MESSAGING_SENDER_ID",
+    appId: "ISI_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const authPage = document.getElementById("authPage");
+  const chatPage = document.getElementById("chatPage");
+  const nameInput = document.getElementById("name");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const errorText = document.getElementById("error");
+  const submitBtn = document.getElementById("submitBtn");
+  const switchBtn = document.getElementById("switchBtn");
+  const formTitle = document.getElementById("formTitle");
+
+  let isRegister = false;
+
+  // GANTI MODE LOGIN / DAFTAR
+  switchBtn.addEventListener("click", () => {
+    isRegister = !isRegister;
+
+    nameInput.classList.toggle("hidden", !isRegister);
+
+    formTitle.textContent = isRegister
+      ? "Buat akun NyaChatt"
+      : "Silakan login ke akun kamu";
+
+    submitBtn.textContent = isRegister
+      ? "Daftar"
+      : "Login";
+
+    switchBtn.textContent = isRegister
+      ? "Sudah punya akun? Login"
+      : "Belum punya akun? Daftar";
+
+    passwordInput.autocomplete = isRegister
+      ? "new-password"
+      : "current-password";
+
+    errorText.textContent = "";
+  });
+
+  // LOGIN DAN DAFTAR
+  submitBtn.addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    const name = nameInput.value.trim();
+
+    errorText.textContent = "";
+
+    if (!email || !password) {
+      errorText.textContent =
+        "Email dan kata sandi wajib diisi.";
+      return;
+    }
+
+    if (isRegister && !name) {
+      errorText.textContent =
+        "Nama kamu wajib diisi.";
+      return;
+    }
+
+    if (isRegister && password.length < 6) {
+      errorText.textContent =
+        "Kata sandi minimal 6 karakter.";
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Memproses...";
+
+    try {
+      if (isRegister) {
+        const result =
+          await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+        await updateProfile(result.user, {
+          displayName: name
+        });
+
+      } else {
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+      }
+
+    } catch (error) {
+      const errors = {
+        "auth/email-already-in-use":
+          "Email sudah terdaftar.",
+        "auth/invalid-email":
+          "Format email tidak valid.",
+        "auth/weak-password":
+          "Kata sandi terlalu lemah.",
+        "auth/invalid-credential":
+          "Email atau kata sandi salah.",
+        "auth/network-request-failed":
+          "Periksa koneksi internet kamu."
+      };
+
+      errorText.textContent =
+        errors[error.code] ||
+        "Terjadi kesalahan: " + error.message;
+
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent =
+        isRegister ? "Daftar" : "Login";
+    }
+  });
+
+  // MEMERIKSA STATUS LOGIN
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      authPage.classList.add("hidden");
+      chatPage.classList.remove("hidden");
+
+      document.getElementById("userName").textContent =
+        user.displayName || user.email;
+
+    } else {
+      chatPage.classList.add("hidden");
+      authPage.classList.remove("hidden");
+    }
+  });
+
+  // LOGOUT
+  document.getElementById("logoutBtn")
+    .addEventListener("click", async () => {
+      await signOut(auth);
+    });
+</script>
 
 </body>
 </html>
