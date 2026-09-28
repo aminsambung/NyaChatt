@@ -472,7 +472,6 @@ try{
 }
 }
 
-// Memuat daftar chat aktif di tab Chats beserta hitungan pesan belum dibaca (unread badge)
 async function loadActiveChats(){
 const box=$("chatsList");
 box.innerHTML='<div class="empty">Memuat percakapan...</div>';
@@ -488,7 +487,6 @@ try{
     if(convSnap.exists()){
       const messagesSnap = await getDocs(collection(db, "conversations", id, "messages"));
       if(!messagesSnap.empty){
-        // Hitung berapa pesan yang belum dibaca (sender bukan kita dan read == false)
         let unreadCount = 0;
         messagesSnap.forEach(mDoc => {
           const mData = mDoc.data();
@@ -538,7 +536,6 @@ try{
     nameEl.textContent = contactName;
     nameRow.appendChild(nameEl);
 
-    // Jika ada pesan belum dibaca, tampilkan balon angka hijau di sebelah kanan
     if(chat.unreadCount > 0){
       const badge = document.createElement("span");
       badge.className = "unread-badge";
@@ -647,17 +644,24 @@ loadActiveChats();
 };
 
 $("sendForm").onsubmit=async event=>{
-event.preventDefault();const text=$("messageInput").value.trim();if(!text||!currentUser||!selectedPerson)return;
-$("sendBtn").disabled=true;try{const id=conversationId(currentUser.uid,selectedPerson.id);
-await addDoc(collection(db,"conversations",id,"messages"),{
-  senderId:currentUser.uid,
-  text,
-  read:false,
-  createdAt:serverTimestamp()
-});
-$("messageInput":$("messageInput").value="",
-$("messageInput").value="";
-}catch(e){showError("appError",e)}finally{$("sendBtn").disabled=false}
+event.preventDefault();
+const text=$("messageInput").value.trim();
+if(!text||!currentUser||!selectedPerson)return;
+$("sendBtn").disabled=true;
+try{
+  const id=conversationId(currentUser.uid,selectedPerson.id);
+  await addDoc(collection(db,"conversations",id,"messages"),{
+    senderId:currentUser.uid,
+    text,
+    read:false,
+    createdAt:serverTimestamp()
+  });
+  $("messageInput").value="";
+}catch(e){
+  showError("appError",e);
+}finally{
+  $("sendBtn").disabled=false;
+}
 };
 </script>
 </body>
