@@ -2,9 +2,11 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - BBM Direct Connect Edition</title>
-<!-- Pustaka QRCode.js -->
+<title>NyaChatt - BBM QR Scanner Edition</title>
+<!-- Pustaka QRCode.js untuk generate QR profil -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Pustaka Html5-Qrcode untuk scan kamera -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
 .bbm-auth-bg{background:linear-gradient(to bottom, #0d3856, #1c6b9e, #005b82);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:white;text-align:center}
@@ -144,8 +146,8 @@ BBM-Style Secure Messenger
 <div id="openAddContactModal" class="chat-item">
 <div class="chat-avatar" style="background:#00897b;">📶+</div>
 <div class="chat-info">
-<div class="chat-contact-name">Tambah Kontak (Cari via PIN)</div>
-<div class="chat-snippet">Hubungkan teman langsung menggunakan PIN BBM</div>
+<div class="chat-contact-name">Tambah Kontak (Scan QR / PIN)</div>
+<div class="chat-snippet">Tambah teman dengan Scan QR Code atau PIN BBM</div>
 </div>
 </div>
 
@@ -180,14 +182,19 @@ BBM-Style Secure Messenger
 </div>
 </div>
 
-<!-- MODAL TAMBAH KONTAK -->
+<!-- MODAL TAMBAH KONTAK & SCANNER QR -->
 <div id="contactModal" class="modal-overlay hidden">
 <div class="modal-card" style="text-align:left;">
-<div class="modal-title" id="modalTitleText">Tambah Kontak PIN</div>
+<div class="modal-title" id="modalTitleText">Tambah Kontak (Scan QR / PIN)</div>
 <input id="newContactName" class="bbm-input" type="text" placeholder="Nama Kontak (Contoh: Budi)" style="color:#263238;">
-<input id="newContactPin" class="bbm-input" type="text" placeholder="Masukkan PIN BBM Teman" style="color:#263238;text-transform:uppercase;">
+<input id="newContactPin" class="bbm-input" type="text" placeholder="PIN BBM (Terisi otomatis dari Scan QR)" style="color:#263238;text-transform:uppercase;">
+
+<!-- Tombol dan Area Kamera Scanner QR -->
+<button id="startScanBtn" class="bbm-btn secondary-btn" style="background:#00897b;margin:4px 0 10px;">📷 Scan QR Code Teman</button>
+<div id="reader" style="width:100%;display:none;margin-bottom:10px;border-radius:6px;overflow:hidden;"></div>
+
 <div id="contactError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
-<div style="display:flex;gap:8px;margin-top:12px;">
+<div style="display:flex;gap:8px;margin-top:8px;">
 <button id="cancelModalBtn" class="bbm-btn secondary-btn" style="flex:1;margin:0;">Batal</button>
 <button id="saveContactBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Simpan Kontak</button>
 </div>
@@ -259,6 +266,7 @@ const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
 let currentUser=null,selectedPerson=null,stopMessages=null;
 let isRegisterMode=false;
+let html5QrCode = null;
 
 function showError(id,e){
 const map={"auth/invalid-credential":"Identitas atau kata sandi salah.","auth/user-not-found":"Akun tidak ditemukan.","auth/wrong-password":"Kata sandi salah.","auth/email-already-in-use":"Email sudah terdaftar.","auth/weak-password":"Kata sandi minimal 6 karakter.","auth/invalid-email":"Format email/identitas tidak valid."};
@@ -329,7 +337,7 @@ try{
       targetEmail = inputVal.toLowerCase().replace(/[^a-z0-9]/g, '') + "@nyachatt.app";
     }
     const c = await createUserWithEmailAndPassword(auth, targetEmail, pass);
-    await ensureProfile(c.user, isEmail(inputVal) ? "" : inputVal, isEmail(inputVal) ? "" : inputVal);
+    await ensureProfile(c.user, isEmail(inputVal) ? "" : inputVal, isEmail(inputVal) ? "" : isEmail(inputVal) ? "" : inputVal);
   } else {
     if(!isEmail(inputVal)){
       const usersRef = collection(db, "users");
@@ -479,7 +487,7 @@ try{
   }
 
   if(activeChats.length === 0){
-    box.innerHTML=`<div class="empty">Belum ada percakapan aktif.<br>Tambah kontak via PIN untuk mulai chat.</div>`;
+    box.innerHTML=`<div class="empty">Belum ada percakapan aktif.<br>Tambah kontak via Scan QR atau PIN untuk mulai chat.</div>`;
     return;
   }
 
@@ -531,14 +539,57 @@ const openModal=()=>{
   $("contactError").textContent="";
   $("newContactName").value = "";
   $("newContactPin").value = "";
+  $("reader").style.display = "none";
 };
-const closeModal=()=>$("contactModal").classList.add("hidden");
+
+const closeModal=()=>{
+  if(html5QrCode){
+    html5QrCode.stop().catch(()=>{});
+    html5QrCode = null;
+  }
+  $("reader").style.display = "none";
+  $("contactModal").classList.add("hidden");
+};
 
 $("openAddContactModal").onclick=openModal;
 $("cancelModalBtn").onclick=closeModal;
 $("fabNewChatBtn").onclick=()=>document.querySelector("[data-target='tabContacts']").click();
 
-// SIMPAN KONTAK AMAN DI AKUN SENDIRI (TANPA ERROR PERMISSION)
+// Fitur Scan QR Code dengan Kamera HP
+$("startScanBtn").onclick=async()=>{
+  const readerDiv = $("reader");
+  readerDiv.style.display = "block";
+  if(!html5QrCode){
+    html5QrCode = new Html5Qrcode("reader");
+  }
+  try{
+    await html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 200, height: 200 } },
+      async (decodedText)=>{
+        // Hasil scan langsung mengisi input PIN
+        $("newContactPin").value = decodedText.trim().toUpperCase();
+        
+        // Cek nama pemilik PIN otomatis dari database
+        const usersRef = collection(db, "users");
+        const qPin = query(usersRef, where("bbmPin", "==", $("newContactPin").value));
+        const snap = await getDocs(qPin);
+        if(!snap.empty){
+          const uData = snap.docs[0].data();
+          $("newContactName").value = uData.displayName || "Teman BBM";
+        }
+
+        await html5QrCode.stop();
+        readerDiv.style.display = "none";
+      },
+      (errorMessage)=>{}
+    );
+  }catch(err){
+    $("contactError").textContent="Gagal akses kamera: Pastikan izin kamera aktif & pakai HTTPS.";
+  }
+};
+
+// Simpan kontak aman di database akun sendiri
 $("saveContactBtn").onclick=async()=>{
 $("contactError").textContent="";
 const name=$("newContactName").value.trim();
@@ -565,7 +616,11 @@ try{
     return;
   }
 
-  // Simpan langsung ke database kontak milik akun sendiri
+  if(html5QrCode){
+    html5QrCode.stop().catch(()=>{});
+    html5QrCode = null;
+  }
+
   await addDoc(collection(db, "users", currentUser.uid, "contacts"), { 
     name: name, 
     bbmPin: pinInput, 
@@ -575,7 +630,7 @@ try{
   closeModal();
   await loadContactsTab();
   await loadActiveChats();
-  alert("Kontak " + name + " berhasil ditambahkan!");
+  alert("Kontak " + name + " berhasil disimpan!");
 }catch(e){
   $("contactError").textContent="Gagal menyimpan: "+e.message;
 }
@@ -599,7 +654,7 @@ try{
   const snapContacts = await getDocs(collection(db, "users", currentUser.uid, "contacts"));
   
   if(snapContacts.empty){
-    box.innerHTML='<div class="empty">Belum ada kontak tersimpan.<br>Ketuk "Tambah Kontak" di atas untuk menambahkan teman via PIN BBM.</div>';
+    box.innerHTML='<div class="empty">Belum ada kontak tersimpan.<br>Ketuk "Tambah Kontak" untuk Scan QR Code atau input PIN teman.</div>';
     return;
   }
 
