@@ -2,11 +2,9 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - Multi Login Mode</title>
+<title>NyaChatt - WhatsApp Style Unread Badge</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
-
-/* Desain Layar Masuk / Auth Ala BBM Klasik */
 .bbm-auth-bg{background:linear-gradient(to bottom, #0d3856, #1c6b9e, #005b82);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:white;text-align:center}
 .bbm-welcome-box{margin-top:20px}
 .bbm-logo{width:85px;height:85px;background:#111;border:3px solid #4fc3f7;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 16px rgba(0,0,0,0.3);font-size:36px}
@@ -44,6 +42,9 @@ input{font:inherit}
 .chat-name-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .chat-contact-name{font-weight:bold;font-size:15px;color:#263238}
 .chat-snippet{font-size:13px;color:#78909c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Balon Angka Notifikasi Belum Dibaca (WhatsApp Style) */
+.unread-badge{background:#25d366;color:white;font-size:11px;font-weight:bold;padding:2px 7px;border-radius:12px;min-width:20px;text-align:center;display:inline-block}
 
 .fab-btn{position:fixed;bottom:24px;right:20px;width:56px;height:56px;background:#00897b;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.3);cursor:pointer;border:0;z-index:99}
 
@@ -269,7 +270,6 @@ if(isRegisterMode){
 }
 };
 
-// Fungsi untuk mendeteksi apakah input adalah email valid
 function isEmail(text){
 return text.includes("@") && text.includes(".");
 }
@@ -288,17 +288,14 @@ try{
   let targetEmail = inputVal;
 
   if(isRegisterMode){
-    // Saat Register: Jika input bukan email (misal username atau no hp), kita buatkan email dummy berbasis domain internal agar bisa masuk Firebase Auth
     if(!isEmail(inputVal)){
       targetEmail = inputVal.toLowerCase().replace(/[^a-z0-9]/g, '') + "@nyachatt.app";
     }
     const c = await createUserWithEmailAndPassword(auth, targetEmail, pass);
     await ensureProfile(c.user, isEmail(inputVal) ? "" : inputVal, isEmail(inputVal) ? "" : inputVal);
   } else {
-    // Saat Login: Jika input bukan email, cari email aslinya berdasarkan username atau nomor HP di Firestore koleksi users
     if(!isEmail(inputVal)){
       const usersRef = collection(db, "users");
-      // Cari berdasarkan displayName atau phone
       const qName = query(usersRef, where("displayName", "==", inputVal));
       const snapName = await getDocs(qName);
       
@@ -403,26 +400,48 @@ async function loadContactsPicker(){
 const box=$("contactsPickerList");
 box.innerHTML='<div class="empty">Memuat kontak...</div>';
 try{
+  const snapContacts = await getDocs(collection(db, "users", currentUser.uid, "contacts"));
   const snapUsers = await getDocs(collection(db, "users"));
-  const people = snapUsers.docs.map(d=>({id:d.id, ...d.data()})).filter(p=>p.id !== currentUser.uid);
   
-  $("contactCountLabel").textContent = people.length + " kontak";
+  let listItems = [];
   
-  if(!people.length){
-    box.innerHTML='<div class="empty">Belum ada pengguna lain terdaftar.</div>';
+  snapContacts.forEach(d=>{
+    const c = d.data();
+    listItems.push({
+      id: d.id,
+      displayName: c.name,
+      email: c.phoneOrEmail,
+      isSavedContact: true
+    });
+  });
+
+  snapUsers.forEach(d=>{
+    if(d.id !== currentUser.uid){
+      const u = d.data();
+      listItems.push({
+        id: d.id,
+        displayName: u.displayName || u.email || "Pengguna",
+        email: u.email || u.phone || "",
+        isSavedContact: false
+      });
+    }
+  });
+
+  $("contactCountLabel").textContent = listItems.length + " kontak";
+  
+  if(listItems.length === 0){
+    box.innerHTML='<div class="empty">Belum ada kontak tersimpan.</div>';
     return;
   }
 
   box.innerHTML="";
-  for(const p of people){
+  for(const p of listItems){
     const item=document.createElement("div");
     item.className="chat-item";
     
-    const nameStr = p.displayName || p.email || "Pengguna";
-    
     const av=document.createElement("div");
     av.className="chat-avatar";
-    av.textContent=nameStr.charAt(0).toUpperCase();
+    av.textContent=p.displayName.charAt(0).toUpperCase();
     
     const info=document.createElement("div");
     info.className="chat-info";
@@ -432,19 +451,19 @@ try{
     
     const nameEl=document.createElement("div");
     nameEl.className="chat-contact-name";
-    nameEl.textContent=nameStr;
+    nameEl.textContent=p.displayName;
     nameRow.appendChild(nameEl);
     info.appendChild(nameRow);
     
     const snippet=document.createElement("div");
     snippet.className="chat-snippet";
-    snippet.textContent=p.phone || p.email || "Ketuk untuk chat";
+    snippet.textContent=p.email;
     info.appendChild(snippet);
     
     item.append(av,info);
     item.onclick=()=>{
       closeSelectContact();
-      openChat({id:p.id, displayName:nameStr, email:p.email});
+      openChat({id:p.id, displayName:p.displayName, email:p.email});
     };
     box.appendChild(item);
   }
@@ -453,6 +472,7 @@ try{
 }
 }
 
+// Memuat daftar chat aktif di tab Chats beserta hitungan pesan belum dibaca (unread badge)
 async function loadActiveChats(){
 const box=$("chatsList");
 box.innerHTML='<div class="empty">Memuat percakapan...</div>';
@@ -468,9 +488,18 @@ try{
     if(convSnap.exists()){
       const messagesSnap = await getDocs(collection(db, "conversations", id, "messages"));
       if(!messagesSnap.empty){
+        // Hitung berapa pesan yang belum dibaca (sender bukan kita dan read == false)
+        let unreadCount = 0;
+        messagesSnap.forEach(mDoc => {
+          const mData = mDoc.data();
+          if(mData.senderId !== currentUser.uid && mData.read !== true){
+            unreadCount++;
+          }
+        });
+
         activeChats.push({
           user: u,
-          lastMsgCount: messagesSnap.docs.length
+          unreadCount: unreadCount
         });
       }
     }
@@ -508,6 +537,15 @@ try{
     nameEl.className = "chat-contact-name";
     nameEl.textContent = contactName;
     nameRow.appendChild(nameEl);
+
+    // Jika ada pesan belum dibaca, tampilkan balon angka hijau di sebelah kanan
+    if(chat.unreadCount > 0){
+      const badge = document.createElement("span");
+      badge.className = "unread-badge";
+      badge.textContent = chat.unreadCount;
+      nameRow.appendChild(badge);
+    }
+
     info.appendChild(nameRow);
 
     const snippet = document.createElement("div");
@@ -617,6 +655,7 @@ await addDoc(collection(db,"conversations",id,"messages"),{
   read:false,
   createdAt:serverTimestamp()
 });
+$("messageInput":$("messageInput").value="",
 $("messageInput").value="";
 }catch(e){showError("appError",e)}finally{$("sendBtn").disabled=false}
 };
