@@ -2,9 +2,11 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - WhatsApp Style Final</title>
+<title>NyaChatt - Multi Login Mode</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
+
+/* Desain Layar Masuk / Auth Ala BBM Klasik */
 .bbm-auth-bg{background:linear-gradient(to bottom, #0d3856, #1c6b9e, #005b82);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:white;text-align:center}
 .bbm-welcome-box{margin-top:20px}
 .bbm-logo{width:85px;height:85px;background:#111;border:3px solid #4fc3f7;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 16px rgba(0,0,0,0.3);font-size:36px}
@@ -42,10 +44,6 @@ input{font:inherit}
 .chat-name-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .chat-contact-name{font-weight:bold;font-size:15px;color:#263238}
 .chat-snippet{font-size:13px;color:#78909c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-.empty-chats-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;text-align:center;background:#fff;min-height:60vh}
-.empty-chats-icon{font-size:48px;margin-bottom:16px}
-.empty-chats-text{font-size:15px;color:#78909c;margin-bottom:20px}
 
 .fab-btn{position:fixed;bottom:24px;right:20px;width:56px;height:56px;background:#00897b;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.3);cursor:pointer;border:0;z-index:99}
 
@@ -92,11 +90,11 @@ input{font:inherit}
 <div class="bbm-welcome-box">
 <div class="bbm-logo">💬</div>
 <div class="bbm-auth-title" id="authScreenTitle">Selamat Datang di NyaChatt</div>
-<div class="bbm-auth-desc" id="authScreenDesc">Masuk ke NyaChatt menggunakan akun kamu. Jika belum punya akun, kamu bisa mendaftar sekarang.</div>
+<div class="bbm-auth-desc" id="authScreenDesc">Masuk menggunakan Username, Email, atau No. HP kamu.</div>
 </div>
 
 <div style="width:100%;max-width:360px;margin:0 auto;">
-<input id="email" class="bbm-input" type="email" placeholder="Alamat Email" autocomplete="email">
+<input id="loginInput" class="bbm-input" type="text" placeholder="Username, Email, atau No. HP" autocomplete="username">
 <input id="password" class="bbm-input" type="password" placeholder="Kata Sandi (min. 6 karakter)" autocomplete="current-password">
 <div id="authError" class="bbm-error"></div>
 
@@ -219,7 +217,7 @@ Ketentuan Layanan & Kebijakan Privasi
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,where,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
@@ -236,13 +234,21 @@ let currentUser=null,selectedPerson=null,stopMessages=null;
 let isRegisterMode=false;
 
 function showError(id,e){
-const map={"auth/invalid-credential":"Email atau kata sandi salah.","auth/user-not-found":"Akun tidak ditemukan.","auth/wrong-password":"Kata sandi salah.","auth/email-already-in-use":"Email sudah terdaftar.","auth/weak-password":"Kata sandi minimal 6 karakter.","auth/invalid-email":"Format email tidak valid."};
+const map={"auth/invalid-credential":"Identitas atau kata sandi salah.","auth/user-not-found":"Akun tidak ditemukan.","auth/wrong-password":"Kata sandi salah.","auth/email-already-in-use":"Email sudah terdaftar.","auth/weak-password":"Kata sandi minimal 6 karakter.","auth/invalid-email":"Format email/identitas tidak valid."};
 $(id).textContent=map[e?.code]||e?.message||"Terjadi kesalahan.";
 }
 
-async function ensureProfile(user){
+async function ensureProfile(user, customName="", customPhone=""){
 const ref=doc(db,"users",user.uid),snap=await getDoc(ref);
-if(!snap.exists())await setDoc(ref,{uid:user.uid,email:user.email||"",displayName:(user.email||"Pengguna").split("@")[0],createdAt:serverTimestamp()});
+if(!snap.exists()){
+  await setDoc(ref,{
+    uid:user.uid,
+    email:user.email||"",
+    displayName:customName || (user.email||"Pengguna").split("@")[0],
+    phone:customPhone || "",
+    createdAt:serverTimestamp()
+  });
+}
 }
 
 $("toggleModeBtn").onclick=()=>{
@@ -250,27 +256,65 @@ isRegisterMode=!isRegisterMode;
 $("authError").textContent="";
 if(isRegisterMode){
   $("authScreenTitle").textContent="Buat Akun Baru";
-  $("authScreenDesc").textContent="Isi detail di bawah untuk mendaftarkan akun baru.";
+  $("authScreenDesc").textContent="Masukkan Username/Email/No.HP dan Password untuk mendaftar.";
   $("mainActionBtn").textContent="Daftar";
   $("toggleModeBtn").textContent="Sudah punya akun? Masuk";
+  $("loginInput").placeholder="Username, Email, atau No. HP";
 }else{
   $("authScreenTitle").textContent="Selamat Datang di NyaChatt";
-  $("authScreenDesc").textContent="Masuk ke NyaChatt menggunakan akun kamu. Jika belum punya akun, kamu bisa mendaftar sekarang.";
+  $("authScreenDesc").textContent="Masuk menggunakan Username, Email, atau No. HP kamu.";
   $("mainActionBtn").textContent="Masuk";
   $("toggleModeBtn").textContent="Buat Akun Baru";
+  $("loginInput").placeholder="Username, Email, atau No. HP";
 }
 };
 
+// Fungsi untuk mendeteksi apakah input adalah email valid
+function isEmail(text){
+return text.includes("@") && text.includes(".");
+}
+
 $("mainActionBtn").onclick=async()=>{
 $("authError").textContent="";
-const email=$("email").value.trim();
+const inputVal=$("loginInput").value.trim();
 const pass=$("password").value;
+
+if(!inputVal || !pass){
+  $("authError").textContent="Semua kolom wajib diisi!";
+  return;
+}
+
 try{
+  let targetEmail = inputVal;
+
   if(isRegisterMode){
-    const c=await createUserWithEmailAndPassword(auth,email,pass);
-    await ensureProfile(c.user);
-  }else{
-    await signInWithEmailAndPassword(auth,email,pass);
+    // Saat Register: Jika input bukan email (misal username atau no hp), kita buatkan email dummy berbasis domain internal agar bisa masuk Firebase Auth
+    if(!isEmail(inputVal)){
+      targetEmail = inputVal.toLowerCase().replace(/[^a-z0-9]/g, '') + "@nyachatt.app";
+    }
+    const c = await createUserWithEmailAndPassword(auth, targetEmail, pass);
+    await ensureProfile(c.user, isEmail(inputVal) ? "" : inputVal, isEmail(inputVal) ? "" : inputVal);
+  } else {
+    // Saat Login: Jika input bukan email, cari email aslinya berdasarkan username atau nomor HP di Firestore koleksi users
+    if(!isEmail(inputVal)){
+      const usersRef = collection(db, "users");
+      // Cari berdasarkan displayName atau phone
+      const qName = query(usersRef, where("displayName", "==", inputVal));
+      const snapName = await getDocs(qName);
+      
+      if(!snapName.empty){
+        targetEmail = snapName.docs[0].data().email;
+      } else {
+        const qPhone = query(usersRef, where("phone", "==", inputVal));
+        const snapPhone = await getDocs(qPhone);
+        if(!snapPhone.empty){
+          targetEmail = snapPhone.docs[0].data().email;
+        } else {
+          throw {code: "auth/user-not-found"};
+        }
+      }
+    }
+    await signInWithEmailAndPassword(auth, targetEmail, pass);
   }
 }catch(e){
   showError("authError",e);
@@ -355,12 +399,11 @@ try{
 }
 };
 
-// Memuat daftar pengguna terdaftar untuk opsi pilih kontak saat chat baru
 async function loadContactsPicker(){
 const box=$("contactsPickerList");
 box.innerHTML='<div class="empty">Memuat kontak...</div>';
 try{
-  const snap=const snapUsers = await getDocs(collection(db, "users"));
+  const snapUsers = await getDocs(collection(db, "users"));
   const people = snapUsers.docs.map(d=>({id:d.id, ...d.data()})).filter(p=>p.id !== currentUser.uid);
   
   $("contactCountLabel").textContent = people.length + " kontak";
@@ -395,7 +438,7 @@ try{
     
     const snippet=document.createElement("div");
     snippet.className="chat-snippet";
-    snippet.textContent=p.email || "Ketuk untuk chat";
+    snippet.textContent=p.phone || p.email || "Ketuk untuk chat";
     info.appendChild(snippet);
     
     item.append(av,info);
@@ -410,7 +453,6 @@ try{
 }
 }
 
-// Memuat daftar percakapan aktif di tab Chats dengan memeriksa dokumen percakapan
 async function loadActiveChats(){
 const box=$("chatsList");
 box.innerHTML='<div class="empty">Memuat percakapan...</div>';
@@ -424,7 +466,6 @@ try{
     const id = conversationId(currentUser.uid, u.id);
     const convSnap = await getDoc(doc(db, "conversations", id));
     if(convSnap.exists()){
-      // Cek apakah ada pesan di dalam percakapan ini
       const messagesSnap = await getDocs(collection(db, "conversations", id, "messages"));
       if(!messagesSnap.empty){
         activeChats.push({
