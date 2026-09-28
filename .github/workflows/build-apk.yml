@@ -18,16 +18,18 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 33
+          build-tools: '33.0.2'
+          cmdline-tools-version: '9.0.3'
 
       - name: Create Minimal Android WebView Project
         run: |
           mkdir -p android-app/app/src/main/assets android-app/app/src/main/java/com/nyachatt/app android-app/app/src/main/res/layout android-app/app/src/main/res/mipmap-hdpi
           
-          # Salin index.html utama ke assets android
           cp index.html android-app/app/src/main/assets/index.html
 
-          # Buat AndroidManifest.xml
           cat << 'EOF' > android-app/app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android"
               package="com.nyachatt.app">
@@ -52,7 +54,6 @@ jobs:
           </manifest>
           EOF
 
-          # Buat MainActivity.java
           cat << 'EOF' > android-app/app/src/main/java/com/nyachatt/app/MainActivity.java
           package com.nyachatt.app;
           import android.app.Activity;
@@ -94,7 +95,6 @@ jobs:
           }
           EOF
 
-          # Buat build.gradle minimal
           cat << 'EOF' > android-app/build.gradle
           buildscript {
               repositories {
@@ -138,7 +138,6 @@ jobs:
         run: |
           cd android-app
           chmod +x gradlew || true
-          # Jika gradle wrapper belum ada, gunakan gradle langsung atau buat wrapper
           gradle wrapper
           ./gradlew assembleDebug
 
