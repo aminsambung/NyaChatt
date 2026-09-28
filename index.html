@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - Status Feature Active</title>
+<title>NyaChatt - BBM Edition</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
 .bbm-auth-bg{background:linear-gradient(to bottom, #0d3856, #1c6b9e, #005b82);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:white;text-align:center}
@@ -16,20 +16,20 @@
 .bbm-btn:disabled{opacity:0.6}
 .bbm-error{color:#ff8a80;font-size:13px;margin:8px 0}
 
-header{background:#005b82;color:white;padding:14px 18px;font-size:20px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 4px rgba(0,0,0,0.1);position:relative}
-.wrap{max-width:600px;margin:0 auto;padding:0;position:relative;min-height:100vh}
+header{background:#005b82;color:white;padding:14px 18px;font-size:18px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 4px rgba(0,0,0,0.1);position:relative}
+.wrap{max-width:600px;margin:0 auto;padding:0;position:relative;min-height:100vh;background:white}
 .hidden{display:none!important}
 input{font:inherit}
 
 .menu-container{position:relative;display:inline-block}
 .menu-btn{background:transparent;color:white;font-size:20px;padding:4px 8px;cursor:pointer;border:0}
-.dropdown-menu{display:none;position:absolute;right:0;top:40px;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;overflow:hidden;z-index:100;min-width:140px}
+.dropdown-menu{display:none;position:absolute;right:0;top:40px;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;overflow:hidden;z-index:100;min-width:160px}
 .dropdown-menu.show{display:block}
 .dropdown-item{padding:12px 16px;color:#263238;cursor:pointer;font-size:14px;background:white;border:0;width:100%;text-align:left}
 .dropdown-item:hover{background:#f0f4f5}
 
 .nav-tabs{display:flex;background:#005b82;border-top:1px solid #004d6e;overflow-x:auto}
-.nav-tab{flex:1;text-align:center;padding:12px 6px;color:#b3e5fc;font-size:12px;font-weight:bold;cursor:pointer;background:transparent;border:0;white-space:nowrap}
+.nav-tab{flex:1;text-align:center;padding:12px 6px;color:#b3e5fc;font-size:11px;font-weight:bold;cursor:pointer;background:transparent;border:0;white-space:nowrap}
 .nav-tab.active{color:white;border-bottom:3px solid white;background:rgba(0,0,0,0.1)}
 
 .tab-content{display:none;background:white;min-height:75vh;position:relative}
@@ -43,17 +43,14 @@ input{font:inherit}
 .chat-contact-name{font-weight:bold;font-size:15px;color:#263238}
 .chat-snippet{font-size:13px;color:#78909c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.contact-actions{display:flex;gap:8px}
+.contact-actions{display:flex;gap:6px}
 .action-icon-btn{background:transparent;border:0;font-size:16px;cursor:pointer;padding:4px;color:#78909c}
 .action-icon-btn:hover{color:#005b82}
 
 .unread-badge{background:#25d366;color:white;font-size:11px;font-weight:bold;padding:2px 7px;border-radius:12px;min-width:20px;text-align:center;display:inline-block}
+.pin-label{font-size:11px;color:#00897b;font-weight:bold;background:#e0f2f1;padding:2px 6px;border-radius:4px}
 
 .fab-btn{position:fixed;bottom:24px;right:20px;width:56px;height:56px;background:#00897b;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.3);cursor:pointer;border:0;z-index:99}
-
-#selectContactView{position:absolute;top:0;left:0;width:100%;min-height:100vh;background:white;z-index:200;display:flex;flex-direction:column}
-.select-contact-header{background:#005b82;color:white;padding:14px 16px;display:flex;align-items:center;gap:14px;font-size:18px;font-weight:bold}
-.section-title{padding:10px 16px;font-size:12px;font-weight:bold;color:#78909c;background:#f5f7f8}
 
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000}
 .modal-card{background:white;width:90%;max-width:380px;padding:20px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.2)}
@@ -86,14 +83,16 @@ input{font:inherit}
 .bbm-tool-icon{cursor:pointer;padding:2px 6px;border-radius:4px}
 
 .empty{color:#78909c;text-align:center;padding:30px;font-size:13px}
+.section-title{padding:10px 16px;font-size:12px;font-weight:bold;color:#78909c;background:#f5f7f8}
 </style>
 </head>
 <body>
 
+<!-- HALAMAN LOGIN / REGISTER -->
 <div id="authCard" class="bbm-auth-bg hidden">
 <div class="bbm-welcome-box">
-<div class="bbm-logo">💬</div>
-<div class="bbm-auth-title" id="authScreenTitle">Selamat Datang di NyaChatt</div>
+<div class="bbm-logo">📶</div>
+<div class="bbm-auth-title" id="authScreenTitle">NyaChatt BBM Edition</div>
 <div class="bbm-auth-desc" id="authScreenDesc">Masuk menggunakan Username, Email, atau No. HP kamu.</div>
 </div>
 
@@ -107,70 +106,72 @@ input{font:inherit}
 </div>
 
 <div style="font-size:11px;color:#90caf9;padding-bottom:10px;">
-Ketentuan Layanan & Kebijakan Privasi
+BBM-Style Secure Messenger
 </div>
 </div>
 
+<!-- HALAMAN UTAMA APLIKASI -->
 <div id="mainAppView" class="wrap hidden">
 <header>
-<span>NyaChatt</span>
+<span>NyaChatt BBM</span>
 <div class="menu-container">
 <button id="menuTrigger" class="menu-btn">⋮</button>
 <div id="dropdownMenu" class="dropdown-menu">
+<button id="profileMenuBtn" class="dropdown-item">Profil & PIN Saya</button>
 <button id="logoutBtn" class="dropdown-item">Keluar</button>
 </div>
 </div>
 </header>
 
+<!-- NAVIGASI TAB UTAMA ALA BBM ANDROID -->
 <div class="nav-tabs">
-<button class="nav-tab active" data-target="tabChats">Chats</button>
-<button class="nav-tab" data-target="tabUpdates">Pembaruan</button>
-<button class="nav-tab" data-target="tabCalls">Panggilan</button>
+<button class="nav-tab active" data-target="tabChats">CHATS</button>
+<button class="nav-tab" data-target="tabContacts">CONTACTS</button>
+<button class="nav-tab" data-target="tabFeeds">FEEDS</button>
 </div>
 
+<!-- TAB 1: CHATS -->
 <div id="tabChats" class="tab-content active">
 <div id="chatsList"><div class="empty">Memuat percakapan...</div></div>
 <button id="fabNewChatBtn" class="fab-btn" title="Pesan Baru">💬+</button>
 </div>
 
-<!-- TAB PEMBARUAN (STATUS) -->
-<div id="tabUpdates" class="tab-content">
-<div id="addStatusBtn" class="chat-item">
-<div class="chat-avatar" style="background:#00897b;">+</div>
-<div class="chat-info">
-<div class="chat-contact-name">Status Saya</div>
-<div class="chat-snippet" id="myStatusSnippet">Ketuk untuk menambahkan pembaruan status</div>
-</div>
-</div>
-<div style="padding:10px 16px;font-size:12px;font-weight:bold;color:#78909c;background:#f5f7f8;">Pembaruan Kontak</div>
-<div id="updatesList" class="empty">Belum ada pembaruan status.</div>
-</div>
-
-<div id="tabCalls" class="tab-content">
-<div class="empty">Belum ada riwayat panggilan suara atau video.</div>
-</div>
-</div>
-
-<div id="selectContactView" class="hidden">
-<div class="select-contact-header">
-<button id="closeSelectContact" class="back-btn">←</button>
-<div>
-<div>Pilih kontak</div>
-<div style="font-size:11px;font-weight:normal;color:#b3e5fc;" id="contactCountLabel">0 kontak</div>
-</div>
-</div>
-
-<div style="flex:1;overflow-y:auto;background:white;">
+<!-- TAB 2: CONTACTS -->
+<div id="tabContacts" class="tab-content">
 <div id="openAddContactModal" class="chat-item">
 <div class="chat-avatar" style="background:#00897b;">👤+</div>
 <div class="chat-info">
-<div class="chat-contact-name">Kontak baru</div>
-<div class="chat-snippet">Simpan kontak baru ke daftar</div>
+<div class="chat-contact-name">Tambah Kontak Baru</div>
+<div class="chat-snippet">Simpan kontak manual via Email/No HP</div>
+</div>
+</div>
+<div class="section-title">Daftar Kontak & Pengguna Terdaftar</div>
+<div id="contactsTabList"><div class="empty">Memuat daftar kontak...</div></div>
+</div>
+
+<!-- TAB 3: FEEDS (PEMBARUAN STATUS) -->
+<div id="tabFeeds" class="tab-content">
+<div id="addStatusBtn" class="chat-item">
+<div class="chat-avatar" style="background:#00897b;">📶</div>
+<div class="chat-info">
+<div class="chat-contact-name">Status Saya</div>
+<div class="chat-snippet" id="myStatusSnippet">Ketuk untuk memperbarui status</div>
+</div>
+</div>
+<div class="section-title">Pembaruan Kontak (Feeds)</div>
+<div id="feedsList" class="empty">Belum ada pembaruan status kontak.</div>
 </div>
 </div>
 
-<div class="section-title">Daftar kontak & pengguna terdaftar</div>
-<div id="contactsPickerList"><div class="empty">Memuat kontak...</div></div>
+<!-- MODAL PROFIL & PIN PENGGUNA -->
+<div id="profileModal" class="modal-overlay hidden">
+<div class="modal-card" style="text-align:center;">
+<div class="modal-title">Profil Saya</div>
+<div class="chat-avatar" style="width:70px;height:70px;font-size:28px;margin:0 auto 12px;background:#005b82;" id="profileAvatarIcon">N</div>
+<div style="font-weight:bold;font-size:16px;margin-bottom:4px;" id="profileNameDisplay">-</div>
+<div class="pin-label" id="profilePinDisplay" style="display:inline-block;margin-bottom:12px;">PIN: -</div>
+<div style="font-size:13px;color:#78909c;margin-bottom:16px;" id="profileEmailDisplay">-</div>
+<button id="closeProfileBtn" class="bbm-btn" style="background:#005b82;">Tutup</button>
 </div>
 </div>
 
@@ -188,19 +189,20 @@ Ketentuan Layanan & Kebijakan Privasi
 </div>
 </div>
 
-<!-- MODAL BUAT STATUS BARU -->
+<!-- MODAL BUAT STATUS (FEEDS) -->
 <div id="statusModal" class="modal-overlay hidden">
 <div class="modal-card">
-<div class="modal-title">Buat Pembaruan Status</div>
+<div class="modal-title">Pembaruan Status BBM</div>
 <input id="statusInputText" class="bbm-input" type="text" placeholder="Tulis status baru..." style="color:#263238;" maxlength="100">
 <div id="statusError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
 <div style="display:flex;gap:8px;margin-top:12px;">
 <button id="cancelStatusBtn" class="bbm-btn secondary-btn" style="flex:1;margin:0;">Batal</button>
-<button id="saveStatusBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Kirim</button>
+<button id="saveStatusBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Perbarui</button>
 </div>
 </div>
 </div>
 
+<!-- HALAMAN RUANG CHAT -->
 <div id="chatRoomView" class="hidden">
 <div class="chat-head">
 <div class="chat-head-left">
@@ -210,7 +212,10 @@ Ketentuan Layanan & Kebijakan Privasi
 <div id="chatStatusSub" class="chat-status">Online</div>
 </div>
 </div>
-<div class="chat-head-actions">📞 🎦 ⋮</div>
+<div class="chat-head-actions">
+<button id="pingBtn" style="background:#ff9800;border:0;color:white;padding:4px 8px;border-radius:4px;font-weight:bold;cursor:pointer;font-size:12px;margin-right:4px;">PING!</button>
+📞 🎦
+</div>
 </div>
 
 <div id="messages"><div class="empty">Memuat pesan...</div></div>
@@ -258,15 +263,21 @@ const map={"auth/invalid-credential":"Identitas atau kata sandi salah.","auth/us
 $(id).textContent=map[e?.code]||e?.message||"Terjadi kesalahan.";
 }
 
+// Generate PIN unik ala BBM berdasarkan UID
+function generateBbmPin(uid){
+  return uid.substring(0, 8).toUpperCase();
+}
+
 async function ensureProfile(user, customName="", customPhone=""){
 const ref=doc(db,"users",user.uid),snap=await getDoc(ref);
 if(!snap.exists()){
   await setDoc(ref,{
     uid:user.uid,
+    bbmPin: generateBbmPin(user.uid),
     email:user.email||"",
     displayName:customName || (user.email||"Pengguna").split("@")[0],
     phone:customPhone || "",
-    statusText: "Ketuk untuk menambahkan pembaruan status",
+    statusText: "Available",
     createdAt:serverTimestamp()
   });
 }
@@ -282,7 +293,7 @@ if(isRegisterMode){
   $("toggleModeBtn").textContent="Sudah punya akun? Masuk";
   $("loginInput").placeholder="Username, Email, atau No. HP";
 }else{
-  $("authScreenTitle").textContent="Selamat Datang di NyaChatt";
+  $("authScreenTitle").textContent="NyaChatt BBM Edition";
   $("authScreenDesc").textContent="Masuk menggunakan Username, Email, atau No. HP kamu.";
   $("mainActionBtn").textContent="Masuk";
   $("toggleModeBtn").textContent="Buat Akun Baru";
@@ -345,29 +356,47 @@ $("dropdownMenu").classList.toggle("show");
 window.onclick=()=>{ $("dropdownMenu").classList.remove("show"); };
 $("logoutBtn").onclick=()=>signOut(auth);
 
+// Menu Profil
+$("profileMenuBtn").onclick=async()=>{
+  $("dropdownMenu").classList.remove("show");
+  $("profileModal").classList.remove("hidden");
+  try {
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    if(userDoc.exists()){
+      const d = userDoc.data();
+      const name = d.displayName || "Pengguna";
+      $("profileNameDisplay").textContent = name;
+      $("profilePinDisplay").textContent = "PIN: " + (d.bbmPin || generateBbmPin(currentUser.uid));
+      $("profileEmailDisplay").textContent = d.email || d.phone || "";
+      $("profileAvatarIcon").textContent = name.charAt(0).toUpperCase();
+    }
+  }catch(e){}
+};
+$("closeProfileBtn").onclick=()=>$("profileModal").classList.add("hidden");
+
 onAuthStateChanged(auth,async user=>{
 currentUser=user;$("authError").textContent="";$("appError").textContent="";
 if(!user){
   $("authCard").classList.remove("hidden");
   $("mainAppView").classList.add("hidden");
   $("chatRoomView").classList.add("hidden");
-  $("selectContactView").classList.add("hidden");
   if(stopMessages)stopMessages();
   selectedPerson=null;
   return;
 }
 $("authCard").classList.add("hidden");
 $("chatRoomView").classList.add("hidden");
-$("selectContactView").classList.add("hidden");
 $("mainAppView").classList.remove("hidden");
 try{
   await ensureProfile(user);
   await loadActiveChats();
+  await loadContactsTab();
   await loadMyStatus();
-  await loadContactUpdates();
+  await loadFeeds();
 }catch(e){showError("appError",e)}
 });
 
+// Navigasi Tab
 document.querySelectorAll(".nav-tab").forEach(tab=>{
 tab.onclick=()=>{
   document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
@@ -376,273 +405,16 @@ tab.onclick=()=>{
   $(tab.dataset.target).classList.add("active");
   if(tab.dataset.target === "tabChats"){
     loadActiveChats();
-  } else if(tab.dataset.target === "tabUpdates"){
+  } else if(tab.dataset.target === "tabContacts"){
+    loadContactsTab();
+  } else if(tab.dataset.target === "tabFeeds"){
     loadMyStatus();
-    loadContactUpdates();
+    loadFeeds();
   }
 };
 });
 
-// --- FITUR STATUS / PEMBARUAN ---
-const openStatusModal = () => {
-  $("statusModal").classList.remove("hidden");
-  $("statusError").textContent = "";
-  $("statusInputText").value = "";
-};
-const closeStatusModal = () => {
-  $("statusModal").classList.add("hidden");
-};
-
-$("addStatusBtn").onclick = openStatusModal;
-$("cancelStatusBtn").onclick = closeStatusModal;
-
-$("saveStatusBtn").onclick = async () => {
-  $("statusError").textContent = "";
-  const newStatus = $("statusInputText").value.trim();
-  if(!newStatus){
-    $("statusError").textContent = "Status tidak boleh kosong!";
-    return;
-  }
-  try {
-    await updateDoc(doc(db, "users", currentUser.uid), {
-      statusText: newStatus,
-      statusTime: serverTimestamp()
-    });
-    closeStatusModal();
-    await loadMyStatus();
-  } catch(e) {
-    $("statusError").textContent = "Gagal memperbarui status: " + e.message;
-  }
-};
-
-async function loadMyStatus(){
-  try {
-    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-    if(userDoc.exists()){
-      const data = userDoc.data();
-      $("myStatusSnippet").textContent = data.statusText || "Ketuk untuk menambahkan pembaruan status";
-    }
-  } catch(e) {}
-}
-
-async function loadContactUpdates(){
-  const box = $("updatesList");
-  try {
-    const usersSnap = await getDocs(collection(db, "users"));
-    box.innerHTML = "";
-    let count = 0;
-
-    usersSnap.forEach(d => {
-      if(d.id !== currentUser.uid){
-        const u = d.data();
-        if(u.statusText && u.statusText !== "Ketuk untuk menambahkan pembaruan status"){
-          count++;
-          const nameStr = u.displayName || u.email || "Pengguna";
-          const item = document.createElement("div");
-          item.className = "chat-item";
-          
-          const av = document.createElement("div");
-          av.className = "chat-avatar";
-          av.textContent = nameStr.charAt(0).toUpperCase();
-
-          const info = document.createElement("div");
-          info.className = "chat-info";
-
-          const nameEl = document.createElement("div");
-          nameEl.className = "chat-contact-name";
-          nameEl.textContent = nameStr;
-          info.appendChild(nameEl);
-
-          const snippet = document.createElement("div");
-          snippet.className = "chat-snippet";
-          snippet.textContent = u.statusText;
-          info.appendChild(snippet);
-
-          item.append(av, info);
-          item.onclick = () => openChat({id: d.id, displayName: nameStr, email: u.email});
-          box.appendChild(item);
-        }
-      }
-    });
-
-    if(count === 0){
-      box.innerHTML = '<div class="empty">Belum ada pembaruan status kontak.</div>';
-    }
-  } catch(e) {
-    box.innerHTML = '<div class="empty">Gagal memuat pembaruan status.</div>';
-  }
-}
-
-const openSelectContact=async()=>{
-$("selectContactView").classList.remove("hidden");
-await loadContactsPicker();
-};
-const closeSelectContact=()=>{
-$("selectContactView").classList.add("hidden");
-};
-
-$("fabNewChatBtn").onclick=openSelectContact;
-$("closeSelectContact").onclick=closeSelectContact;
-
-const openModal=(contactId = null, currentName = "", currentPhone = "")=>{
-  editingContactId = contactId;
-  $("contactModal").classList.remove("hidden");
-  $("contactError").textContent="";
-  if(contactId){
-    $("modalTitleText").textContent="Edit Kontak";
-    $("newContactName").value = currentName;
-    $("newContactPhone").value = currentPhone;
-  } else {
-    $("modalTitleText").textContent="Tambah Kontak Baru";
-    $("newContactName").value = "";
-    $("newContactPhone").value = "";
-  }
-};
-const closeModal=()=>{ $("contactModal").classList.add("hidden"); editingContactId = null; };
-
-$("openAddContactModal").onclick=()=>openModal();
-$("cancelModalBtn").onclick=closeModal;
-
-$("saveContactBtn").onclick=async()=>{
-$("contactError").textContent="";
-const name=$("newContactName").value.trim();
-const phoneOrEmail=$("newContactPhone").value.trim();
-if(!name || !phoneOrEmail){
-  $("contactError").textContent="Nama dan nomor/email wajib diisi!";
-  return;
-}
-try{
-  if(editingContactId){
-    await updateDoc(doc(db, "users", currentUser.uid, "contacts", editingContactId), {
-      name,
-      phoneOrEmail
-    });
-  } else {
-    await addDoc(collection(db,"users",currentUser.uid,"contacts"),{
-      name,
-      phoneOrEmail,
-      createdAt:serverTimestamp()
-    });
-  }
-  closeModal();
-  await loadContactsPicker();
-}catch(e){
-  $("contactError").textContent="Gagal menyimpan: "+e.message;
-}
-};
-
-async function deleteContact(contactId, event){
-  event.stopPropagation();
-  if(confirm("Apakah kamu yakin ingin menghapus kontak ini?")){
-    try {
-      await deleteDoc(doc(db, "users", currentUser.uid, "contacts", contactId));
-      await loadContactsPicker();
-    } catch(e) {
-      alert("Gagal menghapus kontak: " + e.message);
-    }
-  }
-}
-
-async function loadContactsPicker(){
-const box=$("contactsPickerList");
-box.innerHTML='<div class="empty">Memuat kontak...</div>';
-try{
-  const snapContacts = await getDocs(collection(db, "users", currentUser.uid, "contacts"));
-  const snapUsers = await getDocs(collection(db, "users"));
-  
-  let listItems = [];
-  
-  snapContacts.forEach(d=>{
-    const c = d.data();
-    listItems.push({
-      id: d.id,
-      displayName: c.name,
-      email: c.phoneOrEmail,
-      isSavedContact: true
-    });
-  });
-
-  snapUsers.forEach(d=>{
-    if(d.id !== currentUser.uid){
-      const u = d.data();
-      listItems.push({
-        id: d.id,
-        displayName: u.displayName || u.email || "Pengguna",
-        email: u.email || u.phone || "",
-        isSavedContact: false
-      });
-    }
-  });
-
-  $("contactCountLabel").textContent = listItems.length + " kontak";
-  
-  if(listItems.length === 0){
-    box.innerHTML='<div class="empty">Belum ada kontak tersimpan.</div>';
-    return;
-  }
-
-  box.innerHTML="";
-  for(const p of listItems){
-    const item=document.createElement("div");
-    item.className="chat-item";
-    
-    const av=document.createElement("div");
-    av.className="chat-avatar";
-    av.textContent=p.displayName.charAt(0).toUpperCase();
-    
-    const info=document.createElement("div");
-    info.className="chat-info";
-    
-    const nameRow=document.createElement("div");
-    nameRow.className="chat-name-row";
-    
-    const nameEl=document.createElement("div");
-    nameEl.className="chat-contact-name";
-    nameEl.textContent=p.displayName;
-    nameRow.appendChild(nameEl);
-    
-    if(p.isSavedContact){
-      const actionsDiv = document.createElement("div");
-      actionsDiv.className = "contact-actions";
-      
-      const editBtn = document.createElement("button");
-      editBtn.className = "action-icon-btn";
-      editBtn.innerHTML = "✏️";
-      editBtn.title = "Edit Kontak";
-      editBtn.onclick = (e) => {
-        e.stopPropagation();
-        openModal(p.id, p.displayName, p.email);
-      };
-
-      const delBtn = document.createElement("button");
-      delBtn.className = "action-icon-btn";
-      delBtn.innerHTML = "🗑️";
-      delBtn.title = "Hapus Kontak";
-      delBtn.onclick = (e) => deleteContact(p.id, e);
-
-      actionsDiv.append(editBtn, delBtn);
-      nameRow.appendChild(actionsDiv);
-    }
-
-    info.appendChild(nameRow);
-    
-    const snippet=document.createElement("div");
-    snippet.className="chat-snippet";
-    snippet.textContent=p.email;
-    info.appendChild(snippet);
-    
-    item.append(av,info);
-    item.onclick=()=>{
-      closeSelectContact();
-      openChat({id:p.id, displayName:p.displayName, email:p.email});
-    };
-    box.appendChild(item);
-  }
-}catch(e){
-  box.innerHTML='<div class="empty">Gagal memuat kontak.</div>';
-}
-}
-
+// --- TAB CHATS ---
 async function loadActiveChats(){
 const box=$("chatsList");
 box.innerHTML='<div class="empty">Memuat percakapan...</div>';
@@ -681,12 +453,7 @@ try{
   }
 
   if(activeChats.length === 0){
-    box.innerHTML=`
-      <div class="empty-chats-container">
-        <div class="empty-chats-icon">💬</div>
-        <div class="empty-chats-text">Belum ada percakapan aktif.<br>Ketuk tombol pesan di kanan bawah untuk mulai chat.</div>
-      </div>
-    `;
+    box.innerHTML=`<div class="empty">Belum ada percakapan aktif.<br>Ketuk tombol pesan di kanan bawah untuk mulai chat.</div>`;
     return;
   }
 
@@ -736,6 +503,203 @@ try{
 }
 }
 
+// --- TAB CONTACTS ---
+const openModal=(contactId = null, currentName = "", currentPhone = "")=>{
+  editingContactId = contactId;
+  $("contactModal").classList.remove("hidden");
+  $("contactError").textContent="";
+  if(contactId){
+    $("modalTitleText").textContent="Edit Kontak";
+    $("newContactName").value = currentName;
+    $("newContactPhone").value = currentPhone;
+  } else {
+    $("modalTitleText").textContent="Tambah Kontak Baru";
+    $("newContactName").value = "";
+    $("newContactPhone").value = "";
+  }
+};
+const closeModal=()=>$("contactModal").classList.add("hidden");
+
+$("openAddContactModal").onclick=()=>openModal();
+$("cancelModalBtn").onclick=closeModal;
+$("fabNewChatBtn").onclick=()=>document.querySelector("[data-target='tabContacts']").click();
+
+$("saveContactBtn").onclick=async()=>{
+$("contactError").textContent="";
+const name=$("newContactName").value.trim();
+const phoneOrEmail=$("newContactPhone").value.trim();
+if(!name || !phoneOrEmail){
+  $("contactError").textContent="Nama dan nomor/email wajib diisi!";
+  return;
+}
+try{
+  if(editingContactId){
+    await updateDoc(doc(db, "users", currentUser.uid, "contacts", editingContactId), { name, phoneOrEmail });
+  } else {
+    await addDoc(collection(db,"users",currentUser.uid,"contacts"),{ name, phoneOrEmail, createdAt:serverTimestamp() });
+  }
+  closeModal();
+  await loadContactsTab();
+}catch(e){
+  $("contactError").textContent="Gagal menyimpan: "+e.message;
+}
+};
+
+async function deleteContact(contactId, event){
+  event.stopPropagation();
+  if(confirm("Hapus kontak ini?")){
+    try {
+      await deleteDoc(doc(db, "users", currentUser.uid, "contacts", contactId));
+      await loadContactsTab();
+    }catch(e){ alert("Gagal menghapus"); }
+  }
+}
+
+async function loadContactsTab(){
+const box=$("contactsTabList");
+box.innerHTML='<div class="empty">Memuat kontak...</div>';
+try{
+  const snapContacts = await getDocs(collection(db, "users", currentUser.uid, "contacts"));
+  const snapUsers = await getDocs(collection(db, "users"));
+  
+  let listItems = [];
+  snapContacts.forEach(d=>{
+    const c = d.data();
+    listItems.push({ id: d.id, displayName: c.name, email: c.phoneOrEmail, isSavedContact: true });
+  });
+  snapUsers.forEach(d=>{
+    if(d.id !== currentUser.uid){
+      const u = d.data();
+      listItems.push({ id: d.id, displayName: u.displayName || u.email || "Pengguna", email: u.email || u.phone || "", isSavedContact: false });
+    }
+  });
+
+  if(listItems.length === 0){
+    box.innerHTML='<div class="empty">Belum ada kontak.</div>';
+    return;
+  }
+
+  box.innerHTML="";
+  for(const p of listItems){
+    const item=document.createElement("div");
+    item.className="chat-item";
+    
+    const av=document.createElement("div");
+    av.className="chat-avatar";
+    av.textContent=p.displayName.charAt(0).toUpperCase();
+    
+    const info=document.createElement("div");
+    info.className="chat-info";
+    
+    const nameRow=document.createElement("div");
+    nameRow.className="chat-name-row";
+    
+    const nameEl=document.createElement("div");
+    nameEl.className="chat-contact-name";
+    nameEl.textContent=p.displayName;
+    nameRow.appendChild(nameEl);
+    
+    if(p.isSavedContact){
+      const actionsDiv = document.createElement("div");
+      actionsDiv.className = "contact-actions";
+      
+      const editBtn = document.createElement("button");
+      editBtn.className = "action-icon-btn";
+      editBtn.innerHTML = "✏️";
+      editBtn.onclick = (e)=>{ e.stopPropagation(); openModal(p.id, p.displayName, p.email); };
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "action-icon-btn";
+      delBtn.innerHTML = "🗑️";
+      delBtn.onclick = (e)=>deleteContact(p.id, e);
+
+      actionsDiv.append(editBtn, delBtn);
+      nameRow.appendChild(actionsDiv);
+    }
+
+    info.appendChild(nameRow);
+    
+    const snippet=document.createElement("div");
+    snippet.className="chat-snippet";
+    snippet.textContent=p.email;
+    info.appendChild(snippet);
+    
+    item.append(av, info);
+    item.onclick=()=>openChat({id:p.id, displayName:p.displayName, email:p.email});
+    box.appendChild(item);
+  }
+}catch(e){
+  box.innerHTML='<div class="empty">Gagal memuat kontak.</div>';
+}
+}
+
+// --- TAB FEEDS (STATUS) ---
+const openStatusModal=()=>$("statusModal").classList.remove("hidden");
+const closeStatusModal=()=>$("statusModal").classList.add("hidden");
+
+$("addStatusBtn").onclick=openStatusModal;
+$("cancelStatusBtn").onclick=closeStatusModal;
+
+$("saveStatusBtn").onclick=async()=>{
+  const txt = $("statusInputText").value.trim();
+  if(!txt) return;
+  try{
+    await updateDoc(doc(db, "users", currentUser.uid), { statusText: txt });
+    closeStatusModal();
+    loadMyStatus();
+  }catch(e){}
+};
+
+async function loadMyStatus(){
+  try{
+    const d = await getDoc(doc(db, "users", currentUser.uid));
+    if(d.exists()){ $("myStatusSnippet").textContent = d.data().statusText || "Available"; }
+  }catch(e){}
+}
+
+async function loadFeeds(){
+  const box = $("feedsList");
+  try{
+    const snap = await getDocs(collection(db, "users"));
+    box.innerHTML="";
+    let count = 0;
+    snap.forEach(d=>{
+      if(d.id !== currentUser.uid){
+        const u = d.data();
+        if(u.statusText){
+          count++;
+          const name = u.displayName || "Pengguna";
+          const item = document.createElement("div");
+          item.className="chat-item";
+          
+          const av=document.createElement("div");
+          av.className="chat-avatar";
+          av.textContent=name.charAt(0).toUpperCase();
+
+          const info=document.createElement("div");
+          info.className="chat-info";
+
+          const nameEl=document.createElement("div");
+          nameEl.className="chat-contact-name";
+          nameEl.textContent=name;
+          info.appendChild(nameEl);
+
+          const snippet=document.createElement("div");
+          snippet.className="chat-snippet";
+          snippet.textContent=u.statusText;
+          info.appendChild(snippet);
+
+          item.append(av, info);
+          item.onclick=()=>openChat({id:d.id, displayName:name, email:u.email});
+          box.appendChild(item);
+        }
+      }
+    });
+    if(count === 0) box.innerHTML='<div class="empty">Belum ada pembaruan status kontak.</div>';
+  }catch(e){ box.innerHTML='<div class="empty">Gagal memuat feeds.</div>'; }
+}
+
+// --- CHAT ROOM & PING! ---
 function conversationId(a,b){return[a,b].sort().join("_")}
 
 async function openChat(person){
@@ -753,7 +717,7 @@ const q=query(collection(db,"conversations",id,"messages"),orderBy("createdAt","
 
 stopMessages=onSnapshot(q,result=>{
 const area=$("messages");area.innerHTML="";
-if(result.empty){area.innerHTML='<div class="empty">Belum ada pesan. Mulai percakapan!</div>';return}
+if(result.empty){area.innerHTML='<div class="empty">Mulai percakapan dengan PING! atau pesan teks.</div>';return}
 
 result.forEach(d=>{
 const m=d.data();
@@ -774,21 +738,10 @@ const footer=document.createElement("div");
 footer.className="bubble-footer";
 
 if(m.createdAt?.toDate){
-  const messageDate=m.createdAt.toDate();
-  const now=new Date();
-  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  const yesterday=new Date(today);yesterday.setDate(yesterday.getDate()-1);
-  const dateOnly=new Date(messageDate.getFullYear(),messageDate.getMonth(),messageDate.getDate());
-
+  const t=m.createdAt.toDate();
   const timeSpan=document.createElement("span");
   timeSpan.className="time";
-  if(dateOnly.getTime()===today.getTime()){
-    timeSpan.textContent=messageDate.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
-  }else if(dateOnly.getTime()===yesterday.getTime()){
-    timeSpan.textContent="Kemarin";
-  }else{
-    timeSpan.textContent=messageDate.toLocaleDateString("id-ID",{day:"2-digit",month:"2-digit"});
-  }
+  timeSpan.textContent=t.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
   footer.appendChild(timeSpan);
 }
 
@@ -818,6 +771,21 @@ if(stopMessages)stopMessages();
 $("chatRoomView").classList.add("hidden");
 $("mainAppView").classList.remove("hidden");
 loadActiveChats();
+};
+
+// Fitur Khas BBM: Tombol PING!
+$("pingBtn").onclick=async()=>{
+  if(!currentUser || !selectedPerson) return;
+  try{
+    const id=conversationId(currentUser.uid,selectedPerson.id);
+    await addDoc(collection(db,"conversations",id,"messages"),{
+      senderId:currentUser.uid,
+      text: "⚡ PING! ⚡",
+      read:false,
+      createdAt:serverTimestamp()
+    });
+    if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+  }catch(e){}
 };
 
 $("sendForm").onsubmit=async event=>{
