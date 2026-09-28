@@ -20,9 +20,8 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          api-level: 33
-          build-tools: '33.0.2'
-          cmdline-tools-version: '9.0.3'
+          packages: 'platforms;android-33 build-tools;33.0.2'
+          accept-android-sdk-licenses: true
 
       - name: Create Minimal Android WebView Project
         run: |
