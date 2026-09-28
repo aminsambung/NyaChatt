@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - Edit & Delete Contacts</title>
+<title>NyaChatt - Status Feature Active</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
 .bbm-auth-bg{background:linear-gradient(to bottom, #0d3856, #1c6b9e, #005b82);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:white;text-align:center}
@@ -133,16 +133,17 @@ Ketentuan Layanan & Kebijakan Privasi
 <button id="fabNewChatBtn" class="fab-btn" title="Pesan Baru">💬+</button>
 </div>
 
+<!-- TAB PEMBARUAN (STATUS) -->
 <div id="tabUpdates" class="tab-content">
-<div class="chat-item">
+<div id="addStatusBtn" class="chat-item">
 <div class="chat-avatar" style="background:#00897b;">+</div>
 <div class="chat-info">
 <div class="chat-contact-name">Status Saya</div>
-<div class="chat-snippet">Ketuk untuk menambahkan pembaruan status</div>
+<div class="chat-snippet" id="myStatusSnippet">Ketuk untuk menambahkan pembaruan status</div>
 </div>
 </div>
 <div style="padding:10px 16px;font-size:12px;font-weight:bold;color:#78909c;background:#f5f7f8;">Pembaruan Kontak</div>
-<div class="empty">Belum ada pembaruan status.</div>
+<div id="updatesList" class="empty">Belum ada pembaruan status.</div>
 </div>
 
 <div id="tabCalls" class="tab-content">
@@ -173,7 +174,7 @@ Ketentuan Layanan & Kebijakan Privasi
 </div>
 </div>
 
-<!-- MODAL FORM TAMBAH / EDIT KONTAK -->
+<!-- MODAL TAMBAH / EDIT KONTAK -->
 <div id="contactModal" class="modal-overlay hidden">
 <div class="modal-card">
 <div class="modal-title" id="modalTitleText">Tambah Kontak Baru</div>
@@ -183,6 +184,19 @@ Ketentuan Layanan & Kebijakan Privasi
 <div style="display:flex;gap:8px;margin-top:12px;">
 <button id="cancelModalBtn" class="bbm-btn secondary-btn" style="flex:1;margin:0;">Batal</button>
 <button id="saveContactBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Simpan</button>
+</div>
+</div>
+</div>
+
+<!-- MODAL BUAT STATUS BARU -->
+<div id="statusModal" class="modal-overlay hidden">
+<div class="modal-card">
+<div class="modal-title">Buat Pembaruan Status</div>
+<input id="statusInputText" class="bbm-input" type="text" placeholder="Tulis status baru..." style="color:#263238;" maxlength="100">
+<div id="statusError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
+<div style="display:flex;gap:8px;margin-top:12px;">
+<button id="cancelStatusBtn" class="bbm-btn secondary-btn" style="flex:1;margin:0;">Batal</button>
+<button id="saveStatusBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Kirim</button>
 </div>
 </div>
 </div>
@@ -237,7 +251,7 @@ const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
 let currentUser=null,selectedPerson=null,stopMessages=null;
 let isRegisterMode=false;
-let editingContactId = null; // Menyimpan ID jika sedang mengedit kontak
+let editingContactId = null;
 
 function showError(id,e){
 const map={"auth/invalid-credential":"Identitas atau kata sandi salah.","auth/user-not-found":"Akun tidak ditemukan.","auth/wrong-password":"Kata sandi salah.","auth/email-already-in-use":"Email sudah terdaftar.","auth/weak-password":"Kata sandi minimal 6 karakter.","auth/invalid-email":"Format email/identitas tidak valid."};
@@ -252,6 +266,7 @@ if(!snap.exists()){
     email:user.email||"",
     displayName:customName || (user.email||"Pengguna").split("@")[0],
     phone:customPhone || "",
+    statusText: "Ketuk untuk menambahkan pembaruan status",
     createdAt:serverTimestamp()
   });
 }
@@ -348,6 +363,8 @@ $("mainAppView").classList.remove("hidden");
 try{
   await ensureProfile(user);
   await loadActiveChats();
+  await loadMyStatus();
+  await loadContactUpdates();
 }catch(e){showError("appError",e)}
 });
 
@@ -359,9 +376,102 @@ tab.onclick=()=>{
   $(tab.dataset.target).classList.add("active");
   if(tab.dataset.target === "tabChats"){
     loadActiveChats();
+  } else if(tab.dataset.target === "tabUpdates"){
+    loadMyStatus();
+    loadContactUpdates();
   }
 };
 });
+
+// --- FITUR STATUS / PEMBARUAN ---
+const openStatusModal = () => {
+  $("statusModal").classList.remove("hidden");
+  $("statusError").textContent = "";
+  $("statusInputText").value = "";
+};
+const closeStatusModal = () => {
+  $("statusModal").classList.add("hidden");
+};
+
+$("addStatusBtn").onclick = openStatusModal;
+$("cancelStatusBtn").onclick = closeStatusModal;
+
+$("saveStatusBtn").onclick = async () => {
+  $("statusError").textContent = "";
+  const newStatus = $("statusInputText").value.trim();
+  if(!newStatus){
+    $("statusError").textContent = "Status tidak boleh kosong!";
+    return;
+  }
+  try {
+    await updateDoc(doc(db, "users", currentUser.uid), {
+      statusText: newStatus,
+      statusTime: serverTimestamp()
+    });
+    closeStatusModal();
+    await loadMyStatus();
+  } catch(e) {
+    $("statusError").textContent = "Gagal memperbarui status: " + e.message;
+  }
+};
+
+async function loadMyStatus(){
+  try {
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    if(userDoc.exists()){
+      const data = userDoc.data();
+      $("myStatusSnippet").textContent = data.statusText || "Ketuk untuk menambahkan pembaruan status";
+    }
+  } catch(e) {}
+}
+
+async function loadContactUpdates(){
+  const box = $("updatesList");
+  try {
+    const usersSnap = await getDocs(collection(db, "users"));
+    box.innerHTML = "";
+    let count = 0;
+
+    usersSnap.forEach(d => {
+      if(d.id !== currentUser.uid){
+        const u = d.data();
+        if(u.statusText && u.statusText !== "Ketuk untuk menambahkan pembaruan status"){
+          count++;
+          const nameStr = u.displayName || u.email || "Pengguna";
+          const item = document.createElement("div");
+          item.className = "chat-item";
+          
+          const av = document.createElement("div");
+          av.className = "chat-avatar";
+          av.textContent = nameStr.charAt(0).toUpperCase();
+
+          const info = document.createElement("div");
+          info.className = "chat-info";
+
+          const nameEl = document.createElement("div");
+          nameEl.className = "chat-contact-name";
+          nameEl.textContent = nameStr;
+          info.appendChild(nameEl);
+
+          const snippet = document.createElement("div");
+          snippet.className = "chat-snippet";
+          snippet.textContent = u.statusText;
+          info.appendChild(snippet);
+
+          item.append(av, info);
+          item.onclick = () => openChat({id: d.id, displayName: nameStr, email: u.email});
+          box.appendChild(item);
+        }
+      }
+    });
+
+    if(count === 0){
+      box.innerHTML = '<div class="empty">Belum ada pembaruan status kontak.</div>';
+    }
+  } catch(e) {
+    box.innerHTML = '<div class="empty">Gagal memuat pembaruan status.</div>';
+  }
+}
 
 const openSelectContact=async()=>{
 $("selectContactView").classList.remove("hidden");
@@ -374,7 +484,6 @@ $("selectContactView").classList.add("hidden");
 $("fabNewChatBtn").onclick=openSelectContact;
 $("closeSelectContact").onclick=closeSelectContact;
 
-// Modal Tambah / Edit Kontak
 const openModal=(contactId = null, currentName = "", currentPhone = "")=>{
   editingContactId = contactId;
   $("contactModal").classList.remove("hidden");
@@ -394,7 +503,6 @@ const closeModal=()=>{ $("contactModal").classList.add("hidden"); editingContact
 $("openAddContactModal").onclick=()=>openModal();
 $("cancelModalBtn").onclick=closeModal;
 
-// Simpan atau Perbarui Kontak di Database
 $("saveContactBtn").onclick=async()=>{
 $("contactError").textContent="";
 const name=$("newContactName").value.trim();
@@ -405,13 +513,11 @@ if(!name || !phoneOrEmail){
 }
 try{
   if(editingContactId){
-    // Update kontak yang sudah ada
     await updateDoc(doc(db, "users", currentUser.uid, "contacts", editingContactId), {
       name,
       phoneOrEmail
     });
   } else {
-    // Tambah kontak baru
     await addDoc(collection(db,"users",currentUser.uid,"contacts"),{
       name,
       phoneOrEmail,
@@ -425,9 +531,8 @@ try{
 }
 };
 
-// Fungsi Hapus Kontak Manual
 async function deleteContact(contactId, event){
-  event.stopPropagation(); // Mencegah agar tidak membuka ruang chat saat tombol hapus diklik
+  event.stopPropagation();
   if(confirm("Apakah kamu yakin ingin menghapus kontak ini?")){
     try {
       await deleteDoc(doc(db, "users", currentUser.uid, "contacts", contactId));
@@ -438,7 +543,6 @@ async function deleteContact(contactId, event){
   }
 }
 
-// Memuat Daftar Kontak (Kontak Manual + Pengguna Global)
 async function loadContactsPicker(){
 const box=$("contactsPickerList");
 box.innerHTML='<div class="empty">Memuat kontak...</div>';
@@ -454,7 +558,7 @@ try{
       id: d.id,
       displayName: c.name,
       email: c.phoneOrEmail,
-      isSavedContact: true // Menandakan ini kontak manual yang bisa diedit/dihapus
+      isSavedContact: true
     });
   });
 
@@ -497,7 +601,6 @@ try{
     nameEl.textContent=p.displayName;
     nameRow.appendChild(nameEl);
     
-    // Jika kontak manual, tampilkan tombol Edit (✏️) dan Hapus (🗑️) di sebelah kanan
     if(p.isSavedContact){
       const actionsDiv = document.createElement("div");
       actionsDiv.className = "contact-actions";
