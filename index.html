@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - WhatsApp Style Unread Badge</title>
+<title>NyaChatt - WhatsApp Style Last Message</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
 .bbm-auth-bg{background:linear-gradient(to bottom, #0d3856, #1c6b9e, #005b82);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:white;text-align:center}
@@ -218,7 +218,7 @@ Ketentuan Layanan & Kebijakan Privasi
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,where,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,where,orderBy,limit,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
@@ -472,6 +472,7 @@ try{
 }
 }
 
+// Memuat daftar chat aktif beserta isi pesan terakhir (snippet)
 async function loadActiveChats(){
 const box=$("chatsList");
 box.innerHTML='<div class="empty">Memuat percakapan...</div>';
@@ -485,10 +486,17 @@ try{
     const id = conversationId(currentUser.uid, u.id);
     const convSnap = await getDoc(doc(db, "conversations", id));
     if(convSnap.exists()){
-      const messagesSnap = await getDocs(collection(db, "conversations", id, "messages"));
-      if(!messagesSnap.empty){
+      // Ambil pesan terakhir berdasarkan waktu pembuatan (createdAt)
+      const msgQuery = query(collection(db, "conversations", id, "messages"), orderBy("createdAt", "desc"), limit(1));
+      const msgSnap = await getDocs(msgQuery);
+
+      if(!msgSnap.empty){
+        const lastMsgData = msgSnap.docs[0].data();
         let unreadCount = 0;
-        messagesSnap.forEach(mDoc => {
+        
+        // Hitung total pesan belum dibaca
+        const allMsgsSnap = await getDocs(collection(db, "conversations", id, "messages"));
+        allMsgsSnap.forEach(mDoc => {
           const mData = mDoc.data();
           if(mData.senderId !== currentUser.uid && mData.read !== true){
             unreadCount++;
@@ -497,7 +505,9 @@ try{
 
         activeChats.push({
           user: u,
-          unreadCount: unreadCount
+          lastMessage: lastMsgData.text || "Lampiran",
+          unreadCount: unreadCount,
+          time: lastMsgData.createdAt
         });
       }
     }
@@ -547,7 +557,7 @@ try{
 
     const snippet = document.createElement("div");
     snippet.className = "chat-snippet";
-    snippet.textContent = "Ketuk untuk melihat percakapan";
+    snippet.textContent = chat.lastMessage; // Menampilkan teks pesan terakhir
     info.appendChild(snippet);
 
     item.append(av, info);
