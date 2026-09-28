@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - BBM QR Scanner Edition</title>
+<title>NyaChatt - BBM QR & Profile Edition</title>
 <!-- Pustaka QRCode.js untuk generate QR profil -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Pustaka Html5-Qrcode untuk scan kamera -->
@@ -41,7 +41,9 @@ input{font:inherit}
 
 .chat-item{display:flex;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #f0f4f5;cursor:pointer;gap:12px}
 .chat-item:hover{background:#f5f7f8}
-.chat-avatar{width:45px;height:45px;background:#78909c;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;flex-shrink:0}
+.chat-avatar{width:45px;height:45px;background:#78909c;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;flex-shrink:0;overflow:hidden}
+.chat-avatar img{width:100%;height:100%;object-fit:cover}
+
 .chat-info{flex:1;min-width:0}
 .chat-name-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .chat-contact-name{font-weight:bold;font-size:15px;color:#263238}
@@ -157,7 +159,7 @@ BBM-Style Secure Messenger
 
 <div id="tabFeeds" class="tab-content">
 <div id="addStatusBtn" class="chat-item">
-<div class="chat-avatar" style="background:#00897b;">📶</div>
+<div class="chat-avatar" id="myFeedAvatar" style="background:#00897b;">📶</div>
 <div class="chat-info">
 <div class="chat-contact-name">Status Saya</div>
 <div class="chat-snippet" id="myStatusSnippet">Ketuk untuk memperbarui status</div>
@@ -173,11 +175,19 @@ BBM-Style Secure Messenger
 <div class="modal-card">
 <div class="bbmme-card">
 <div class="bbmme-title">#BBMme</div>
+<div style="width:70px;height:70px;background:#78909c;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:bold;margin:0 auto 8px;overflow:hidden;">
+  <span id="profileAvatarInitial">P</span>
+  <img id="profileAvatarImg" src="" style="width:100%;height:100%;object-fit:cover;display:none;">
+</div>
 <div id="qrcodeContainer"></div>
 <div class="bbmme-pin" id="profilePinDisplay">PIN: -</div>
 </div>
-<div style="font-weight:bold;font-size:15px;margin:8px 0 2px;" id="profileNameDisplay">-</div>
-<div style="font-size:12px;color:#78909c;margin-bottom:14px;" id="profileEmailDisplay">-</div>
+<div style="font-weight:bold;font-size:15px;margin:6px 0 2px;" id="profileNameDisplay">-</div>
+<div style="font-size:12px;color:#78909c;margin-bottom:8px;" id="profileEmailDisplay">-</div>
+
+<input id="newAvatarUrlInput" class="bbm-input" type="text" placeholder="URL Foto Profil (opsional)" style="font-size:12px;margin-bottom:6px;color:#263238;">
+<button id="saveAvatarBtn" class="bbm-btn" style="background:#00897b;padding:8px;margin-bottom:6px;font-size:13px;">Simpan Foto</button>
+
 <button id="closeProfileBtn" class="bbm-btn" style="background:#005b82;">Tutup</button>
 </div>
 </div>
@@ -189,7 +199,6 @@ BBM-Style Secure Messenger
 <input id="newContactName" class="bbm-input" type="text" placeholder="Nama Kontak (Contoh: Budi)" style="color:#263238;">
 <input id="newContactPin" class="bbm-input" type="text" placeholder="PIN BBM (Terisi otomatis dari Scan QR)" style="color:#263238;text-transform:uppercase;">
 
-<!-- Tombol dan Area Kamera Scanner QR -->
 <button id="startScanBtn" class="bbm-btn secondary-btn" style="background:#00897b;margin:4px 0 10px;">📷 Scan QR Code Teman</button>
 <div id="reader" style="width:100%;display:none;margin-bottom:10px;border-radius:6px;overflow:hidden;"></div>
 
@@ -287,6 +296,7 @@ if(!snap.exists()){
     displayName:customName || (user.email||"Pengguna").split("@")[0],
     phone:customPhone || "",
     statusText: "Available",
+    avatarUrl: "",
     createdAt:serverTimestamp()
   });
 } else {
@@ -337,7 +347,7 @@ try{
       targetEmail = inputVal.toLowerCase().replace(/[^a-z0-9]/g, '') + "@nyachatt.app";
     }
     const c = await createUserWithEmailAndPassword(auth, targetEmail, pass);
-    await ensureProfile(c.user, isEmail(inputVal) ? "" : inputVal, isEmail(inputVal) ? "" : isEmail(inputVal) ? "" : inputVal);
+    await ensureProfile(c.user, isEmail(inputVal) ? "" : inputVal, isEmail(inputVal) ? "" : inputVal);
   } else {
     if(!isEmail(inputVal)){
       const usersRef = collection(db, "users");
@@ -379,17 +389,29 @@ $("profileMenuBtn").onclick=async()=>{
       const d = userDoc.data();
       const name = d.displayName || "Pengguna";
       const pin = d.bbmPin || generateBbmPin(currentUser.uid);
+      const avatar = d.avatarUrl || "";
       
       $("profileNameDisplay").textContent = name;
       $("profilePinDisplay").textContent = "PIN: " + pin;
       $("profileEmailDisplay").textContent = d.email || d.phone || "";
+      $("newAvatarUrlInput").value = avatar;
+
+      if(avatar){
+        $("profileAvatarImg").src = avatar;
+        $("profileAvatarImg").style.display = "block";
+        $("profileAvatarInitial").style.display = "none";
+      } else {
+        $("profileAvatarInitial").textContent = name.charAt(0).toUpperCase();
+        $("profileAvatarImg").style.display = "none";
+        $("profileAvatarInitial").style.display = "flex";
+      }
       
       const qrcodeContainer = $("qrcodeContainer");
       qrcodeContainer.innerHTML = "";
       new QRCode(qrcodeContainer, {
         text: pin,
-        width: 140,
-        height: 140,
+        width: 130,
+        height: 130,
         colorDark : "#000000",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
@@ -397,6 +419,19 @@ $("profileMenuBtn").onclick=async()=>{
     }
   }catch(e){}
 };
+
+$("saveAvatarBtn").onclick = async () => {
+  const url = $("newAvatarUrlInput").value.trim();
+  try {
+    await updateDoc(doc(db, "users", currentUser.uid), { avatarUrl: url });
+    alert("Foto profil berhasil diperbarui!");
+    $("profileModal").classList.add("hidden");
+    loadMyStatus();
+  } catch(e) {
+    alert("Gagal memperbarui foto: " + e.message);
+  }
+};
+
 $("closeProfileBtn").onclick=()=>$("profileModal").classList.add("hidden");
 
 onAuthStateChanged(auth,async user=>{
@@ -449,11 +484,13 @@ try{
     const cData = cDoc.data();
     const usersRef = collection(db, "users");
     let targetUserId = null;
+    let targetAvatar = "";
 
     const qPin = query(usersRef, where("bbmPin", "==", cData.bbmPin));
     const sPin = await getDocs(qPin);
     if(!sPin.empty){
       targetUserId = sPin.docs[0].id;
+      targetAvatar = sPin.docs[0].data().avatarUrl || "";
     }
 
     if(targetUserId){
@@ -478,6 +515,7 @@ try{
             userId: targetUserId,
             displayName: cData.name,
             pin: cData.bbmPin,
+            avatarUrl: targetAvatar,
             lastMessage: lastMsgData.text || "Lampiran",
             unreadCount: unreadCount
           });
@@ -498,7 +536,11 @@ try{
 
     const av = document.createElement("div");
     av.className = "chat-avatar";
-    av.textContent = chat.displayName.charAt(0).toUpperCase();
+    if(chat.avatarUrl){
+      av.innerHTML = `<img src="${chat.avatarUrl}">`;
+    } else {
+      av.textContent = chat.displayName.charAt(0).toUpperCase();
+    }
 
     const info = document.createElement("div");
     info.className = "chat-info";
@@ -555,7 +597,6 @@ $("openAddContactModal").onclick=openModal;
 $("cancelModalBtn").onclick=closeModal;
 $("fabNewChatBtn").onclick=()=>document.querySelector("[data-target='tabContacts']").click();
 
-// Fitur Scan QR Code dengan Kamera HP
 $("startScanBtn").onclick=async()=>{
   const readerDiv = $("reader");
   readerDiv.style.display = "block";
@@ -567,10 +608,8 @@ $("startScanBtn").onclick=async()=>{
       { facingMode: "environment" },
       { fps: 10, qrbox: { width: 200, height: 200 } },
       async (decodedText)=>{
-        // Hasil scan langsung mengisi input PIN
         $("newContactPin").value = decodedText.trim().toUpperCase();
         
-        // Cek nama pemilik PIN otomatis dari database
         const usersRef = collection(db, "users");
         const qPin = query(usersRef, where("bbmPin", "==", $("newContactPin").value));
         const snap = await getDocs(qPin);
@@ -589,7 +628,6 @@ $("startScanBtn").onclick=async()=>{
   }
 };
 
-// Simpan kontak aman di database akun sendiri
 $("saveContactBtn").onclick=async()=>{
 $("contactError").textContent="";
 const name=$("newContactName").value.trim();
@@ -667,10 +705,12 @@ try{
 
     const usersRef = collection(db, "users");
     let targetUid = null;
+    let targetAvatar = "";
     const qPin = query(usersRef, where("bbmPin", "==", pinStr));
     const sPin = await getDocs(qPin);
     if(!sPin.empty){
       targetUid = sPin.docs[0].id;
+      targetAvatar = sPin.docs[0].data().avatarUrl || "";
     }
 
     const item=document.createElement("div");
@@ -678,7 +718,11 @@ try{
     
     const av=document.createElement("div");
     av.className="chat-avatar";
-    av.textContent=nameStr.charAt(0).toUpperCase();
+    if(targetAvatar){
+      av.innerHTML = `<img src="${targetAvatar}">`;
+    } else {
+      av.textContent = nameStr.charAt(0).toUpperCase();
+    }
     
     const info=document.createElement("div");
     info.className="chat-info";
@@ -742,7 +786,13 @@ $("saveStatusBtn").onclick=async()=>{
 async function loadMyStatus(){
   try{
     const d = await getDoc(doc(db, "users", currentUser.uid));
-    if(d.exists()){ $("myStatusSnippet").textContent = d.data().statusText || "Available"; }
+    if(d.exists()){ 
+      const data = d.data();
+      $("myStatusSnippet").textContent = data.statusText || "Available"; 
+      if(data.avatarUrl){
+        $("myFeedAvatar").innerHTML = `<img src="${data.avatarUrl}">`;
+      }
+    }
   }catch(e){}
 }
 
@@ -770,7 +820,11 @@ async function loadFeeds(){
           
           const av=document.createElement("div");
           av.className="chat-avatar";
-          av.textContent=cData.name.charAt(0).toUpperCase();
+          if(targetUser.avatarUrl){
+            av.innerHTML = `<img src="${targetUser.avatarUrl}">`;
+          } else {
+            av.textContent = cData.name.charAt(0).toUpperCase();
+          }
 
           const info=document.createElement("div");
           info.className="chat-info";
