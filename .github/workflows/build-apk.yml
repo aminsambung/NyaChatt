@@ -95,14 +95,8 @@ jobs:
           EOF
 
           cat << 'EOF' > android-app/build.gradle
-          buildscript {
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-              dependencies {
-                  classpath 'com.android.tools.build:gradle:7.4.2'
-              }
+          plugins {
+              id 'com.android.application' version '7.4.2' apply false
           }
           allprojects {
               repositories {
@@ -146,7 +140,8 @@ jobs:
       - name: Build Debug APK with Gradle
         run: |
           cd android-app
-          gradle assembleDebug
+          gradle wrapper --gradle-version 7.6.3
+          ./gradlew assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
