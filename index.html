@@ -95,8 +95,8 @@ input{font:inherit}
 </head>
 <body>
 
-<!-- LAYAR MASUK / AUTH ALA BBM KLASIK -->
-<div id="authCard" class="bbm-auth-bg">
+<!-- LAYAR MASUK / AUTH (Diberi class hidden agar tidak berkedip saat dicek) -->
+<div id="authCard" class="bbm-auth-bg hidden">
 <div class="bbm-welcome-box">
 <div class="bbm-logo">💬</div>
 <div class="bbm-auth-title" id="authScreenTitle">Selamat Datang di NyaChatt</div>
@@ -158,14 +158,12 @@ Ketentuan Layanan & Kebijakan Privasi
 <!-- 3. TAB KONTAK (Gaya BBM Klasik) -->
 <div id="tabContacts" class="tab-content">
 <div id="contactsList">
-<!-- Tampilan awal jika belum ada kontak -->
 <div class="empty-contacts-container">
 <div class="empty-contacts-icon">👤</div>
 <div class="empty-contacts-text">Anda tidak memiliki kontak.</div>
 <button id="addContactEmptyBtn" class="add-contact-main-btn">TAMBAH KONTAK</button>
 </div>
 </div>
-<!-- Tombol Melayang (FAB) di pojok kanan bawah -->
 <button id="fabAddBtn" class="fab-btn" title="Tambah Kontak">👤+</button>
 </div>
 
@@ -251,7 +249,6 @@ const ref=doc(db,"users",user.uid),snap=await getDoc(ref);
 if(!snap.exists())await setDoc(ref,{uid:user.uid,email:user.email||"",displayName:(user.email||"Pengguna").split("@")[0],createdAt:serverTimestamp()});
 }
 
-// Toggle mode Masuk / Daftar
 $("toggleModeBtn").onclick=()=>{
 isRegisterMode=!isRegisterMode;
 $("authError").textContent="";
@@ -284,7 +281,6 @@ try{
 }
 };
 
-// Dropdown Menu Titik Tiga (Keluar)
 $("menuTrigger").onclick=(e)=>{
 e.stopPropagation();
 $("dropdownMenu").classList.toggle("show");
@@ -311,7 +307,6 @@ try{
 }catch(e){showError("appError",e)}
 });
 
-// Sistem Navigasi Tab
 document.querySelectorAll(".nav-tab").forEach(tab=>{
 tab.onclick=()=>{
   document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
@@ -321,15 +316,19 @@ tab.onclick=()=>{
 };
 });
 
-// Kontrol Modal Tambah Kontak
 const openModal=()=>{ $("contactModal").classList.remove("hidden"); $("contactError").textContent=""; };
 const closeModal=()=>{ $("contactModal").classList.add("hidden"); $("newContactName").value=""; $("newContactPhone").value=""; };
 
-$("addContactEmptyBtn").onclick=openModal;
+// Gunakan event delegation untuk tombol tambah kontak dinamis
+document.addEventListener("click", (e) => {
+  if (e.target && e.target.id === "addContactEmptyBtn") {
+    openModal();
+  }
+});
+
 $("fabAddBtn").onclick=openModal;
 $("cancelModalBtn").onclick=closeModal;
 
-// Simpan Kontak ke Firebase
 $("saveContactBtn").onclick=async()=>{
 $("contactError").textContent="";
 const name=$("newContactName").value.trim();
@@ -351,7 +350,6 @@ try{
 }
 };
 
-// Memuat Daftar Kontak dari Firebase dengan Gaya BBM Klasik
 async function loadContacts(){
 const box=$("contactsList");
 try{
@@ -365,7 +363,6 @@ try{
         <button id="addContactEmptyBtn" class="add-contact-main-btn">TAMBAH KONTAK</button>
       </div>
     `;
-    $("addContactEmptyBtn").onclick=openModal;
     return;
   }
 
