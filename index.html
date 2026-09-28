@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - BBM Classic Style</title>
+<title>NyaChatt - BBM Classic Contacts</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
 
@@ -19,7 +19,7 @@
 .bbm-error{color:#ff8a80;font-size:13px;margin:8px 0}
 
 header{background:#005b82;color:white;padding:14px 18px;font-size:20px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 4px rgba(0,0,0,0.1);position:relative}
-.wrap{max-width:600px;margin:0 auto;padding:0}
+.wrap{max-width:600px;margin:0 auto;padding:0;position:relative;min-height:100vh}
 .hidden{display:none!important}
 input{font:inherit}
 
@@ -36,7 +36,7 @@ input{font:inherit}
 .nav-tab{flex:1;text-align:center;padding:12px 6px;color:#b3e5fc;font-size:12px;font-weight:bold;cursor:pointer;background:transparent;border:0;white-space:nowrap}
 .nav-tab.active{color:white;border-bottom:3px solid white;background:rgba(0,0,0,0.1)}
 
-.tab-content{display:none;background:white;min-height:75vh}
+.tab-content{display:none;background:white;min-height:75vh;position:relative}
 .tab-content.active{display:block}
 
 /* Daftar Item Tab */
@@ -48,8 +48,19 @@ input{font:inherit}
 .chat-contact-name{font-weight:bold;font-size:15px;color:#263238}
 .chat-snippet{font-size:13px;color:#78909c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* Form Tambah Kontak */
-.add-contact-box{padding:16px;background:#f9fbfb;border-bottom:1px solid #e0e0e0}
+/* Tampilan Kosong Kontak Ala BBM Klasik */
+.empty-contacts-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;background:#f9fbfb;min-height:60vh}
+.empty-contacts-icon{width:64px;height:64px;background:#cfd8dc;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;color:#546e7a;margin-bottom:16px}
+.empty-contacts-text{font-size:15px;color:#546e7a;margin-bottom:20px}
+.add-contact-main-btn{background:#005b82;color:white;border:0;border-radius:6px;padding:12px 24px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.15)}
+
+/* Floating Action Button (FAB) Kontak di Pojok Kanan Bawah */
+.fab-btn{position:fixed;bottom:24px;right:20px;width:56px;height:56px;background:#005b82;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.3);cursor:pointer;border:0;z-index:99}
+
+/* Modal Form Tambah Kontak */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal-card{background:white;width:90%;max-width:380px;padding:20px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.2)}
+.modal-title{font-size:18px;font-weight:bold;color:#005b82;margin-bottom:12px}
 
 /* Ruang Chat Privat */
 #chatRoomView{display:flex;flex-direction:column;height:100vh;max-height:100vh;background:#f5f7f8}
@@ -88,21 +99,21 @@ input{font:inherit}
 <div id="authCard" class="bbm-auth-bg">
 <div class="bbm-welcome-box">
 <div class="bbm-logo">💬</div>
-<div class="bbm-auth-title" id="authScreenTitle">Welcome to NyaChatt</div>
-<div class="bbm-auth-desc" id="authScreenDesc">Sign in to NyaChatt with your account. If you don't have an account, you can create one now.</div>
+<div class="bbm-auth-title" id="authScreenTitle">Selamat Datang di NyaChatt</div>
+<div class="bbm-auth-desc" id="authScreenDesc">Masuk ke NyaChatt menggunakan akun kamu. Jika belum punya akun, kamu bisa mendaftar sekarang.</div>
 </div>
 
 <div style="width:100%;max-width:360px;margin:0 auto;">
-<input id="email" class="bbm-input" type="email" placeholder="Email address" autocomplete="email">
-<input id="password" class="bbm-input" type="password" placeholder="Password (min. 6 characters)" autocomplete="current-password">
+<input id="email" class="bbm-input" type="email" placeholder="Alamat Email" autocomplete="email">
+<input id="password" class="bbm-input" type="password" placeholder="Kata Sandi (min. 6 karakter)" autocomplete="current-password">
 <div id="authError" class="bbm-error"></div>
 
-<button id="mainActionBtn" class="bbm-btn">Sign In</button>
-<button id="toggleModeBtn" class="bbm-btn secondary-btn">Create a New Account</button>
+<button id="mainActionBtn" class="bbm-btn">Masuk</button>
+<button id="toggleModeBtn" class="bbm-btn secondary-btn">Buat Akun Baru</button>
 </div>
 
 <div style="font-size:11px;color:#90caf9;padding-bottom:10px;">
-Terms of Service & Privacy Policy
+Ketentuan Layanan & Kebijakan Privasi
 </div>
 </div>
 
@@ -113,12 +124,12 @@ Terms of Service & Privacy Policy
 <div class="menu-container">
 <button id="menuTrigger" class="menu-btn">⋮</button>
 <div id="dropdownMenu" class="dropdown-menu">
-<button id="logoutBtn" class="dropdown-item">Logout</button>
+<button id="logoutBtn" class="dropdown-item">Keluar</button>
 </div>
 </div>
 </header>
 
-<!-- Navigasi Tab (Chats, Pembaruan, Kontak, Panggilan) -->
+<!-- Navigasi Tab -->
 <div class="nav-tabs">
 <button class="nav-tab active" data-target="tabChats">Chats</button>
 <button class="nav-tab" data-target="tabUpdates">Pembaruan</button>
@@ -128,7 +139,7 @@ Terms of Service & Privacy Policy
 
 <!-- 1. TAB CHATS -->
 <div id="tabChats" class="tab-content active">
-<div id="chatsList"><div class="empty">Belum ada riwayat chat. Mulai dari tab Kontak!</div></div>
+<div id="chatsList"><div class="empty">Belum ada riwayat chat. Buka tab Kontak untuk memulai!</div></div>
 </div>
 
 <!-- 2. TAB PEMBARUAN -->
@@ -144,21 +155,37 @@ Terms of Service & Privacy Policy
 <div class="empty">Belum ada pembaruan status.</div>
 </div>
 
-<!-- 3. TAB KONTAK -->
+<!-- 3. TAB KONTAK (Gaya BBM Klasik) -->
 <div id="tabContacts" class="tab-content">
-<div class="add-contact-box">
-<h3 style="margin:0 0 8px;font-size:15px;color:#005b82;">Tambah Kontak Baru</h3>
-<input id="newContactName" class="bbm-input" style="color:#263238;margin-bottom:6px;" type="text" placeholder="Nama Kontak (Contoh: Budi)">
-<input id="newContactPhone" class="bbm-input" style="color:#263238;margin-bottom:8px;" type="text" placeholder="Nomor HP / Email Kontak">
-<button id="saveContactBtn" class="bbm-btn" style="background:#005b82;">Simpan Kontak ke Firebase</button>
-<div id="contactError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
+<div id="contactsList">
+<!-- Tampilan awal jika belum ada kontak -->
+<div class="empty-contacts-container">
+<div class="empty-contacts-icon">👤</div>
+<div class="empty-contacts-text">Anda tidak memiliki kontak.</div>
+<button id="addContactEmptyBtn" class="add-contact-main-btn">TAMBAH KONTAK</button>
 </div>
-<div id="contactsList"><div class="empty">Memuat daftar kontak...</div></div>
+</div>
+<!-- Tombol Melayang (FAB) di pojok kanan bawah -->
+<button id="fabAddBtn" class="fab-btn" title="Tambah Kontak">👤+</button>
 </div>
 
 <!-- 4. TAB PANGGILAN -->
 <div id="tabCalls" class="tab-content">
 <div class="empty">Belum ada riwayat panggilan suara atau video.</div>
+</div>
+</div>
+
+<!-- MODAL FORM TAMBAH KONTAK -->
+<div id="contactModal" class="modal-overlay hidden">
+<div class="modal-card">
+<div class="modal-title">Tambah Kontak Baru</div>
+<input id="newContactName" class="bbm-input" type="text" placeholder="Nama Kontak (Contoh: Budi)">
+<input id="newContactPhone" class="bbm-input" type="text" placeholder="Nomor HP atau Email Kontak">
+<div id="contactError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
+<div style="display:flex;gap:8px;margin-top:12px;">
+<button id="cancelModalBtn" class="bbm-btn secondary-btn" style="flex:1;margin:0;">Batal</button>
+<button id="saveContactBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Simpan</button>
+</div>
 </div>
 </div>
 
@@ -224,24 +251,23 @@ const ref=doc(db,"users",user.uid),snap=await getDoc(ref);
 if(!snap.exists())await setDoc(ref,{uid:user.uid,email:user.email||"",displayName:(user.email||"Pengguna").split("@")[0],createdAt:serverTimestamp()});
 }
 
-// Toggle mode Sign In / Register ala tombol BBM
+// Toggle mode Masuk / Daftar
 $("toggleModeBtn").onclick=()=>{
 isRegisterMode=!isRegisterMode;
 $("authError").textContent="";
 if(isRegisterMode){
-  $("authScreenTitle").textContent="Create a New Account";
-  $("authScreenDesc").textContent="Fill in your details to create a new account.";
-  $("mainActionBtn").textContent="Register";
-  $("toggleModeBtn").textContent="Already have an account? Sign In";
+  $("authScreenTitle").textContent="Buat Akun Baru";
+  $("authScreenDesc").textContent="Isi detail di bawah untuk mendaftarkan akun baru.";
+  $("mainActionBtn").textContent="Daftar";
+  $("toggleModeBtn").textContent="Sudah punya akun? Masuk";
 }else{
-  $("authScreenTitle").textContent="Welcome to NyaChatt";
-  $("authScreenDesc").textContent="Sign in to NyaChatt with your account. If you don't have an account, you can create one now.";
-  $("mainActionBtn").textContent="Sign In";
-  $("toggleModeBtn").textContent="Create a New Account";
+  $("authScreenTitle").textContent="Selamat Datang di NyaChatt";
+  $("authScreenDesc").textContent="Masuk ke NyaChatt menggunakan akun kamu. Jika belum punya akun, kamu bisa mendaftar sekarang.";
+  $("mainActionBtn").textContent="Masuk";
+  $("toggleModeBtn").textContent="Buat Akun Baru";
 }
 };
 
-// Tombol Aksi Utama (Sign In / Register)
 $("mainActionBtn").onclick=async()=>{
 $("authError").textContent="";
 const email=$("email").value.trim();
@@ -258,7 +284,7 @@ try{
 }
 };
 
-// Dropdown Menu Titik Tiga (Logout)
+// Dropdown Menu Titik Tiga (Keluar)
 $("menuTrigger").onclick=(e)=>{
 e.stopPropagation();
 $("dropdownMenu").classList.toggle("show");
@@ -295,7 +321,15 @@ tab.onclick=()=>{
 };
 });
 
-// Simpan Kontak Baru ke Firebase
+// Kontrol Modal Tambah Kontak
+const openModal=()=>{ $("contactModal").classList.remove("hidden"); $("contactError").textContent=""; };
+const closeModal=()=>{ $("contactModal").classList.add("hidden"); $("newContactName").value=""; $("newContactPhone").value=""; };
+
+$("addContactEmptyBtn").onclick=openModal;
+$("fabAddBtn").onclick=openModal;
+$("cancelModalBtn").onclick=closeModal;
+
+// Simpan Kontak ke Firebase
 $("saveContactBtn").onclick=async()=>{
 $("contactError").textContent="";
 const name=$("newContactName").value.trim();
@@ -310,26 +344,32 @@ try{
     phoneOrEmail,
     createdAt:serverTimestamp()
   });
-  $("newContactName").value="";
-  $("newContactPhone").value="";
+  closeModal();
   await loadContacts();
-  alert("Kontak berhasil disimpan!");
 }catch(e){
-  $("contactError").textContent="Gagal menyimpan kontak: "+e.message;
+  $("contactError").textContent="Gagal menyimpan: "+e.message;
 }
 };
 
-// Memuat Daftar Kontak dari Firebase
+// Memuat Daftar Kontak dari Firebase dengan Gaya BBM Klasik
 async function loadContacts(){
 const box=$("contactsList");
-box.innerHTML='<div class="empty">Memuat daftar kontak...</div>';
 try{
   const snap=await getDocs(collection(db,"users",currentUser.uid,"contacts"));
-  box.innerHTML="";
+  
   if(snap.empty){
-    box.innerHTML='<div class="empty">Belum ada kontak tersimpan. Tambahkan di atas!</div>';
+    box.innerHTML=`
+      <div class="empty-contacts-container">
+        <div class="empty-contacts-icon">👤</div>
+        <div class="empty-contacts-text">Anda tidak memiliki kontak.</div>
+        <button id="addContactEmptyBtn" class="add-contact-main-btn">TAMBAH KONTAK</button>
+      </div>
+    `;
+    $("addContactEmptyBtn").onclick=openModal;
     return;
   }
+
+  box.innerHTML="";
   snap.forEach(d=>{
     const c=d.data();
     const item=document.createElement("div");
