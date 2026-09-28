@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - BBM Classic Contacts</title>
+<title>NyaChatt - WhatsApp Style FAB</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
 
@@ -31,7 +31,7 @@ input{font:inherit}
 .dropdown-item{padding:12px 16px;color:#263238;cursor:pointer;font-size:14px;background:white;border:0;width:100%;text-align:left}
 .dropdown-item:hover{background:#f0f4f5}
 
-/* Navigasi Tab Utama */
+/* Navigasi Tab Utama (Sisa 3 Tab: Chats, Pembaruan, Panggilan) */
 .nav-tabs{display:flex;background:#005b82;border-top:1px solid #004d6e;overflow-x:auto}
 .nav-tab{flex:1;text-align:center;padding:12px 6px;color:#b3e5fc;font-size:12px;font-weight:bold;cursor:pointer;background:transparent;border:0;white-space:nowrap}
 .nav-tab.active{color:white;border-bottom:3px solid white;background:rgba(0,0,0,0.1)}
@@ -48,14 +48,13 @@ input{font:inherit}
 .chat-contact-name{font-weight:bold;font-size:15px;color:#263238}
 .chat-snippet{font-size:13px;color:#78909c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* Tampilan Kosong Kontak Ala BBM Klasik */
-.empty-contacts-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;background:#f9fbfb;min-height:60vh}
-.empty-contacts-icon{width:64px;height:64px;background:#cfd8dc;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;color:#546e7a;margin-bottom:16px}
-.empty-contacts-text{font-size:15px;color:#546e7a;margin-bottom:20px}
-.add-contact-main-btn{background:#005b82;color:white;border:0;border-radius:6px;padding:12px 24px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.15)}
+/* Tampilan Kosong Chats */
+.empty-chats-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;text-align:center;background:#fff;min-height:60vh}
+.empty-chats-icon{font-size:48px;margin-bottom:16px}
+.empty-chats-text{font-size:15px;color:#78909c;margin-bottom:20px}
 
-/* Floating Action Button (FAB) Kontak di Pojok Kanan Bawah */
-.fab-btn{position:fixed;bottom:24px;right:20px;width:56px;height:56px;background:#005b82;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.3);cursor:pointer;border:0;z-index:99}
+/* Floating Action Button (FAB) Pesan di Pojok Kanan Bawah */
+.fab-btn{position:fixed;bottom:24px;right:20px;width:56px;height:56px;background:#00897b;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.3);cursor:pointer;border:0;z-index:99}
 
 /* Modal Form Tambah Kontak */
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000}
@@ -95,7 +94,7 @@ input{font:inherit}
 </head>
 <body>
 
-<!-- LAYAR MASUK / AUTH (Diberi class hidden agar tidak berkedip saat dicek) -->
+<!-- LAYAR MASUK / AUTH -->
 <div id="authCard" class="bbm-auth-bg hidden">
 <div class="bbm-welcome-box">
 <div class="bbm-logo">💬</div>
@@ -117,7 +116,7 @@ Ketentuan Layanan & Kebijakan Privasi
 </div>
 </div>
 
-<!-- HALAMAN UTAMA DENGAN TAB & MENU TITIK TIGA -->
+<!-- HALAMAN UTAMA DENGAN TAB -->
 <div id="mainAppView" class="wrap hidden">
 <header>
 <span>NyaChatt</span>
@@ -129,17 +128,23 @@ Ketentuan Layanan & Kebijakan Privasi
 </div>
 </header>
 
-<!-- Navigasi Tab -->
+<!-- Navigasi Tab (Tanpa Tab Kontak) -->
 <div class="nav-tabs">
 <button class="nav-tab active" data-target="tabChats">Chats</button>
 <button class="nav-tab" data-target="tabUpdates">Pembaruan</button>
-<button class="nav-tab" data-target="tabContacts">Kontak</button>
 <button class="nav-tab" data-target="tabCalls">Panggilan</button>
 </div>
 
-<!-- 1. TAB CHATS -->
+<!-- 1. TAB CHATS (Dilengkapi Tombol FAB Tambah Kontak di Kanan Bawah) -->
 <div id="tabChats" class="tab-content active">
-<div id="chatsList"><div class="empty">Belum ada riwayat chat. Buka tab Kontak untuk memulai!</div></div>
+<div id="chatsList">
+<div class="empty-chats-container">
+<div class="empty-chats-icon">💬</div>
+<div class="empty-chats-text">Belum ada kontak atau percakapan.<br>Ketuk tombol pesan di bawah untuk menambah kontak baru.</div>
+</div>
+</div>
+<!-- Tombol Melayang (FAB) WhatsApp Style di Kanan Bawah -->
+<button id="fabAddBtn" class="fab-btn" title="Tambah Kontak / Pesan Baru">💬+</button>
 </div>
 
 <!-- 2. TAB PEMBARUAN -->
@@ -155,19 +160,7 @@ Ketentuan Layanan & Kebijakan Privasi
 <div class="empty">Belum ada pembaruan status.</div>
 </div>
 
-<!-- 3. TAB KONTAK (Gaya BBM Klasik) -->
-<div id="tabContacts" class="tab-content">
-<div id="contactsList">
-<div class="empty-contacts-container">
-<div class="empty-contacts-icon">👤</div>
-<div class="empty-contacts-text">Anda tidak memiliki kontak.</div>
-<button id="addContactEmptyBtn" class="add-contact-main-btn">TAMBAH KONTAK</button>
-</div>
-</div>
-<button id="fabAddBtn" class="fab-btn" title="Tambah Kontak">👤+</button>
-</div>
-
-<!-- 4. TAB PANGGILAN -->
+<!-- 3. TAB PANGGILAN -->
 <div id="tabCalls" class="tab-content">
 <div class="empty">Belum ada riwayat panggilan suara atau video.</div>
 </div>
@@ -177,8 +170,8 @@ Ketentuan Layanan & Kebijakan Privasi
 <div id="contactModal" class="modal-overlay hidden">
 <div class="modal-card">
 <div class="modal-title">Tambah Kontak Baru</div>
-<input id="newContactName" class="bbm-input" type="text" placeholder="Nama Kontak (Contoh: Budi)">
-<input id="newContactPhone" class="bbm-input" type="text" placeholder="Nomor HP atau Email Kontak">
+<input id="newContactName" class="bbm-input" type="text" placeholder="Nama Kontak (Contoh: Budi)" style="color:#263238;">
+<input id="newContactPhone" class="bbm-input" type="text" placeholder="Nomor HP atau Email Kontak" style="color:#263238;">
 <div id="contactError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
 <div style="display:flex;gap:8px;margin-top:12px;">
 <button id="cancelModalBtn" class="bbm-btn secondary-btn" style="flex:1;margin:0;">Batal</button>
@@ -319,13 +312,6 @@ tab.onclick=()=>{
 const openModal=()=>{ $("contactModal").classList.remove("hidden"); $("contactError").textContent=""; };
 const closeModal=()=>{ $("contactModal").classList.add("hidden"); $("newContactName").value=""; $("newContactPhone").value=""; };
 
-// Gunakan event delegation untuk tombol tambah kontak dinamis
-document.addEventListener("click", (e) => {
-  if (e.target && e.target.id === "addContactEmptyBtn") {
-    openModal();
-  }
-});
-
 $("fabAddBtn").onclick=openModal;
 $("cancelModalBtn").onclick=closeModal;
 
@@ -351,16 +337,15 @@ try{
 };
 
 async function loadContacts(){
-const box=$("contactsList");
+const box=$("chatsList");
 try{
   const snap=await getDocs(collection(db,"users",currentUser.uid,"contacts"));
   
   if(snap.empty){
     box.innerHTML=`
-      <div class="empty-contacts-container">
-        <div class="empty-contacts-icon">👤</div>
-        <div class="empty-contacts-text">Anda tidak memiliki kontak.</div>
-        <button id="addContactEmptyBtn" class="add-contact-main-btn">TAMBAH KONTAK</button>
+      <div class="empty-chats-container">
+        <div class="empty-chats-icon">💬</div>
+        <div class="empty-chats-text">Belum ada kontak atau percakapan.<br>Ketuk tombol pesan di bawah untuk menambah kontak baru.</div>
       </div>
     `;
     return;
