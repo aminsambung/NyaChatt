@@ -137,10 +137,12 @@ jobs:
           }
           EOF
 
-      - name: Build Debug APK with Gradle
+      - name: Build Debug APK with Gradle Wrapper
         run: |
           cd android-app
-          gradle wrapper --gradle-version 7.6.3
+          # Buat wrapper secara manual agar menggunakan Gradle 7.6 yang stabil
+          gradle wrapper --gradle-version 7.6
+          chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Upload APK Artifact
