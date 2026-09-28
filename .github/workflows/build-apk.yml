@@ -95,14 +95,8 @@ jobs:
           EOF
 
           cat << 'EOF' > android-app/build.gradle
-          buildscript {
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-              dependencies {
-                  classpath 'com.android.tools.build:gradle:7.4.2'
-              }
+          plugins {
+              id 'com.android.application' version '7.4.2' apply false
           }
           allprojects {
               repositories {
@@ -113,7 +107,9 @@ jobs:
           EOF
 
           cat << 'EOF' > android-app/app/build.gradle
-          apply plugin: 'com.android.application'
+          plugins {
+              id 'com.android.application'
+          }
           android {
               compileSdk 33
               defaultConfig {
@@ -130,15 +126,14 @@ jobs:
           EOF
 
           cat << 'EOF' > android-app/settings.gradle
+          rootProject.name = "NyaChatt"
           include ':app'
           EOF
 
       - name: Build Debug APK with Gradle
         run: |
           cd android-app
-          chmod +x gradlew || true
-          gradle wrapper
-          ./gradlew assembleDebug
+          gradle assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
