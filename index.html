@@ -2,11 +2,9 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - WhatsApp Style Active Chats</title>
+<title>NyaChatt - WhatsApp Style Final</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
-
-/* Desain Layar Masuk / Auth Ala BBM Klasik */
 .bbm-auth-bg{background:linear-gradient(to bottom, #0d3856, #1c6b9e, #005b82);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:white;text-align:center}
 .bbm-welcome-box{margin-top:20px}
 .bbm-logo{width:85px;height:85px;background:#111;border:3px solid #4fc3f7;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 16px rgba(0,0,0,0.3);font-size:36px}
@@ -23,7 +21,6 @@ header{background:#005b82;color:white;padding:14px 18px;font-size:20px;font-weig
 .hidden{display:none!important}
 input{font:inherit}
 
-/* Menu Dropdown Titik Tiga */
 .menu-container{position:relative;display:inline-block}
 .menu-btn{background:transparent;color:white;font-size:20px;padding:4px 8px;cursor:pointer;border:0}
 .dropdown-menu{display:none;position:absolute;right:0;top:40px;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;overflow:hidden;z-index:100;min-width:140px}
@@ -31,7 +28,6 @@ input{font:inherit}
 .dropdown-item{padding:12px 16px;color:#263238;cursor:pointer;font-size:14px;background:white;border:0;width:100%;text-align:left}
 .dropdown-item:hover{background:#f0f4f5}
 
-/* Navigasi Tab Utama */
 .nav-tabs{display:flex;background:#005b82;border-top:1px solid #004d6e;overflow-x:auto}
 .nav-tab{flex:1;text-align:center;padding:12px 6px;color:#b3e5fc;font-size:12px;font-weight:bold;cursor:pointer;background:transparent;border:0;white-space:nowrap}
 .nav-tab.active{color:white;border-bottom:3px solid white;background:rgba(0,0,0,0.1)}
@@ -39,7 +35,6 @@ input{font:inherit}
 .tab-content{display:none;background:white;min-height:75vh;position:relative}
 .tab-content.active{display:block}
 
-/* Daftar Item Chat / Kontak */
 .chat-item{display:flex;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #f0f4f5;cursor:pointer;gap:12px}
 .chat-item:hover{background:#f5f7f8}
 .chat-avatar{width:45px;height:45px;background:#78909c;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;flex-shrink:0}
@@ -47,27 +42,21 @@ input{font:inherit}
 .chat-name-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .chat-contact-name{font-weight:bold;font-size:15px;color:#263238}
 .chat-snippet{font-size:13px;color:#78909c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chat-time-label{font-size:11px;color:#78909c}
 
-/* Tampilan Kosong Chats */
 .empty-chats-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;text-align:center;background:#fff;min-height:60vh}
 .empty-chats-icon{font-size:48px;margin-bottom:16px}
 .empty-chats-text{font-size:15px;color:#78909c;margin-bottom:20px}
 
-/* Floating Action Button (FAB) Pesan di Pojok Kanan Bawah */
 .fab-btn{position:fixed;bottom:24px;right:20px;width:56px;height:56px;background:#00897b;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.3);cursor:pointer;border:0;z-index:99}
 
-/* Halaman Pilih Kontak (WhatsApp Style) */
 #selectContactView{position:absolute;top:0;left:0;width:100%;min-height:100vh;background:white;z-index:200;display:flex;flex-direction:column}
 .select-contact-header{background:#005b82;color:white;padding:14px 16px;display:flex;align-items:center;gap:14px;font-size:18px;font-weight:bold}
 .section-title{padding:10px 16px;font-size:12px;font-weight:bold;color:#78909c;background:#f5f7f8}
 
-/* Modal Form Tambah Kontak */
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000}
 .modal-card{background:white;width:90%;max-width:380px;padding:20px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.2)}
 .modal-title{font-size:18px;font-weight:bold;color:#005b82;margin-bottom:12px}
 
-/* Ruang Chat Privat */
 #chatRoomView{display:flex;flex-direction:column;height:100vh;max-height:100vh;background:#f5f7f8}
 .chat-head{background:#005b82;color:white;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-weight:bold;min-height:54px}
 .chat-head-left{display:flex;align-items:center;gap:10px}
@@ -87,7 +76,6 @@ input{font:inherit}
 .bbm-check{font-size:11px;color:#78909c;font-weight:bold}
 .bbm-check.read{color:#00c853}
 
-/* Toolbar Bawah Chat */
 .sendrow-wrap{background:#eceff1;border-top:1px solid #cfd8dc;padding:6px}
 .sendrow{display:flex;align-items:center;gap:6px}
 .sendrow input{margin:0;flex:1;background:white;border-radius:6px;padding:10px;font-size:13px;border:1px solid #b0bec5}
@@ -100,7 +88,6 @@ input{font:inherit}
 </head>
 <body>
 
-<!-- LAYAR MASUK / AUTH -->
 <div id="authCard" class="bbm-auth-bg hidden">
 <div class="bbm-welcome-box">
 <div class="bbm-logo">💬</div>
@@ -122,7 +109,6 @@ Ketentuan Layanan & Kebijakan Privasi
 </div>
 </div>
 
-<!-- HALAMAN UTAMA DENGAN TAB -->
 <div id="mainAppView" class="wrap hidden">
 <header>
 <span>NyaChatt</span>
@@ -134,21 +120,17 @@ Ketentuan Layanan & Kebijakan Privasi
 </div>
 </header>
 
-<!-- Navigasi Tab -->
 <div class="nav-tabs">
 <button class="nav-tab active" data-target="tabChats">Chats</button>
 <button class="nav-tab" data-target="tabUpdates">Pembaruan</button>
 <button class="nav-tab" data-target="tabCalls">Panggilan</button>
 </div>
 
-<!-- 1. TAB CHATS (Menampilkan daftar chat aktif otomatis) -->
 <div id="tabChats" class="tab-content active">
-<div id="chatsList"><div class="empty">Memuat daftar chat...</div></div>
-<!-- Tombol Pesan Baru (FAB) di Kanan Bawah -->
+<div id="chatsList"><div class="empty">Memuat percakapan...</div></div>
 <button id="fabNewChatBtn" class="fab-btn" title="Pesan Baru">💬+</button>
 </div>
 
-<!-- 2. TAB PEMBARUAN -->
 <div id="tabUpdates" class="tab-content">
 <div class="chat-item">
 <div class="chat-avatar" style="background:#00897b;">+</div>
@@ -161,13 +143,11 @@ Ketentuan Layanan & Kebijakan Privasi
 <div class="empty">Belum ada pembaruan status.</div>
 </div>
 
-<!-- 3. TAB PANGGILAN -->
 <div id="tabCalls" class="tab-content">
 <div class="empty">Belum ada riwayat panggilan suara atau video.</div>
 </div>
 </div>
 
-<!-- HALAMAN PILIH KONTAK (WhatsApp Style saat FAB diklik) -->
 <div id="selectContactView" class="hidden">
 <div class="select-contact-header">
 <button id="closeSelectContact" class="back-btn">←</button>
@@ -186,12 +166,11 @@ Ketentuan Layanan & Kebijakan Privasi
 </div>
 </div>
 
-<div class="section-title">Daftar kontak tersimpan</div>
+<div class="section-title">Daftar pengguna terdaftar</div>
 <div id="contactsPickerList"><div class="empty">Memuat kontak...</div></div>
 </div>
 </div>
 
-<!-- MODAL FORM TAMBAH KONTAK -->
 <div id="contactModal" class="modal-overlay hidden">
 <div class="modal-card">
 <div class="modal-title">Tambah Kontak Baru</div>
@@ -205,7 +184,6 @@ Ketentuan Layanan & Kebijakan Privasi
 </div>
 </div>
 
-<!-- RUANG CHAT PRIVAT -->
 <div id="chatRoomView" class="hidden">
 <div class="chat-head">
 <div class="chat-head-left">
@@ -241,7 +219,7 @@ Ketentuan Layanan & Kebijakan Privasi
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,where,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
@@ -339,7 +317,6 @@ tab.onclick=()=>{
 };
 });
 
-// Halaman Pilih Kontak
 const openSelectContact=async()=>{
 $("selectContactView").classList.remove("hidden");
 await loadContactsPicker();
@@ -351,7 +328,6 @@ $("selectContactView").classList.add("hidden");
 $("fabNewChatBtn").onclick=openSelectContact;
 $("closeSelectContact").onclick=closeSelectContact;
 
-// Modal Tambah Kontak Baru
 const openModal=()=>{ $("contactModal").classList.remove("hidden"); $("contactError").textContent=""; };
 const closeModal=()=>{ $("contactModal").classList.add("hidden"); $("newContactName").value=""; $("newContactPhone").value=""; };
 
@@ -379,27 +355,31 @@ try{
 }
 };
 
+// Memuat daftar pengguna terdaftar untuk opsi pilih kontak saat chat baru
 async function loadContactsPicker(){
 const box=$("contactsPickerList");
 box.innerHTML='<div class="empty">Memuat kontak...</div>';
 try{
-  const snap=await getDocs(collection(db,"users",currentUser.uid,"contacts"));
-  $("contactCountLabel").textContent = snap.docs.length + " kontak";
+  const snap=const snapUsers = await getDocs(collection(db, "users"));
+  const people = snapUsers.docs.map(d=>({id:d.id, ...d.data()})).filter(p=>p.id !== currentUser.uid);
   
-  if(snap.empty){
-    box.innerHTML='<div class="empty">Belum ada kontak tersimpan. Ketuk "Kontak baru" di atas.</div>';
+  $("contactCountLabel").textContent = people.length + " kontak";
+  
+  if(!people.length){
+    box.innerHTML='<div class="empty">Belum ada pengguna lain terdaftar.</div>';
     return;
   }
 
   box.innerHTML="";
-  snap.forEach(d=>{
-    const c=d.data();
+  for(const p of people){
     const item=document.createElement("div");
     item.className="chat-item";
     
+    const nameStr = p.displayName || p.email || "Pengguna";
+    
     const av=document.createElement("div");
     av.className="chat-avatar";
-    av.textContent=(c.name||"K").charAt(0).toUpperCase();
+    av.textContent=nameStr.charAt(0).toUpperCase();
     
     const info=document.createElement("div");
     info.className="chat-info";
@@ -409,36 +389,53 @@ try{
     
     const nameEl=document.createElement("div");
     nameEl.className="chat-contact-name";
-    nameEl.textContent=c.name;
+    nameEl.textContent=nameStr;
     nameRow.appendChild(nameEl);
     info.appendChild(nameRow);
     
     const snippet=document.createElement("div");
     snippet.className="chat-snippet";
-    snippet.textContent=c.phoneOrEmail;
+    snippet.textContent=p.email || "Ketuk untuk chat";
     info.appendChild(snippet);
     
     item.append(av,info);
     item.onclick=()=>{
       closeSelectContact();
-      openChat({id:d.id, displayName:c.name, email:c.phoneOrEmail});
+      openChat({id:p.id, displayName:nameStr, email:p.email});
     };
     box.appendChild(item);
-  });
+  }
 }catch(e){
   box.innerHTML='<div class="empty">Gagal memuat kontak.</div>';
 }
 }
 
-// Memuat Daftar Percakapan Aktif di Tab Chats
+// Memuat daftar percakapan aktif di tab Chats dengan memeriksa dokumen percakapan
 async function loadActiveChats(){
 const box=$("chatsList");
 box.innerHTML='<div class="empty">Memuat percakapan...</div>';
 try{
-  const q = query(collection(db, "conversations"), where("members", "array-contains", currentUser.uid));
-  const snap = await getDocs(q);
+  const usersSnap = await getDocs(collection(db, "users"));
+  const otherUsers = usersSnap.docs.map(d => ({ id: d.id, ...d.data() })).filter(u => u.id !== currentUser.uid);
 
-  if(snap.empty){
+  let activeChats = [];
+
+  for(const u of otherUsers){
+    const id = conversationId(currentUser.uid, u.id);
+    const convSnap = await getDoc(doc(db, "conversations", id));
+    if(convSnap.exists()){
+      // Cek apakah ada pesan di dalam percakapan ini
+      const messagesSnap = await getDocs(collection(db, "conversations", id, "messages"));
+      if(!messagesSnap.empty){
+        activeChats.push({
+          user: u,
+          lastMsgCount: messagesSnap.docs.length
+        });
+      }
+    }
+  }
+
+  if(activeChats.length === 0){
     box.innerHTML=`
       <div class="empty-chats-container">
         <div class="empty-chats-icon">💬</div>
@@ -449,22 +446,9 @@ try{
   }
 
   box.innerHTML="";
-  for(const docSnap of snap.docs){
-    const conv = docSnap.data();
-    const members = conv.members || [];
-    const otherUid = members.find(id => id !== currentUser.uid);
-    if(!otherUid) continue;
-
-    // Ambil data profil atau kontak lawan bicara
-    let contactName = otherUid;
-    let contactDetail = "";
-    
-    const userDoc = await getDoc(doc(db, "users", otherUid));
-    if(userDoc.exists()){
-      const uData = userDoc.data();
-      contactName = uData.displayName || uData.email || "Pengguna";
-      contactDetail = uData.email || "";
-    }
+  for(const chat of activeChats){
+    const u = chat.user;
+    const contactName = u.displayName || u.email || "Pengguna";
 
     const item = document.createElement("div");
     item.className = "chat-item";
@@ -487,11 +471,11 @@ try{
 
     const snippet = document.createElement("div");
     snippet.className = "chat-snippet";
-    snippet.textContent = contactDetail || "Ketuk untuk melihat pesan";
+    snippet.textContent = "Ketuk untuk melihat percakapan";
     info.appendChild(snippet);
 
     item.append(av, info);
-    item.onclick = () => openChat({ id: otherUid, displayName: contactName, email: contactDetail });
+    item.onclick = () => openChat({ id: u.id, displayName: contactName, email: u.email });
     box.appendChild(item);
   }
 }catch(e){
