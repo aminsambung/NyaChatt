@@ -2,31 +2,63 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - Chat Pribadi</title>
+<title>NyaChatt - BBM Style</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f8f7;color:#263238}
-header{background:#008f7a;color:white;padding:16px 20px;font-size:25px;font-weight:bold}
-.wrap{max-width:850px;margin:22px auto;padding:0 14px}.card{background:white;border-radius:18px;padding:20px;box-shadow:0 4px 18px #0000000d}
-.hidden{display:none!important}h2{margin:0 0 14px;font-size:21px}input,button{font:inherit}
-input{width:100%;padding:15px;border:1px solid #cbd5d8;border-radius:12px;margin:8px 0;background:white}
-button{border:0;border-radius:12px;padding:13px 18px;background:#008f7a;color:white;cursor:pointer}
-button:disabled{opacity:.55;cursor:default}.secondary{background:#e3f3f0;color:#006b5c}
-.auth-actions{display:flex;gap:10px;margin-top:8px}.auth-actions button{flex:1}.muted{color:#68777c;font-size:14px}
-.error{color:#b3261e;white-space:pre-wrap;margin:10px 0}.topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:15px}
-.layout{display:grid;grid-template-columns:240px 1fr;gap:14px}.panel{border:1px solid #d8e2e0;border-radius:14px;overflow:hidden;min-width:0}
-.panel-title{background:#e6f5f2;color:#006b5c;padding:13px;font-weight:bold}#contacts{max-height:65vh;overflow-y:auto}
-.contact{width:100%;border-radius:0;background:white;color:#263238;text-align:left;border-bottom:1px solid #edf0f0;padding:14px}
-.contact.active{background:#d9f3ee;color:#006b5c;font-weight:bold}.chat-head{padding:13px;border-bottom:1px solid #e5eaea;font-weight:bold;min-height:48px}
-#messages{height:52vh;min-height:260px;overflow-y:auto;padding:12px;background:#fafcfc}
-.bubble{max-width:85%;padding:10px 12px;border-radius:13px;margin:8px 0;overflow-wrap:anywhere;background:#e2f4f1}
-.bubble.mine{background:#d7e9ff;margin-left:auto}
-.time{font-size:11px;color:#6b777b;margin-top:5px;text-align:right}.sendrow{display:flex;gap:8px;padding:10px;border-top:1px solid #e5eaea}
-.sendrow input{margin:0;flex:1;min-width:0}.empty{color:#68777c;text-align:center;padding:30px 12px}
-@media(max-width:620px){.wrap{margin:14px auto}.layout{grid-template-columns:1fr}#contacts{max-height:190px}#messages{height:45vh}.card{padding:14px}}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
+header{background:#005b82;color:white;padding:14px 18px;font-size:22px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+.wrap{max-width:850px;margin:16px auto;padding:0 10px}.card{background:white;border-radius:12px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.08)}
+.hidden{display:none!important}h2{margin:0 0 10px;font-size:20px}input,button{font:inherit}
+input{width:100%;padding:12px;border:1px solid #b0bec5;border-radius:8px;margin:6px 0;background:white}
+button{border:0;border-radius:8px;padding:12px 16px;background:#005b82;color:white;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#37474f}
+.auth-actions{display:flex;gap:10px;margin-top:8px}.auth-actions button{flex:1}.muted{color:#78909c;font-size:13px}
+.error{color:#d32f2f;white-space:pre-wrap;margin:8px 0}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #cfd8dc}
+.layout{display:grid;grid-template-columns:240px 1fr;gap:10px;background:#cfd8dc;border-radius:8px;overflow:hidden}
+.panel{background:white;display:flex;flex-direction:column}
+.panel-title{background:#eceff1;color:#37474f;padding:12px;font-weight:bold;font-size:14px;border-bottom:1px solid #cfd8dc}
+#contacts{max-height:60vh;overflow-y:auto}
+.contact{width:100%;border-radius:0;background:white;color:#263238;text-align:left;border-bottom:1px solid #f0f4f5;padding:12px;box-shadow:none}
+.contact.active{background:#b3e5fc;color:#01579b;font-weight:bold}
+
+/* BBM Chat Room Style */
+.chat-container{display:flex;flex-direction:column;background:#f5f7f8;min-height:420px}
+.chat-head{background:#005b82;color:white;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-weight:bold;min-height:50px}
+.chat-head-left{display:flex;align-items:center;gap:10px}
+.back-btn{background:transparent;color:white;padding:4px 8px;font-size:18px;cursor:pointer}
+.chat-head-info .chat-name{font-size:15px}
+.chat-head-info .chat-status{font-size:11px;color:#b3e5fc;font-weight:normal}
+.chat-head-actions{font-size:18px;letter-spacing:6px;color:#b3e5fc}
+
+#messages{flex:1;height:45vh;min-height:240px;overflow-y:auto;padding:12px;background:#eef2f3;display:flex;flex-direction:column}
+
+/* Bubble BBM */
+.msg-row{display:flex;align-items:flex-end;margin:6px 0;gap:6px}
+.msg-row.mine{flex-direction:row-reverse}
+.avatar{width:28px;height:28px;background:#78909c;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;flex-shrink:0}
+.bubble{max-width:75%;padding:8px 12px;border-radius:8px;font-size:13px;position:relative;box-shadow:0 1px 2px rgba(0,0,0,0.1);word-break:break-word}
+.bubble.other{background:#ffffff;color:#263238;border-top-left-radius:2px}
+.bubble.mine{background:#d1e8ff;color:#0d47a1;border-top-right-radius:2px}
+.bubble-text{margin-bottom:2px}
+.bubble-footer{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:2px}
+.time{font-size:10px;color:#78909c}
+.bbm-check{font-size:10px;color:#2e7d32;font-weight:bold}
+
+/* BBM Toolbar Bawah */
+.sendrow-wrap{background:#eceff1;border-top:1px solid #cfd8dc;padding:6px}
+.sendrow{display:flex;align-items:center;gap:6px}
+.sendrow input{margin:0;flex:1;background:white;border-radius:6px;padding:10px;font-size:13px;border:1px solid #b0bec5}
+.send-btn{background:#005b82;border-radius:6px;padding:10px 14px;font-size:13px}
+.bbm-toolbar{display:flex;align-items:center;justify-content:space-around;padding:6px 4px 2px;background:#eceff1;border-top:1px solid #dcdde1;color:#546e7a;font-size:16px}
+.bbm-tool-icon{cursor:pointer;padding:2px 6px;border-radius:4px}
+.bbm-tool-icon:hover{background:#cfd8dc}
+
+.empty{color:#78909c;text-align:center;padding:20px;font-size:13px}
+@media(max-width:620px){.layout{grid-template-columns:1fr}#contacts{max-height:160px}}
 </style>
 </head>
 <body>
-<header>NyaChatt 💬</header>
+<header>NyaChatt 📱</header>
 <div class="wrap">
 <section id="authCard" class="card">
 <h2>Masuk ke NyaChatt</h2><p class="muted">Gunakan email dan kata sandi akun kamu.</p>
@@ -35,15 +67,52 @@ button:disabled{opacity:.55;cursor:default}.secondary{background:#e3f3f0;color:#
 <div class="auth-actions"><button id="loginBtn">Login</button><button id="registerBtn" class="secondary">Daftar</button></div>
 <div id="authError" class="error"></div>
 </section>
+
 <section id="appCard" class="card hidden">
 <div class="topline"><div>Login sebagai: <b id="myEmail"></b></div><button id="logoutBtn" class="secondary">Logout</button></div>
 <div class="layout">
-<div class="panel"><div class="panel-title">Kontak terdaftar</div><div id="contacts"><div class="empty">Memuat kontak...</div></div></div>
-<div class="panel"><div id="chatTitle" class="chat-head">Pilih kontak untuk mulai chat</div>
+<div class="panel">
+<div class="panel-title">Kontak BBM</div>
+<div id="contacts"><div class="empty">Memuat kontak...</div></div>
+</div>
+
+<div class="panel chat-container">
+<div id="chatHead" class="chat-head hidden">
+<div class="chat-head-left">
+<button id="backToList" class="back-btn hidden">←</button>
+<div class="chat-head-info">
+<div id="chatTitle" class="chat-name">Pilih kontak</div>
+<div class="chat-status">Available</div>
+</div>
+</div>
+<div class="chat-head-actions">📞 🎦 ⋮</div>
+</div>
+<div id="chatPlaceholder" class="chat-head" style="background:#005b82;">
+<div class="chat-head-info"><div class="chat-name">Pilih kontak untuk mulai chat</div></div>
+</div>
+
 <div id="messages"><div class="empty">Pesan pribadi akan tampil di sini.</div></div>
-<form id="sendForm" class="sendrow"><input id="messageInput" type="text" maxlength="2000" placeholder="Tulis pesan..." disabled><button id="sendBtn" type="submit" disabled>Kirim</button></form>
-</div></div><div id="appError" class="error"></div>
-</section></div>
+
+<div class="sendrow-wrap">
+<form id="sendForm" class="sendrow">
+<input id="messageInput" type="text" maxlength="2000" placeholder="Ketik pesan..." disabled>
+<button id="sendBtn" class="send-btn" type="submit" disabled>Kirim</button>
+</form>
+<div class="bbm-toolbar">
+<span class="bbm-tool-icon" title="Kamera">📷</span>
+<span class="bbm-tool-icon" title="Kirim File/Foto">🖼️</span>
+<span class="bbm-tool-icon" title="Kirim Dokumen">📎</span>
+<span class="bbm-tool-icon" title="Kirim Lokasi">📍</span>
+<span class="bbm-tool-icon" title="Voice Note">🎤</span>
+<span class="bbm-tool-icon" title="Emoji">😊</span>
+</div>
+</div>
+</div>
+</div>
+<div id="appError" class="error"></div>
+</section>
+</div>
+
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
@@ -58,86 +127,127 @@ appId:"1:1081303400744:web:981fd5f46c53eb2dce101d"
 };
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);let currentUser=null,selectedUid=null,stopMessages=null;
+
 function showError(id,e){
 const map={"auth/invalid-credential":"Email atau kata sandi salah.","auth/user-not-found":"Akun tidak ditemukan. Silakan daftar.","auth/wrong-password":"Kata sandi salah.","auth/email-already-in-use":"Email sudah terdaftar. Silakan login.","auth/weak-password":"Kata sandi minimal 6 karakter.","auth/invalid-email":"Format email tidak valid.","auth/network-request-failed":"Koneksi internet bermasalah."};
 $(id).textContent=map[e?.code]||e?.message||"Terjadi kesalahan. Coba lagi.";
 }
+
 async function ensureProfile(user){
 const ref=doc(db,"users",user.uid),snap=await getDoc(ref);
 if(!snap.exists())await setDoc(ref,{uid:user.uid,email:user.email||"",displayName:(user.email||"Pengguna").split("@")[0],createdAt:serverTimestamp()});
 }
+
 $("loginBtn").onclick=async()=>{ $("authError").textContent="";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){showError("authError",e)} };
 $("registerBtn").onclick=async()=>{ $("authError").textContent="";try{const c=await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);await ensureProfile(c.user)}catch(e){showError("authError",e)} };
 $("logoutBtn").onclick=()=>signOut(auth);
+
 onAuthStateChanged(auth,async user=>{
 currentUser=user;$("authError").textContent="";$("appError").textContent="";
 if(!user){$("authCard").classList.remove("hidden");$("appCard").classList.add("hidden");if(stopMessages)stopMessages();selectedUid=null;return}
 $("authCard").classList.add("hidden");$("appCard").classList.remove("hidden");$("myEmail").textContent=user.email||"Pengguna";
 try{await ensureProfile(user);await loadContacts()}catch(e){showError("appError",e)}
 });
+
 async function loadContacts(){
 const box=$("contacts");box.innerHTML='<div class="empty">Memuat kontak...</div>';
 const snap=await getDocs(collection(db,"users"));
 const people=snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.id!==currentUser.uid).sort((a,b)=>(a.displayName||a.email||"").localeCompare(b.displayName||b.email||""));
 box.innerHTML="";
-if(!people.length){box.innerHTML='<div class="empty">Belum ada pengguna lain. Minta teman daftar terlebih dahulu.</div>';return}
-for(const p of people){const b=document.createElement("button");b.className="contact";b.textContent=p.displayName||p.email||"Pengguna";b.dataset.uid=p.id;b.onclick=()=>openChat(p);box.appendChild(b)}
+if(!people.length){box.innerHTML='<div class="empty">Belum ada pengguna lain.</div>';return}
+for(const p of people){
+const b=document.createElement("button");b.className="contact";
+const name=p.displayName||p.email||"Pengguna";
+b.textContent=name;b.dataset.uid=p.id;b.onclick=()=>openChat(p);box.appendChild(b)
 }
+}
+
 function conversationId(a,b){return[a,b].sort().join("_")}
+
 async function openChat(person){
 $("appError").textContent="";selectedUid=person.id;
 document.querySelectorAll(".contact").forEach(el=>el.classList.toggle("active",el.dataset.uid===selectedUid));
-$("chatTitle").textContent=person.displayName||person.email||"Chat pribadi";$("messages").innerHTML='<div class="empty">Memuat pesan...</div>';
+
+// Ganti header chat ala BBM
+$("chatPlaceholder").classList.add("hidden");
+$("chatHead").classList.remove("hidden");
+$("chatTitle").textContent=person.displayName||person.email||"Chat";
+
+$("messages").innerHTML='<div class="empty">Memuat pesan...</div>';
 $("messageInput").disabled=false;$("sendBtn").disabled=false;if(stopMessages)stopMessages();
+
 const id=conversationId(currentUser.uid,person.id),ref=doc(db,"conversations",id);
 try{
 await setDoc(ref,{members:[currentUser.uid,person.id].sort()},{merge:true});
 const q=query(collection(db,"conversations",id,"messages"),orderBy("createdAt","asc"));
+
 stopMessages=onSnapshot(q,result=>{
 const area=$("messages");area.innerHTML="";
 if(result.empty){area.innerHTML='<div class="empty">Belum ada pesan. Mulai percakapan!</div>';return}
-result.forEach(d=>{const m=d.data(),bubble=document.createElement("div");bubble.className="bubble"+(m.senderId===currentUser.uid?" mine":"");
-const body=document.createElement("div");body.textContent=m.text||"";bubble.append(body);
-if(m.createdAt?.toDate){
-  const time=document.createElement("div");
-  time.className="time";
 
+result.forEach(d=>{
+const m=d.data();
+const isMine=(m.senderId===currentUser.uid);
+
+const row=document.createElement("div");
+row.className="msg-row"+(isMine?" mine":"");
+
+// Avatar untuk lawan bicara
+if(!isMine){
+  const av=document.createElement("div");
+  av.className="avatar";
+  const nameStr=person.displayName||person.email||"U";
+  av.textContent=nameStr.charAt(0).toUpperCase();
+  row.appendChild(av);
+}
+
+const bubble=document.createElement("div");
+bubble.className="bubble "+(isMine?"mine":"other");
+
+const body=document.createElement("div");
+body.className="bubble-text";
+body.textContent=m.text||"";
+bubble.appendChild(body);
+
+const footer=document.createElement("div");
+footer.className="bubble-footer";
+
+if(m.createdAt?.toDate){
   const messageDate=m.createdAt.toDate();
   const now=new Date();
-
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  const yesterday=new Date(today);
-  yesterday.setDate(yesterday.getDate()-1);
+  const yesterday=new Date(today);yesterday.setDate(yesterday.getDate()-1);
+  const dateOnly=new Date(messageDate.getFullYear(),messageDate.getMonth(),messageDate.getDate());
 
-  const dateOnly=new Date(
-    messageDate.getFullYear(),
-    messageDate.getMonth(),
-    messageDate.getDate()
-  );
-
+  const timeSpan=document.createElement("span");
+  timeSpan.className="time";
   if(dateOnly.getTime()===today.getTime()){
-    time.textContent=messageDate.toLocaleTimeString("id-ID",{
-      hour:"2-digit",
-      minute:"2-digit"
-    });
+    timeSpan.textContent=messageDate.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
   }else if(dateOnly.getTime()===yesterday.getTime()){
-    time.textContent="Kemarin";
+    timeSpan.textContent="Kemarin";
   }else{
-    time.textContent=messageDate.toLocaleDateString("id-ID",{
-      day:"2-digit",
-      month:"2-digit",
-      year:"numeric"
-    });
+    timeSpan.textContent=messageDate.toLocaleDateString("id-ID",{day:"2-digit",month:"2-digit"});
   }
-
-  bubble.appendChild(time);
+  footer.appendChild(timeSpan);
 }
-area.appendChild(bubble);
+
+// Tambahkan ikon centang bintang hijau ala BBM untuk pesan terkirim kita
+if(isMine){
+  const check=document.createElement("span");
+  check.className="bbm-check";
+  check.textContent="★";
+  footer.appendChild(check);
+}
+
+bubble.appendChild(footer);
+row.appendChild(bubble);
+area.appendChild(row);
 });
 area.scrollTop=area.scrollHeight;
 },e=>showError("appError",e));
 }catch(e){showError("appError",e)}
 }
+
 $("sendForm").onsubmit=async event=>{
 event.preventDefault();const text=$("messageInput").value.trim();if(!text||!currentUser||!selectedUid)return;
 $("sendBtn").disabled=true;try{const id=conversationId(currentUser.uid,selectedUid);
@@ -145,4 +255,5 @@ await addDoc(collection(db,"conversations",id,"messages"),{senderId:currentUser.
 }catch(e){showError("appError",e)}finally{$("sendBtn").disabled=false}
 };
 </script>
-</body></html>
+</body>
+</html>
