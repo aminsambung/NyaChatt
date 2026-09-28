@@ -137,11 +137,23 @@ jobs:
           }
           EOF
 
-      - name: Build Debug APK with Gradle Wrapper
+      - name: Build Debug APK with Wrapper
         run: |
           cd android-app
-          # Buat wrapper secara manual agar menggunakan Gradle 7.6 yang stabil
-          gradle wrapper --gradle-version 7.6
+          # Unduh dan buat file gradlew secara independen
+          mvn -N io.takari:maven:wrapper -Dmaven=3.8.6 || true
+          # Menggunakan gradle builder bawaan direct script tanpa perintah global gradle
+          python3 -c "
+          import urllib.request
+          import zipfile
+          import os
+          
+          url = 'https://services.gradle.org/distributions/gradle-7.6-bin.zip'
+          urllib.request.urlretrieve(url, 'gradle-7.6.zip')
+          with zipfile.ZipFile('gradle-7.6.zip', 'r') as zip_ref:
+              zip_ref.extractall('.')
+          "
+          ./gradle-7.6/bin/gradle wrapper --gradle-version 7.6
           chmod +x gradlew
           ./gradlew assembleDebug
 
