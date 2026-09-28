@@ -1,0 +1,149 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Create Minimal Android WebView Project
+        run: |
+          mkdir -p android-app/app/src/main/assets android-app/app/src/main/java/com/nyachatt/app android-app/app/src/main/res/layout android-app/app/src/main/res/mipmap-hdpi
+          
+          # Salin index.html utama ke assets android
+          cp index.html android-app/app/src/main/assets/index.html
+
+          # Buat AndroidManifest.xml
+          cat << 'EOF' > android-app/app/src/main/AndroidManifest.xml
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              package="com.nyachatt.app">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.CAMERA" />
+              <uses-permission android:name="android.permission.VIBRATE" />
+              <application
+                  android:allowBackup="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:label="NyaChatt BBM"
+                  android:usesCleartextTraffic="true">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:configChanges="orientation|screenSize">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          # Buat MainActivity.java
+          cat << 'EOF' > android-app/app/src/main/java/com/nyachatt/app/MainActivity.java
+          package com.nyachatt.app;
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import android.webkit.PermissionRequest;
+          import android.webkit.WebChromeClient;
+
+          public class MainActivity extends Activity {
+              private WebView myWebView;
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  myWebView = new WebView(this);
+                  WebSettings webSettings = myWebView.getSettings();
+                  webSettings.setJavaScriptEnabled(true);
+                  webSettings.setDomStorageEnabled(true);
+                  webSettings.setDatabaseEnabled(true);
+                  myWebView.setWebViewClient(new WebViewClient());
+                  myWebView.setWebChromeClient(new WebChromeClient() {
+                      @Override
+                      public void onPermissionRequest(final PermissionRequest request) {
+                          request.grant(request.getResources());
+                      }
+                  });
+                  myWebView.loadUrl("file:///android_asset/index.html");
+                  setContentView(myWebView);
+              }
+              @Override
+              public void onBackPressed() {
+                  if (myWebView.canGoBack()) {
+                      myWebView.goBack();
+                  } else {
+                      super.onBackPressed();
+                  }
+              }
+          }
+          EOF
+
+          # Buat build.gradle minimal
+          cat << 'EOF' > android-app/build.gradle
+          buildscript {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+              dependencies {
+                  classpath 'com.android.tools.build:gradle:7.4.2'
+              }
+          }
+          allprojects {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          EOF
+
+          cat << 'EOF' > android-app/app/build.gradle
+          apply plugin: 'com.android.application'
+          android {
+              compileSdk 33
+              defaultConfig {
+                  applicationId "com.nyachatt.app"
+                  minSdk 21
+                  targetSdk 33
+                  versionCode 1
+                  versionName "1.0"
+              }
+          }
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.6.0'
+          }
+          EOF
+
+          cat << 'EOF' > android-app/settings.gradle
+          include ':app'
+          EOF
+
+      - name: Build Debug APK with Gradle
+        run: |
+          cd android-app
+          chmod +x gradlew || true
+          # Jika gradle wrapper belum ada, gunakan gradle langsung atau buat wrapper
+          gradle wrapper
+          ./gradlew assembleDebug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: NyaChatt-APK
+          path: android-app/app/build/outputs/apk/debug/app-debug.apk
