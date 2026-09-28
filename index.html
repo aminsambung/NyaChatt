@@ -2,10 +2,10 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - Full Features</title>
+<title>NyaChatt - WhatsApp Style</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
-header{background:#005b82;color:white;padding:14px 18px;font-size:20px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+header{background:#005b82;color:white;padding:14px 18px;font-size:20px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 4px rgba(0,0,0,0.1);position:relative}
 .wrap{max-width:600px;margin:0 auto;padding:0}.card{background:white;border-radius:0;padding:0;box-shadow:none}
 .hidden{display:none!important}h2{margin:0 0 10px;font-size:20px}input,button{font:inherit}
 input{width:100%;padding:12px;border:1px solid #b0bec5;border-radius:8px;margin:6px 0;background:white}
@@ -14,6 +14,14 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 .auth-container{max-width:400px;margin:40px auto;padding:20px;background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08)}
 .auth-actions{display:flex;gap:10px;margin-top:8px}.auth-actions button{flex:1}.muted{color:#78909c;font-size:13px}
 .error{color:#d32f2f;white-space:pre-wrap;margin:8px 0}
+
+/* Menu Dropdown Titik Tiga Ala WhatsApp */
+.menu-container{position:relative;display:inline-block}
+.menu-btn{background:transparent;color:white;font-size:20px;padding:4px 8px;cursor:pointer;border:0}
+.dropdown-menu{display:none;position:absolute;right:0;top:40px;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;overflow:hidden;z-index:100;min-width:140px}
+.dropdown-menu.show{display:block}
+.dropdown-item{padding:12px 16px;color:#263238;cursor:pointer;font-size:14px;background:white;border:0;width:100%;text-align:left}
+.dropdown-item:hover{background:#f0f4f5}
 
 /* Navigasi Tab Utama */
 .nav-tabs{display:flex;background:#005b82;border-top:1px solid #004d6e;overflow-x:auto}
@@ -30,8 +38,10 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 .chat-info{flex:1;min-width:0}
 .chat-name-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .chat-contact-name{font-weight:bold;font-size:15px;color:#263238}
-.chat-time{font-size:11px;color:#78909c}
 .chat-snippet{font-size:13px;color:#78909c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Form Tambah Kontak */
+.add-contact-box{padding:16px;background:#f9fbfb;border-bottom:1px solid #e0e0e0}
 
 /* Ruang Chat Privat */
 #chatRoomView{display:flex;flex-direction:column;height:100vh;max-height:100vh;background:#f5f7f8}
@@ -40,7 +50,6 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 .back-btn{background:transparent;color:white;padding:4px 8px;font-size:20px;cursor:pointer;border:0}
 .chat-head-info .chat-name{font-size:16px}
 .chat-head-info .chat-status{font-size:11px;color:#b3e5fc;font-weight:normal}
-.chat-head-actions{font-size:18px;letter-spacing:6px;color:#b3e5fc}
 
 #messages{flex:1;overflow-y:auto;padding:12px;background:#eef2f3;display:flex;flex-direction:column}
 .msg-row{display:flex;align-items:flex-end;margin:6px 0;gap:6px}
@@ -52,7 +61,7 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 .bubble-footer{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:2px}
 .time{font-size:10px;color:#78909c}
 .bbm-check{font-size:11px;color:#78909c;font-weight:bold}
-.bbm-check.read{color:#00c853} /* Hijau jika sudah dibaca/dilihat */
+.bbm-check.read{color:#00c853}
 
 /* Toolbar Bawah Chat */
 .sendrow-wrap{background:#eceff1;border-top:1px solid #cfd8dc;padding:6px}
@@ -76,24 +85,29 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 <div id="authError" class="error"></div>
 </div>
 
-<!-- HALAMAN UTAMA DENGAN TAB -->
+<!-- HALAMAN UTAMA DENGAN TAB & MENU TITIK TIGA -->
 <div id="mainAppView" class="wrap hidden">
 <header>
 <span>NyaChatt</span>
-<button id="logoutBtn" class="secondary" style="padding:6px 10px;font-size:12px;">Logout</button>
+<div class="menu-container">
+<button id="menuTrigger" class="menu-btn">⋮</button>
+<div id="dropdownMenu" class="dropdown-menu">
+<button id="logoutBtn" class="dropdown-item">Logout</button>
+</div>
+</div>
 </header>
 
-<!-- Navigasi Tab -->
+<!-- Navigasi Tab (Chats, Pembaruan, Kontak, Panggilan) -->
 <div class="nav-tabs">
 <button class="nav-tab active" data-target="tabChats">Chats</button>
 <button class="nav-tab" data-target="tabUpdates">Pembaruan</button>
-<button class="nav-tab" data-target="tabCommunities">Komunitas</button>
+<button class="nav-tab" data-target="tabContacts">Kontak</button>
 <button class="nav-tab" data-target="tabCalls">Panggilan</button>
 </div>
 
 <!-- 1. TAB CHATS -->
 <div id="tabChats" class="tab-content active">
-<div id="chatsList"><div class="empty">Memuat daftar chat...</div></div>
+<div id="chatsList"><div class="empty">Belum ada riwayat chat. Mulai dari tab Kontak!</div></div>
 </div>
 
 <!-- 2. TAB PEMBARUAN -->
@@ -106,19 +120,19 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 </div>
 </div>
 <div style="padding:10px 16px;font-size:12px;font-weight:bold;color:#78909c;background:#f5f7f8;">Pembaruan Kontak</div>
-<div id="updatesList"><div class="empty">Belum ada pembaruan status dari kontak lain.</div></div>
+<div class="empty">Belum ada pembaruan status.</div>
 </div>
 
-<!-- 3. TAB KOMUNITAS -->
-<div id="tabCommunities" class="tab-content">
-<div class="chat-item">
-<div class="chat-avatar" style="background:#5e35b1;">👥</div>
-<div class="chat-info">
-<div class="chat-contact-name">Komunitas NyaChatt Official</div>
-<div class="chat-snippet">Grup diskusi umum pengguna aplikasi</div>
+<!-- 3. TAB KONTAK (Penyimpanan ke Firebase) -->
+<div id="tabContacts" class="tab-content">
+<div class="add-contact-box">
+<h3 style="margin:0 0 8px;font-size:15px;color:#005b82;">Tambah Kontak Baru</h3>
+<input id="newContactName" type="text" placeholder="Nama Kontak (Contoh: Budi)" style="margin-bottom:6px;">
+<input id="newContactPhone" type="text" placeholder="Nomor HP / Email Kontak" style="margin-bottom:8px;">
+<button id="saveContactBtn" style="width:100%;padding:10px;">Simpan Kontak ke Firebase</button>
+<div id="contactError" class="error" style="font-size:12px;"></div>
 </div>
-</div>
-<div class="empty">Fitur komunitas dan grup terbuka lainnya akan segera hadir di sini.</div>
+<div id="contactsList"><div class="empty">Memuat daftar kontak...</div></div>
 </div>
 
 <!-- 4. TAB PANGGILAN -->
@@ -163,7 +177,7 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,where,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
@@ -188,6 +202,13 @@ const ref=doc(db,"users",user.uid),snap=await getDoc(ref);
 if(!snap.exists())await setDoc(ref,{uid:user.uid,email:user.email||"",displayName:(user.email||"Pengguna").split("@")[0],createdAt:serverTimestamp()});
 }
 
+// Dropdown Menu Titik Tiga (Logout)
+$("menuTrigger").onclick=(e)=>{
+e.stopPropagation();
+$("dropdownMenu").classList.toggle("show");
+};
+window.onclick=()=>{ $("dropdownMenu").classList.remove("show"); };
+
 $("loginBtn").onclick=async()=>{ $("authError").textContent="";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){showError("authError",e)} };
 $("registerBtn").onclick=async()=>{ $("authError").textContent="";try{const c=await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);await ensureProfile(c.user)}catch(e){showError("authError",e)} };
 $("logoutBtn").onclick=()=>signOut(auth);
@@ -207,7 +228,7 @@ $("chatRoomView").classList.add("hidden");
 $("mainAppView").classList.remove("hidden");
 try{
   await ensureProfile(user);
-  await loadBbmChats();
+  await loadContacts();
 }catch(e){showError("appError",e)}
 });
 
@@ -221,28 +242,49 @@ tab.onclick=()=>{
 };
 });
 
-// Muat Daftar Chat
-async function loadBbmChats(){
-const box=$("chatsList");
-box.innerHTML='<div class="empty">Memuat daftar chat...</div>';
+// Simpan Kontak Baru ke Firebase (subkoleksi 'contacts' milik user yang sedang login)
+$("saveContactBtn").onclick=async()=>{
+$("contactError").textContent="";
+const name=$("newContactName").value.trim();
+const phoneOrEmail=$("newContactPhone").value.trim();
+if(!name || !phoneOrEmail){
+  $("contactError").textContent="Nama dan nomor/email wajib diisi!";
+  return;
+}
 try{
-  const snap=await getDocs(collection(db,"users"));
-  const people=snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.id!==currentUser.uid).sort((a,b)=>(a.displayName||a.email||"").localeCompare(b.displayName||b.email||""));
-  
+  await addDoc(collection(db,"users",currentUser.uid,"contacts"),{
+    name,
+    phoneOrEmail,
+    createdAt:serverTimestamp()
+  });
+  $("newContactName").value="";
+  $("newContactPhone").value="";
+  await loadContacts();
+  alert("Kontak berhasil disimpan!");
+}catch(e){
+  $("contactError").textContent="Gagal menyimpan kontak: "+e.message;
+}
+};
+
+// Memuat Daftar Kontak dari Firebase
+async function loadContacts(){
+const box=$("contactsList");
+box.innerHTML='<div class="empty">Memuat daftar kontak...</div>';
+try{
+  const snap=await getDocs(collection(db,"users",currentUser.uid,"contacts"));
   box.innerHTML="";
-  if(!people.length){
-    box.innerHTML='<div class="empty">Belum ada kontak lain.</div>';
+  if(snap.empty){
+    box.innerHTML='<div class="empty">Belum ada kontak tersimpan. Tambahkan di atas!</div>';
     return;
   }
-
-  for(const p of people){
+  snap.forEach(d=>{
+    const c=d.data();
     const item=document.createElement("div");
     item.className="chat-item";
-    const nameStr=p.displayName||p.email||"Pengguna";
     
     const av=document.createElement("div");
     av.className="chat-avatar";
-    av.textContent=nameStr.charAt(0).toUpperCase();
+    av.textContent=(c.name||"K").charAt(0).toUpperCase();
     
     const info=document.createElement("div");
     info.className="chat-info";
@@ -252,22 +294,22 @@ try{
     
     const nameEl=document.createElement("div");
     nameEl.className="chat-contact-name";
-    nameEl.textContent=nameStr;
-    
+    nameEl.textContent=c.name;
     nameRow.appendChild(nameEl);
     info.appendChild(nameRow);
     
     const snippet=document.createElement("div");
     snippet.className="chat-snippet";
-    snippet.textContent=p.email || "Ketuk untuk chat";
+    snippet.textContent=c.phoneOrEmail;
     info.appendChild(snippet);
     
     item.append(av,info);
-    item.onclick=()=>openChat(p);
+    // Ketika kontak diklik, langsung buka ruang chat privat
+    item.onclick=()=>openChat({id:d.id, displayName:c.name, email:c.phoneOrEmail});
     box.appendChild(item);
-  }
+  });
 }catch(e){
-  box.innerHTML=`<div class="empty">Gagal memuat kontak.</div>`;
+  box.innerHTML='<div class="empty">Gagal memuat kontak.</div>';
 }
 }
 
@@ -327,13 +369,11 @@ if(m.createdAt?.toDate){
   footer.appendChild(timeSpan);
 }
 
-// Indikator Status Pesan (Terkirim / Dibaca)
 if(isMine){
   const check=document.createElement("span");
-  // Jika pesan sudah dibaca/dilihat oleh lawan bicara, tandai kelas 'read'
   const isRead=m.read === true;
   check.className="bbm-check" + (isRead ? " read" : "");
-  check.textContent=isRead ? "✓✓" : "✓"; // ✓ = Terkirim/Terlihat, ✓✓ = Dibaca
+  check.textContent=isRead ? "✓✓" : "✓";
   footer.appendChild(check);
 }
 
@@ -341,7 +381,6 @@ bubble.appendChild(footer);
 row.appendChild(bubble);
 area.appendChild(row);
 
-// Tandai pesan dari lawan bicara sebagai "dibaca" jika kita sedang membuka ruang chat ini
 if(!isMine && m.read !== true){
   updateDoc(doc(db,"conversations",id,"messages",d.id), { read: true }).catch(()=>{});
 }
@@ -351,12 +390,11 @@ area.scrollTop=area.scrollHeight;
 }catch(e){showError("appError",e)}
 }
 
-// Tombol kembali ke daftar menu utama
 $("backToList").onclick=()=>{
 if(stopMessages)stopMessages();
 $("chatRoomView").classList.add("hidden");
 $("mainAppView").classList.remove("hidden");
-loadBbmChats();
+loadContacts();
 };
 
 $("sendForm").onsubmit=async event=>{
@@ -365,7 +403,7 @@ $("sendBtn").disabled=true;try{const id=conversationId(currentUser.uid,selectedP
 await addDoc(collection(db,"conversations",id,"messages"),{
   senderId:currentUser.uid,
   text,
-  read:false, // Status awal belum dibaca
+  read:false,
   createdAt:serverTimestamp()
 });
 $("messageInput").value="";
