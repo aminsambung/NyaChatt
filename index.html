@@ -2,11 +2,9 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - BBM QR Scanner Edition</title>
-<!-- Pustaka QRCode.js untuk generate QR -->
+<title>NyaChatt - BBM Friend Request Edition</title>
+<!-- Pustaka QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<!-- Pustaka Html5-Qrcode untuk scan kamera -->
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
 .bbm-auth-bg{background:linear-gradient(to bottom, #0d3856, #1c6b9e, #005b82);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:white;text-align:center}
@@ -17,6 +15,7 @@
 .bbm-input{width:100%;padding:12px 14px;border:1px solid #4fc3f7;border-radius:6px;margin:8px 0;background:rgba(255,255,255,0.9);color:#263238;font-size:14px;text-align:left}
 .bbm-btn{width:100%;padding:12px;border:0;border-radius:6px;background:linear-gradient(to bottom, #37474f, #212121);color:white;font-weight:bold;cursor:pointer;margin:6px 0;box-shadow:0 2px 4px rgba(0,0,0,0.4);font-size:14px}
 .bbm-btn.secondary-btn{background:linear-gradient(to bottom, #546e7a, #37474f)}
+.bbm-btn.accept-btn{background:#25d366;color:white;padding:6px 12px;font-size:12px;width:auto;margin:0}
 .bbm-btn:disabled{opacity:0.6}
 .bbm-error{color:#ff8a80;font-size:13px;margin:8px 0}
 
@@ -47,7 +46,7 @@ input{font:inherit}
 .chat-contact-name{font-weight:bold;font-size:15px;color:#263238}
 .chat-snippet{font-size:13px;color:#78909c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.contact-actions{display:flex;gap:6px}
+.contact-actions{display:flex;gap:6px;align-items:center}
 .action-icon-btn{background:transparent;border:0;font-size:16px;cursor:pointer;padding:4px;color:#78909c}
 .action-icon-btn:hover{color:#005b82}
 
@@ -146,10 +145,17 @@ BBM-Style Secure Messenger
 <div id="openAddContactModal" class="chat-item">
 <div class="chat-avatar" style="background:#00897b;">📶+</div>
 <div class="chat-info">
-<div class="chat-contact-name">Undang Kontak (Invite PIN / Scan QR)</div>
-<div class="chat-snippet">Tambah teman menggunakan PIN atau Scan QR</div>
+<div class="chat-contact-name">Undang Kontak (Kirim Permintaan PIN)</div>
+<div class="chat-snippet">Kirim undangan pertemanan via PIN BBM</div>
 </div>
 </div>
+
+<!-- Bagian Undangan Masuk (Friend Requests) -->
+<div id="requestsSection" class="hidden">
+<div class="section-title" style="background:#e0f2f1;color:#00796b;">Permintaan Pertanyaan Masuk</div>
+<div id="requestsList"></div>
+</div>
+
 <div class="section-title">Daftar Kontak Saya</div>
 <div id="contactsTabList"><div class="empty">Belum ada kontak tersimpan.</div></div>
 </div>
@@ -167,7 +173,7 @@ BBM-Style Secure Messenger
 </div>
 </div>
 
-<!-- MODAL PROFIL DENGAN KARTU #BBMme QR CODE -->
+<!-- MODAL PROFIL #BBMme -->
 <div id="profileModal" class="modal-overlay hidden">
 <div class="modal-card">
 <div class="bbmme-card">
@@ -181,21 +187,16 @@ BBM-Style Secure Messenger
 </div>
 </div>
 
-<!-- MODAL TAMBAH KONTAK & SCANNER QR -->
+<!-- MODAL KIRIM UNDANGAN PIN -->
 <div id="contactModal" class="modal-overlay hidden">
 <div class="modal-card" style="text-align:left;">
-<div class="modal-title" id="modalTitleText">Undang Kontak (Invite PIN / QR)</div>
-<input id="newContactName" class="bbm-input" type="text" placeholder="Nama Kontak (Contoh: Budi)" style="color:#263238;">
-<input id="newContactPin" class="bbm-input" type="text" placeholder="Masukkan PIN atau Scan QR" style="color:#263238;text-transform:uppercase;">
-
-<!-- Tombol dan Area Kamera Scanner QR -->
-<button id="startScanBtn" class="bbm-btn secondary-btn" style="background:#00897b;margin:4px 0 10px;">📷 Scan QR Code Teman</button>
-<div id="reader" style="width:100%;display:none;margin-bottom:10px;"></div>
-
+<div class="modal-title" id="modalTitleText">Kirim Undangan PIN</div>
+<input id="newContactName" class="bbm-input" type="text" placeholder="Nama Panggilan Teman (Contoh: Budi)" style="color:#263238;">
+<input id="newContactPin" class="bbm-input" type="text" placeholder="Masukkan PIN BBM Tujuan" style="color:#263238;text-transform:uppercase;">
 <div id="contactError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
-<div style="display:flex;gap:8px;margin-top:8px;">
+<div style="display:flex;gap:8px;margin-top:12px;">
 <button id="cancelModalBtn" class="bbm-btn secondary-btn" style="flex:1;margin:0;">Batal</button>
-<button id="saveContactBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Simpan Kontak</button>
+<button id="saveContactBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Kirim Undangan</button>
 </div>
 </div>
 </div>
@@ -265,8 +266,6 @@ const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
 let currentUser=null,selectedPerson=null,stopMessages=null;
 let isRegisterMode=false;
-let editingContactId = null;
-let html5QrCode = null;
 
 function showError(id,e){
 const map={"auth/invalid-credential":"Identitas atau kata sandi salah.","auth/user-not-found":"Akun tidak ditemukan.","auth/wrong-password":"Kata sandi salah.","auth/email-already-in-use":"Email sudah terdaftar.","auth/weak-password":"Kata sandi minimal 6 karakter.","auth/invalid-email":"Format email/identitas tidak valid."};
@@ -387,7 +386,7 @@ $("profileMenuBtn").onclick=async()=>{
       const qrcodeContainer = $("qrcodeContainer");
       qrcodeContainer.innerHTML = "";
       new QRCode(qrcodeContainer, {
-        text: "NYACHATT-PIN:" + pin,
+        text: pin,
         width: 140,
         height: 140,
         colorDark : "#000000",
@@ -416,6 +415,7 @@ try{
   await ensureProfile(user);
   await loadActiveChats();
   await loadContactsTab();
+  await loadFriendRequests();
   await loadMyStatus();
   await loadFeeds();
 }catch(e){showError("appError",e)}
@@ -431,6 +431,7 @@ tab.onclick=()=>{
     loadActiveChats();
   } else if(tab.dataset.target === "tabContacts"){
     loadContactsTab();
+    loadFriendRequests();
   } else if(tab.dataset.target === "tabFeeds"){
     loadMyStatus();
     loadFeeds();
@@ -487,7 +488,7 @@ try{
   }
 
   if(activeChats.length === 0){
-    box.innerHTML=`<div class="empty">Belum ada percakapan aktif.<br>Undang kontak via PIN atau Scan QR terlebih dahulu.</div>`;
+    box.innerHTML=`<div class="empty">Belum ada percakapan aktif.<br>Undang kontak via PIN terlebih dahulu untuk mulai chat.</div>`;
     return;
   }
 
@@ -534,74 +535,19 @@ try{
 }
 }
 
-const openModal=(contactId = null, currentName = "", currentPin = "")=>{
-  editingContactId = contactId;
+const openModal=()=>{
   $("contactModal").classList.remove("hidden");
   $("contactError").textContent="";
-  $("reader").style.display = "none";
-  if(contactId){
-    $("modalTitleText").textContent="Edit Kontak";
-    $("newContactName").value = currentName;
-    $("newContactPin").value = currentPin;
-  } else {
-    $("modalTitleText").textContent="Undang Kontak (Invite PIN / QR)";
-    $("newContactName").value = "";
-    $("newContactPin").value = "";
-  }
+  $("newContactName").value = "";
+  $("newContactPin").value = "";
 };
+const closeModal=()=>$("contactModal").classList.add("hidden");
 
-const closeModal=()=>{
-  if(html5QrCode){
-    html5QrCode.stop().catch(()=>{});
-    html5QrCode = null;
-  }
-  $("reader").style.display = "none";
-  $("contactModal").classList.add("hidden");
-};
-
-$("openAddContactModal").onclick=()=>openModal();
+$("openAddContactModal").onclick=openModal;
 $("cancelModalBtn").onclick=closeModal;
 $("fabNewChatBtn").onclick=()=>document.querySelector("[data-target='tabContacts']").click();
 
-// Tombol Scan QR dengan Kamera
-$("startScanBtn").onclick=async()=>{
-  const readerDiv = $("reader");
-  readerDiv.style.display = "block";
-  if(!html5QrCode){
-    html5QrCode = new Html5Qrcode("reader");
-  }
-  try{
-    await html5QrCode.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 220, height: 220 } },
-      async (decodedText)=>{
-        // Format QR: NYACHATT-PIN:ABC12345
-        let scannedPin = decodedText;
-        if(decodedText.includes("NYACHATT-PIN:")){
-          scannedPin = decodedText.split("NYACHATT-PIN:")[1];
-        }
-        $("newContactPin").value = scannedPin.trim().toUpperCase();
-        
-        // Ambil nama otomatis dari database jika ditemukan
-        const usersRef = collection(db, "users");
-        const qPin = query(usersRef, where("bbmPin", "==", $("newContactPin").value));
-        const snap = await getDocs(qPin);
-        if(!snap.empty){
-          const uData = snap.docs[0].data();
-          $("newContactName").value = uData.displayName || "Teman BBM";
-        }
-
-        await html5QrCode.stop();
-        readerDiv.style.display = "none";
-      },
-      (errorMessage)=>{}
-    );
-  }catch(err){
-    $("contactError").textContent="Gagal mengakses kamera: "+err;
-  }
-};
-
-// Simpan kontak dengan fitur Mutual Connection Dua Arah
+// 1. KIRIM PERMINTAAN PERTEMANAN (FRIEND REQUEST) KE AKUN TUJUAN
 $("saveContactBtn").onclick=async()=>{
 $("contactError").textContent="";
 const name=$("newContactName").value.trim();
@@ -631,41 +577,102 @@ try{
     return;
   }
 
+  // Ambil profil saya untuk dikirimkan dalam request
   const myDoc = await getDoc(doc(db, "users", currentUser.uid));
   const myData = myDoc.data();
-  const myName = myData.displayName || "Teman BBM";
-  const myPin = myData.bbmPin;
 
-  if(editingContactId){
-    await updateDoc(doc(db, "users", currentUser.uid, "contacts", editingContactId), { name, bbmPin: pinInput });
-  } else {
-    // 1. Simpan ke kontak kita
-    await addDoc(collection(db, "users", currentUser.uid, "contacts"), { 
-      name: name, 
-      bbmPin: pinInput, 
-      createdAt: serverTimestamp() 
-    });
+  // Simpan ke subkoleksi friendRequests milik akun tujuan (targetUid)
+  await addDoc(collection(db, "users", targetUid, "friendRequests"), {
+    senderUid: currentUser.uid,
+    senderName: name, // Nama panggilan yang diatur pengirim
+    senderPin: myData.bbmPin,
+    createdAt: serverTimestamp()
+  });
 
-    // 2. Mutual contact otomatis ke HP teman
-    const theirContactsRef = collection(db, "users", targetUid, "contacts");
-    const checkTheirs = await getDocs(query(theirContactsRef, where("bbmPin", "==", myPin)));
-    
-    if(checkTheirs.empty){
-      await addDoc(theirContactsRef, {
-        name: myName,
-        bbmPin: myPin,
-        createdAt: serverTimestamp()
-      });
-    }
-  }
-
+  alert("Undangan pertemanan berhasil dikirim ke PIN " + pinInput + "!");
   closeModal();
-  await loadContactsTab();
-  await loadActiveChats();
 }catch(e){
-  $("contactError").textContent="Gagal menyimpan: "+e.message;
+  $("contactError").textContent="Gagal mengirim undangan: "+e.message;
 }
 };
+
+// 2. LOAD & TERIMA FRIEND REQUEST
+async function loadFriendRequests(){
+  const section = $("requestsSection");
+  const list = $("requestsList");
+  try{
+    const reqsSnap = await getDocs(collection(db, "users", currentUser.uid, "friendRequests"));
+    if(reqsSnap.empty){
+      section.classList.add("hidden");
+      return;
+    }
+
+    section.classList.remove("hidden");
+    list.innerHTML = "";
+
+    reqsSnap.forEach(reqDoc => {
+      const r = reqDoc.data();
+      const reqId = reqDoc.id;
+
+      const item = document.createElement("div");
+      item.className = "chat-item";
+
+      const av = document.createElement("div");
+      av.className = "chat-avatar";
+      av.textContent = r.senderName.charAt(0).toUpperCase();
+
+      const info = document.createElement("div");
+      info.className = "chat-info";
+
+      const nameRow = document.createElement("div");
+      nameRow.className = "chat-name-row";
+
+      const nameEl = document.createElement("div");
+      nameEl.className = "chat-contact-name";
+      nameEl.textContent = r.senderName;
+      nameRow.appendChild(nameEl);
+
+      // Tombol Terima
+      const acceptBtn = document.createElement("button");
+      acceptBtn.className = "bbm-btn accept-btn";
+      acceptBtn.textContent = "Terima";
+      acceptBtn.onclick = async (e) => {
+        e.stopPropagation();
+        try {
+          // A. Masukkan pengirim ke daftar kontak kita
+          await addDoc(collection(db, "users", currentUser.uid, "contacts"), {
+            name: r.senderName,
+            bbmPin: r.senderPin,
+            createdAt: serverTimestamp()
+          });
+
+          // B. Hapus request dari database
+          await deleteDoc(doc(db, "users", currentUser.uid, "friendRequests", reqId));
+
+          alert("Undangan diterima! Kontak telah ditambahkan.");
+          await loadContactsTab();
+          await loadFriendRequests();
+          await loadActiveChats();
+        } catch(err) {
+          alert("Gagal menerima undangan: " + err.message);
+        }
+      };
+
+      nameRow.appendChild(acceptBtn);
+      info.appendChild(nameRow);
+
+      const snippet = document.createElement("div");
+      snippet.className = "chat-snippet";
+      snippet.textContent = "PIN: " + r.senderPin + " ingin berteman.";
+      info.appendChild(snippet);
+
+      item.append(av, info);
+      list.appendChild(item);
+    });
+  } catch(e) {
+    section.classList.add("hidden");
+  }
+}
 
 async function deleteContact(contactId, event){
   event.stopPropagation();
@@ -673,6 +680,7 @@ async function deleteContact(contactId, event){
     try {
       await deleteDoc(doc(db, "users", currentUser.uid, "contacts", contactId));
       await loadContactsTab();
+      await loadActiveChats();
     }catch(e){ alert("Gagal menghapus"); }
   }
 }
@@ -684,7 +692,7 @@ try{
   const snapContacts = await getDocs(collection(db, "users", currentUser.uid, "contacts"));
   
   if(snapContacts.empty){
-    box.innerHTML='<div class="empty">Belum ada kontak tersimpan.<br>Ketuk "Undang Kontak" di atas untuk menambahkan teman via PIN atau Scan QR.</div>';
+    box.innerHTML='<div class="empty">Belum ada kontak tersimpan.<br>Ketuk "Undang Kontak" di atas untuk mengirim undangan via PIN.</div>';
     return;
   }
 
@@ -723,18 +731,13 @@ try{
     
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "contact-actions";
-    
-    const editBtn = document.createElement("button");
-    editBtn.className = "action-icon-btn";
-    editBtn.innerHTML = "✏️";
-    editBtn.onclick = (e)=>{ e.stopPropagation(); openModal(contactId, nameStr, pinStr); };
 
     const delBtn = document.createElement("button");
     delBtn.className = "action-icon-btn";
     delBtn.innerHTML = "🗑️";
     delBtn.onclick = (e)=>deleteContact(contactId, e);
 
-    actionsDiv.append(editBtn, delBtn);
+    actionsDiv.append(delBtn);
     nameRow.appendChild(actionsDiv);
     info.appendChild(nameRow);
     
