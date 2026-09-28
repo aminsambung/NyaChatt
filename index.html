@@ -2,18 +2,26 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - WhatsApp Style</title>
+<title>NyaChatt - BBM Classic Style</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
+
+/* Desain Layar Masuk / Auth Ala BBM Klasik */
+.bbm-auth-bg{background:linear-gradient(to bottom, #0d3856, #1c6b9e, #005b82);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:white;text-align:center}
+.bbm-welcome-box{margin-top:20px}
+.bbm-logo{width:85px;height:85px;background:#111;border:3px solid #4fc3f7;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 16px rgba(0,0,0,0.3);font-size:36px}
+.bbm-auth-title{font-size:22px;font-weight:bold;margin-bottom:8px}
+.bbm-auth-desc{font-size:13px;color:#b3e5fc;line-height:1.4;max-width:320px;margin:0 auto 20px}
+.bbm-input{width:100%;padding:12px 14px;border:1px solid #4fc3f7;border-radius:6px;margin:8px 0;background:rgba(255,255,255,0.9);color:#263238;font-size:14px;text-align:left}
+.bbm-btn{width:100%;padding:12px;border:0;border-radius:6px;background:linear-gradient(to bottom, #37474f, #212121);color:white;font-weight:bold;cursor:pointer;margin:6px 0;box-shadow:0 2px 4px rgba(0,0,0,0.4);font-size:14px}
+.bbm-btn.secondary-btn{background:linear-gradient(to bottom, #546e7a, #37474f)}
+.bbm-btn:disabled{opacity:0.6}
+.bbm-error{color:#ff8a80;font-size:13px;margin:8px 0}
+
 header{background:#005b82;color:white;padding:14px 18px;font-size:20px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 4px rgba(0,0,0,0.1);position:relative}
-.wrap{max-width:600px;margin:0 auto;padding:0}.card{background:white;border-radius:0;padding:0;box-shadow:none}
-.hidden{display:none!important}h2{margin:0 0 10px;font-size:20px}input,button{font:inherit}
-input{width:100%;padding:12px;border:1px solid #b0bec5;border-radius:8px;margin:6px 0;background:white}
-button{border:0;border-radius:8px;padding:12px 16px;background:#005b82;color:white;cursor:pointer}
-button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#37474f}
-.auth-container{max-width:400px;margin:40px auto;padding:20px;background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08)}
-.auth-actions{display:flex;gap:10px;margin-top:8px}.auth-actions button{flex:1}.muted{color:#78909c;font-size:13px}
-.error{color:#d32f2f;white-space:pre-wrap;margin:8px 0}
+.wrap{max-width:600px;margin:0 auto;padding:0}
+.hidden{display:none!important}
+input{font:inherit}
 
 /* Menu Dropdown Titik Tiga Ala WhatsApp */
 .menu-container{position:relative;display:inline-block}
@@ -76,13 +84,26 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 </head>
 <body>
 
-<!-- KARTU LOGIN -->
-<div id="authCard" class="auth-container">
-<h2>Masuk ke NyaChatt</h2><p class="muted">Gunakan email dan kata sandi akun kamu.</p>
-<input id="email" type="email" placeholder="Email" autocomplete="email">
-<input id="password" type="password" placeholder="Kata sandi (minimal 6 karakter)" autocomplete="current-password">
-<div class="auth-actions"><button id="loginBtn">Login</button><button id="registerBtn" class="secondary">Daftar</button></div>
-<div id="authError" class="error"></div>
+<!-- LAYAR MASUK / AUTH ALA BBM KLASIK -->
+<div id="authCard" class="bbm-auth-bg">
+<div class="bbm-welcome-box">
+<div class="bbm-logo">💬</div>
+<div class="bbm-auth-title" id="authScreenTitle">Welcome to NyaChatt</div>
+<div class="bbm-auth-desc" id="authScreenDesc">Sign in to NyaChatt with your account. If you don't have an account, you can create one now.</div>
+</div>
+
+<div style="width:100%;max-width:360px;margin:0 auto;">
+<input id="email" class="bbm-input" type="email" placeholder="Email address" autocomplete="email">
+<input id="password" class="bbm-input" type="password" placeholder="Password (min. 6 characters)" autocomplete="current-password">
+<div id="authError" class="bbm-error"></div>
+
+<button id="mainActionBtn" class="bbm-btn">Sign In</button>
+<button id="toggleModeBtn" class="bbm-btn secondary-btn">Create a New Account</button>
+</div>
+
+<div style="font-size:11px;color:#90caf9;padding-bottom:10px;">
+Terms of Service & Privacy Policy
+</div>
 </div>
 
 <!-- HALAMAN UTAMA DENGAN TAB & MENU TITIK TIGA -->
@@ -123,14 +144,14 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 <div class="empty">Belum ada pembaruan status.</div>
 </div>
 
-<!-- 3. TAB KONTAK (Penyimpanan ke Firebase) -->
+<!-- 3. TAB KONTAK -->
 <div id="tabContacts" class="tab-content">
 <div class="add-contact-box">
 <h3 style="margin:0 0 8px;font-size:15px;color:#005b82;">Tambah Kontak Baru</h3>
-<input id="newContactName" type="text" placeholder="Nama Kontak (Contoh: Budi)" style="margin-bottom:6px;">
-<input id="newContactPhone" type="text" placeholder="Nomor HP / Email Kontak" style="margin-bottom:8px;">
-<button id="saveContactBtn" style="width:100%;padding:10px;">Simpan Kontak ke Firebase</button>
-<div id="contactError" class="error" style="font-size:12px;"></div>
+<input id="newContactName" class="bbm-input" style="color:#263238;margin-bottom:6px;" type="text" placeholder="Nama Kontak (Contoh: Budi)">
+<input id="newContactPhone" class="bbm-input" style="color:#263238;margin-bottom:8px;" type="text" placeholder="Nomor HP / Email Kontak">
+<button id="saveContactBtn" class="bbm-btn" style="background:#005b82;">Simpan Kontak ke Firebase</button>
+<div id="contactError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
 </div>
 <div id="contactsList"><div class="empty">Memuat daftar kontak...</div></div>
 </div>
@@ -177,7 +198,7 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,where,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
@@ -191,6 +212,7 @@ appId:"1:1081303400744:web:981fd5f46c53eb2dce101d"
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
 let currentUser=null,selectedPerson=null,stopMessages=null;
+let isRegisterMode=false;
 
 function showError(id,e){
 const map={"auth/invalid-credential":"Email atau kata sandi salah.","auth/user-not-found":"Akun tidak ditemukan.","auth/wrong-password":"Kata sandi salah.","auth/email-already-in-use":"Email sudah terdaftar.","auth/weak-password":"Kata sandi minimal 6 karakter.","auth/invalid-email":"Format email tidak valid."};
@@ -202,15 +224,46 @@ const ref=doc(db,"users",user.uid),snap=await getDoc(ref);
 if(!snap.exists())await setDoc(ref,{uid:user.uid,email:user.email||"",displayName:(user.email||"Pengguna").split("@")[0],createdAt:serverTimestamp()});
 }
 
+// Toggle mode Sign In / Register ala tombol BBM
+$("toggleModeBtn").onclick=()=>{
+isRegisterMode=!isRegisterMode;
+$("authError").textContent="";
+if(isRegisterMode){
+  $("authScreenTitle").textContent="Create a New Account";
+  $("authScreenDesc").textContent="Fill in your details to create a new account.";
+  $("mainActionBtn").textContent="Register";
+  $("toggleModeBtn").textContent="Already have an account? Sign In";
+}else{
+  $("authScreenTitle").textContent="Welcome to NyaChatt";
+  $("authScreenDesc").textContent="Sign in to NyaChatt with your account. If you don't have an account, you can create one now.";
+  $("mainActionBtn").textContent="Sign In";
+  $("toggleModeBtn").textContent="Create a New Account";
+}
+};
+
+// Tombol Aksi Utama (Sign In / Register)
+$("mainActionBtn").onclick=async()=>{
+$("authError").textContent="";
+const email=$("email").value.trim();
+const pass=$("password").value;
+try{
+  if(isRegisterMode){
+    const c=await createUserWithEmailAndPassword(auth,email,pass);
+    await ensureProfile(c.user);
+  }else{
+    await signInWithEmailAndPassword(auth,email,pass);
+  }
+}catch(e){
+  showError("authError",e);
+}
+};
+
 // Dropdown Menu Titik Tiga (Logout)
 $("menuTrigger").onclick=(e)=>{
 e.stopPropagation();
 $("dropdownMenu").classList.toggle("show");
 };
 window.onclick=()=>{ $("dropdownMenu").classList.remove("show"); };
-
-$("loginBtn").onclick=async()=>{ $("authError").textContent="";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){showError("authError",e)} };
-$("registerBtn").onclick=async()=>{ $("authError").textContent="";try{const c=await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);await ensureProfile(c.user)}catch(e){showError("authError",e)} };
 $("logoutBtn").onclick=()=>signOut(auth);
 
 onAuthStateChanged(auth,async user=>{
@@ -232,7 +285,7 @@ try{
 }catch(e){showError("appError",e)}
 });
 
-// Sistem Navigasi Antar Tab
+// Sistem Navigasi Tab
 document.querySelectorAll(".nav-tab").forEach(tab=>{
 tab.onclick=()=>{
   document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
@@ -242,7 +295,7 @@ tab.onclick=()=>{
 };
 });
 
-// Simpan Kontak Baru ke Firebase (subkoleksi 'contacts' milik user yang sedang login)
+// Simpan Kontak Baru ke Firebase
 $("saveContactBtn").onclick=async()=>{
 $("contactError").textContent="";
 const name=$("newContactName").value.trim();
@@ -304,7 +357,6 @@ try{
     info.appendChild(snippet);
     
     item.append(av,info);
-    // Ketika kontak diklik, langsung buka ruang chat privat
     item.onclick=()=>openChat({id:d.id, displayName:c.name, email:c.phoneOrEmail});
     box.appendChild(item);
   });
