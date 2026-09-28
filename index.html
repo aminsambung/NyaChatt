@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - WhatsApp Style FAB</title>
+<title>NyaChatt - WhatsApp Style Select Contact</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
 
@@ -23,7 +23,7 @@ header{background:#005b82;color:white;padding:14px 18px;font-size:20px;font-weig
 .hidden{display:none!important}
 input{font:inherit}
 
-/* Menu Dropdown Titik Tiga Ala WhatsApp */
+/* Menu Dropdown Titik Tiga */
 .menu-container{position:relative;display:inline-block}
 .menu-btn{background:transparent;color:white;font-size:20px;padding:4px 8px;cursor:pointer;border:0}
 .dropdown-menu{display:none;position:absolute;right:0;top:40px;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;overflow:hidden;z-index:100;min-width:140px}
@@ -31,7 +31,7 @@ input{font:inherit}
 .dropdown-item{padding:12px 16px;color:#263238;cursor:pointer;font-size:14px;background:white;border:0;width:100%;text-align:left}
 .dropdown-item:hover{background:#f0f4f5}
 
-/* Navigasi Tab Utama (Sisa 3 Tab: Chats, Pembaruan, Panggilan) */
+/* Navigasi Tab Utama */
 .nav-tabs{display:flex;background:#005b82;border-top:1px solid #004d6e;overflow-x:auto}
 .nav-tab{flex:1;text-align:center;padding:12px 6px;color:#b3e5fc;font-size:12px;font-weight:bold;cursor:pointer;background:transparent;border:0;white-space:nowrap}
 .nav-tab.active{color:white;border-bottom:3px solid white;background:rgba(0,0,0,0.1)}
@@ -39,7 +39,7 @@ input{font:inherit}
 .tab-content{display:none;background:white;min-height:75vh;position:relative}
 .tab-content.active{display:block}
 
-/* Daftar Item Tab */
+/* Daftar Item Chat / Kontak */
 .chat-item{display:flex;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #f0f4f5;cursor:pointer;gap:12px}
 .chat-item:hover{background:#f5f7f8}
 .chat-avatar{width:45px;height:45px;background:#78909c;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;flex-shrink:0}
@@ -55,6 +55,11 @@ input{font:inherit}
 
 /* Floating Action Button (FAB) Pesan di Pojok Kanan Bawah */
 .fab-btn{position:fixed;bottom:24px;right:20px;width:56px;height:56px;background:#00897b;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.3);cursor:pointer;border:0;z-index:99}
+
+/* Halaman Pilih Kontak (WhatsApp Style) */
+#selectContactView{position:absolute;top:0;left:0;width:100%;min-height:100vh;background:white;z-index:200;display:flex;flex-direction:column}
+.select-contact-header{background:#005b82;color:white;padding:14px 16px;display:flex;align-items:center;gap:14px;font-size:18px;font-weight:bold}
+.section-title{padding:10px 16px;font-size:12px;font-weight:bold;color:#78909c;background:#f5f7f8}
 
 /* Modal Form Tambah Kontak */
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000}
@@ -128,23 +133,23 @@ Ketentuan Layanan & Kebijakan Privasi
 </div>
 </header>
 
-<!-- Navigasi Tab (Tanpa Tab Kontak) -->
+<!-- Navigasi Tab -->
 <div class="nav-tabs">
 <button class="nav-tab active" data-target="tabChats">Chats</button>
 <button class="nav-tab" data-target="tabUpdates">Pembaruan</button>
 <button class="nav-tab" data-target="tabCalls">Panggilan</button>
 </div>
 
-<!-- 1. TAB CHATS (Dilengkapi Tombol FAB Tambah Kontak di Kanan Bawah) -->
+<!-- 1. TAB CHATS (Hanya berisi riwayat chat aktif) -->
 <div id="tabChats" class="tab-content active">
 <div id="chatsList">
 <div class="empty-chats-container">
 <div class="empty-chats-icon">💬</div>
-<div class="empty-chats-text">Belum ada kontak atau percakapan.<br>Ketuk tombol pesan di bawah untuk menambah kontak baru.</div>
+<div class="empty-chats-text">Belum ada percakapan aktif.<br>Ketuk tombol pesan di bawah untuk mulai chat.</div>
 </div>
 </div>
-<!-- Tombol Melayang (FAB) WhatsApp Style di Kanan Bawah -->
-<button id="fabAddBtn" class="fab-btn" title="Tambah Kontak / Pesan Baru">💬+</button>
+<!-- Tombol Pesan Baru (FAB) di Kanan Bawah -->
+<button id="fabNewChatBtn" class="fab-btn" title="Pesan Baru">💬+</button>
 </div>
 
 <!-- 2. TAB PEMBARUAN -->
@@ -163,6 +168,31 @@ Ketentuan Layanan & Kebijakan Privasi
 <!-- 3. TAB PANGGILAN -->
 <div id="tabCalls" class="tab-content">
 <div class="empty">Belum ada riwayat panggilan suara atau video.</div>
+</div>
+</div>
+
+<!-- HALAMAN PILIH KONTAK (WhatsApp Style saat FAB diklik) -->
+<div id="selectContactView" class="hidden">
+<div class="select-contact-header">
+<button id="closeSelectContact" class="back-btn">←</button>
+<div>
+<div>Pilih kontak</div>
+<div style="font-size:11px;font-weight:normal;color:#b3e5fc;" id="contactCountLabel">0 kontak</div>
+</div>
+</div>
+
+<div style="flex:1;overflow-y:auto;background:white;">
+<!-- Opsi Tambah Kontak Baru -->
+<div id="openAddContactModal" class="chat-item">
+<div class="chat-avatar" style="background:#00897b;">👤+</div>
+<div class="chat-info">
+<div class="chat-contact-name">Kontak baru</div>
+<div class="chat-snippet">Simpan kontak baru ke daftar</div>
+</div>
+</div>
+
+<div class="section-title">Daftar kontak di NyaChatt</div>
+<div id="contactsPickerList"><div class="empty">Memuat kontak...</div></div>
 </div>
 </div>
 
@@ -287,16 +317,18 @@ if(!user){
   $("authCard").classList.remove("hidden");
   $("mainAppView").classList.add("hidden");
   $("chatRoomView").classList.add("hidden");
+  $("selectContactView").classList.add("hidden");
   if(stopMessages)stopMessages();
   selectedPerson=null;
   return;
 }
 $("authCard").classList.add("hidden");
 $("chatRoomView").classList.add("hidden");
+$("selectContactView").classList.add("hidden");
 $("mainAppView").classList.remove("hidden");
 try{
   await ensureProfile(user);
-  await loadContacts();
+  await loadActiveChats();
 }catch(e){showError("appError",e)}
 });
 
@@ -309,10 +341,23 @@ tab.onclick=()=>{
 };
 });
 
+// Kontrol Halaman Pilih Kontak (WhatsApp Style)
+const openSelectContact=async()=>{
+$("selectContactView").classList.remove("hidden");
+await loadContactsPicker();
+};
+const closeSelectContact=()=>{
+$("selectContactView").classList.add("hidden");
+};
+
+$("fabNewChatBtn").onclick=openSelectContact;
+$("closeSelectContact").onclick=closeSelectContact;
+
+// Kontrol Modal Tambah Kontak Baru
 const openModal=()=>{ $("contactModal").classList.remove("hidden"); $("contactError").textContent=""; };
 const closeModal=()=>{ $("contactModal").classList.add("hidden"); $("newContactName").value=""; $("newContactPhone").value=""; };
 
-$("fabAddBtn").onclick=openModal;
+$("openAddContactModal").onclick=openModal;
 $("cancelModalBtn").onclick=closeModal;
 
 $("saveContactBtn").onclick=async()=>{
@@ -330,24 +375,22 @@ try{
     createdAt:serverTimestamp()
   });
   closeModal();
-  await loadContacts();
+  await loadContactsPicker(); // Refresh daftar di halaman pilih kontak
 }catch(e){
   $("contactError").textContent="Gagal menyimpan: "+e.message;
 }
 };
 
-async function loadContacts(){
-const box=$("chatsList");
+// Memuat daftar kontak khusus untuk halaman "Pilih Kontak"
+async function loadContactsPicker(){
+const box=$("contactsPickerList");
+box.innerHTML='<div class="empty">Memuat kontak...</div>';
 try{
   const snap=await getDocs(collection(db,"users",currentUser.uid,"contacts"));
+  $("contactCountLabel").textContent = snap.docs.length + " kontak";
   
   if(snap.empty){
-    box.innerHTML=`
-      <div class="empty-chats-container">
-        <div class="empty-chats-icon">💬</div>
-        <div class="empty-chats-text">Belum ada kontak atau percakapan.<br>Ketuk tombol pesan di bawah untuk menambah kontak baru.</div>
-      </div>
-    `;
+    box.innerHTML='<div class="empty">Belum ada kontak tersimpan. Ketuk "Kontak baru" di atas.</div>';
     return;
   }
 
@@ -379,12 +422,27 @@ try{
     info.appendChild(snippet);
     
     item.append(av,info);
-    item.onclick=()=>openChat({id:d.id, displayName:c.name, email:c.phoneOrEmail});
+    item.onclick=()=>{
+      closeSelectContact();
+      openChat({id:d.id, displayName:c.name, email:c.phoneOrEmail});
+    };
     box.appendChild(item);
   });
 }catch(e){
   box.innerHTML='<div class="empty">Gagal memuat kontak.</div>';
 }
+}
+
+// Memuat Chat Aktif di Tab Chats (Hanya yang sudah ada percakapan)
+async function loadActiveChats(){
+const box=$("chatsList");
+// Untuk saat ini tab chats kosong sampai ada riwayat percakapan atau bisa dikembangkan mendeteksi percakapan aktif
+box.innerHTML=`
+  <div class="empty-chats-container">
+    <div class="empty-chats-icon">💬</div>
+    <div class="empty-chats-text">Belum ada percakapan aktif.<br>Ketuk tombol pesan di kanan bawah untuk mulai chat.</div>
+  </div>
+`;
 }
 
 function conversationId(a,b){return[a,b].sort().join("_")}
@@ -468,7 +526,7 @@ $("backToList").onclick=()=>{
 if(stopMessages)stopMessages();
 $("chatRoomView").classList.add("hidden");
 $("mainAppView").classList.remove("hidden");
-loadContacts();
+loadActiveChats();
 };
 
 $("sendForm").onsubmit=async event=>{
