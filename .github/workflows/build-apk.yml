@@ -95,8 +95,14 @@ jobs:
           EOF
 
           cat << 'EOF' > android-app/build.gradle
-          plugins {
-              id 'com.android.application' version '7.4.2' apply false
+          buildscript {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+              dependencies {
+                  classpath 'com.android.tools.build:gradle:7.4.2'
+              }
           }
           allprojects {
               repositories {
@@ -104,6 +110,18 @@ jobs:
                   mavenCentral()
               }
           }
+          EOF
+
+          cat << 'EOF' > android-app/settings.gradle
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          rootProject.name = "NyaChatt"
+          include ':app'
           EOF
 
           cat << 'EOF' > android-app/app/build.gradle
@@ -123,11 +141,6 @@ jobs:
           dependencies {
               implementation 'androidx.appcompat:appcompat:1.6.0'
           }
-          EOF
-
-          cat << 'EOF' > android-app/settings.gradle
-          rootProject.name = "NyaChatt"
-          include ':app'
           EOF
 
       - name: Build Debug APK with Gradle
