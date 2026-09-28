@@ -1,3 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NyaChatt - BBM Edition</title>
+<!-- Pustaka QRCode.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
+.bbm-auth-bg{background:linear-gradient(to bottom, #0d3856, #1c6b9e, #005b82);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:white;text-align:center}
+.bbm-welcome-box{margin-top:20px}
+.bbm-logo{width:85px;height:85px;background:#111;border:3px solid #4fc3f7;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 16px rgba(0,0,0,0.3);font-size:36px}
+.bbm-auth-title{font-size:22px;font-weight:bold;margin-bottom:8px}
+.bbm-auth-desc{font-size:13px;color:#b3e5fc;line-height:1.4;max-width:320px;margin:0 auto 20px}
+.bbm-input{width:100%;padding:12px 14px;border:1px solid #4fc3f7;border-radius:6px;margin:8px 0;background:rgba(255,255,255,0.9);color:#263238;font-size:14px;text-align:left}
+.bbm-btn{width:100%;padding:12px;border:0;border-radius:6px;background:linear-gradient(to bottom, #37474f, #212121);color:white;font-weight:bold;cursor:pointer;margin:6px 0;box-shadow:0 2px 4px rgba(0,0,0,0.4);font-size:14px}
+.bbm-btn.secondary-btn{background:linear-gradient(to bottom, #546e7a, #37474f)}
+.bbm-btn:disabled{opacity:0.6}
+.bbm-error{color:#ff8a80;font-size:13px;margin:8px 0}
+
+header{background:#005b82;color:white;padding:14px 18px;font-size:18px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 4px rgba(0,0,0,0.1);position:relative}
+.wrap{max-width:600px;margin:0 auto;padding:0;position:relative;min-height:100vh;background:white}
+.hidden{display:none!important}
+input{font:inherit}
+
+.menu-container{position:relative;display:inline-block}
+.menu-btn{background:transparent;color:white;font-size:20px;padding:4px 8px;cursor:pointer;border:0}
+.dropdown-menu{display:none;position:absolute;right:0;top:40px;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:6px;overflow:hidden;z-index:100;min-width:160px}
+.dropdown-menu.show{display:block}
+.dropdown-item{padding:12px 16px;color:#263238;cursor:pointer;font-size:14px;background:white;border:0;width:100%;text-align:left}
+.dropdown-item:hover{background:#f0f4f5}
+
+.nav-tabs{display:flex;background:#005b82;border-top:1px solid #004d6e;overflow-x:auto}
+.nav-tab{flex:1;text-align:center;padding:12px 6px;color:#b3e5fc;font-size:11px;font-weight:bold;cursor:pointer;background:transparent;border:0;white-space:nowrap}
+.nav-tab.active{color:white;border-bottom:3px solid white;background:rgba(0,0,0,0.1)}
+
+.tab-content{display:none;background:white;min-height:75vh;position:relative}
+.tab-content.active{display:block}
+
+.chat-item{display:flex;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #f0f4f5;cursor:pointer;gap:12px}
+.chat-item:hover{background:#f5f7f8}
+.chat-avatar{width:45px;height:45px;background:#78909c;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;flex-shrink:0}
+.chat-info{flex:1;min-width:0}
+.chat-name-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.chat-contact-name{font-weight:bold;font-size:15px;color:#263238}
+.chat-snippet{font-size:13px;color:#78909c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.contact-actions{display:flex;gap:6px}
+.action-icon-btn{background:transparent;border:0;font-size:16px;cursor:pointer;padding:4px;color:#78909c}
+.action-icon-btn:hover{color:#005b82}
+
+.unread-badge{background:#25d366;color:white;font-size:11px;font-weight:bold;padding:2px 7px;border-radius:12px;min-width:20px;text-align:center;display:inline-block}
+
+/* Kartu Barcode ala #BBMme */
+.bbmme-card{background:white;border:2px solid #005b82;border-radius:12px;padding:16px;margin:12px auto;text-align:center;max-width:260px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.bbmme-title{font-size:18px;font-weight:bold;color:#005b82;margin-bottom:8px}
+#qrcodeContainer{display:flex;justify-content:center;margin:10px 0}
+#qrcodeContainer img{border:4px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.2)}
+.bbmme-pin{font-size:16px;font-weight:bold;color:#263238;background:#e5f0f5;padding:6px;border-radius:4px;margin-top:8px;letter-spacing:1px}
+
+.fab-btn{position:fixed;bottom:24px;right:20px;width:56px;height:56px;background:#00897b;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.3);cursor:pointer;border:0;z-index:99}
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal-card{background:white;width:90%;max-width:340px;padding:20px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.2);text-align:center}
+.modal-title{font-size:18px;font-weight:bold;color:#005b82;margin-bottom:12px}
+
+#chatRoomView{display:flex;flex-direction:column;height:100vh;max-height:100vh;background:#f5f7f8}
+.chat-head{background:#005b82;color:white;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-weight:bold;min-height:54px}
+.chat-head-left{display:flex;align-items:center;gap:10px}
+.back-btn{background:transparent;color:white;padding:4px 8px;font-size:20px;cursor:pointer;border:0}
+.chat-head-info .chat-name{font-size:16px}
+.chat-head-info .chat-status{font-size:11px;color:#b3e5fc;font-weight:normal}
+
+#messages{flex:1;overflow-y:auto;padding:12px;background:#eef2f3;display:flex;flex-direction:column}
+.msg-row{display:flex;align-items:flex-end;margin:6px 0;gap:6px}
+.msg-row.mine{flex-direction:row-reverse}
+.bubble{max-width:75%;padding:8px 12px;border-radius:8px;font-size:13px;position:relative;box-shadow:0 1px 2px rgba(0,0,0,0.1);word-break:break-word}
+.bubble.other{background:#ffffff;color:#263238;border-top-left-radius:2px}
+.bubble.mine{background:#d1e8ff;color:#0d47a1;border-top-right-radius:2px}
+.bubble-text{margin-bottom:2px}
+.bubble-footer{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:2px}
+.time{font-size:10px;color:#78909c}
+.bbm-check{font-size:11px;color:#78909c;font-weight:bold}
+.bbm-check.read{color:#00c853}
+
+.sendrow-wrap{background:#eceff1;border-top:1px solid #cfd8dc;padding:6px}
+.sendrow{display:flex;align-items:center;gap:6px}
+.sendrow input{margin:0;flex:1;background:white;border-radius:6px;padding:10px;font-size:13px;border:1px solid #b0bec5}
+.send-btn{background:#005b82;border-radius:6px;padding:10px 14px;font-size:13px}
+.bbm-toolbar{display:flex;align-items:center;justify-content:space-around;padding:6px 4px 2px;background:#eceff1;border-top:1px solid #dcdde1;color:#546e7a;font-size:16px}
+.bbm-tool-icon{cursor:pointer;padding:2px 6px;border-radius:4px}
+
+.empty{color:#78909c;text-align:center;padding:30px;font-size:13px}
+.section-title{padding:10px 16px;font-size:12px;font-weight:bold;color:#78909c;background:#f5f7f8}
+</style>
+</head>
+<body>
+
+<div id="authCard" class="bbm-auth-bg hidden">
+<div class="bbm-welcome-box">
+<div class="bbm-logo">📶</div>
+<div class="bbm-auth-title" id="authScreenTitle">NyaChatt BBM Edition</div>
+<div class="bbm-auth-desc" id="authScreenDesc">Masuk menggunakan Username, Email, atau No. HP kamu.</div>
+</div>
+
+<div style="width:100%;max-width:360px;margin:0 auto;">
+<input id="loginInput" class="bbm-input" type="text" placeholder="Username, Email, atau No. HP" autocomplete="username">
+<input id="password" class="bbm-input" type="password" placeholder="Kata Sandi (min. 6 karakter)" autocomplete="current-password">
+<div id="authError" class="bbm-error"></div>
+
+<button id="mainActionBtn" class="bbm-btn">Masuk</button>
+<button id="toggleModeBtn" class="bbm-btn secondary-btn">Buat Akun Baru</button>
+</div>
+
+<div style="font-size:11px;color:#90caf9;padding-bottom:10px;">
+BBM-Style Secure Messenger
+</div>
+</div>
+
+<div id="mainAppView" class="wrap hidden">
+<header>
+<span>NyaChatt BBM</span>
+<div class="menu-container">
+<button id="menuTrigger" class="menu-btn">⋮</button>
+<div id="dropdownMenu" class="dropdown-menu">
+<button id="profileMenuBtn" class="dropdown-item">Profil & Barcode PIN</button>
+<button id="logoutBtn" class="dropdown-item">Keluar</button>
+</div>
+</div>
+</header>
+
+<div class="nav-tabs">
+<button class="nav-tab active" data-target="tabChats">CHATS</button>
+<button class="nav-tab" data-target="tabContacts">CONTACTS</button>
+<button class="nav-tab" data-target="tabFeeds">FEEDS</button>
+</div>
+
+<div id="tabChats" class="tab-content active">
+<div id="chatsList"><div class="empty">Memuat percakapan...</div></div>
+<button id="fabNewChatBtn" class="fab-btn" title="Pesan Baru">💬+</button>
+</div>
+
+<div id="tabContacts" class="tab-content">
+<div id="openAddContactModal" class="chat-item">
+<div class="chat-avatar" style="background:#00897b;">📶+</div>
+<div class="chat-info">
+<div class="chat-contact-name">Undang Kontak (Invite via PIN)</div>
+<div class="chat-snippet">Tambah teman menggunakan PIN BBM</div>
+</div>
+</div>
+<div class="section-title">Daftar Kontak Saya</div>
+<div id="contactsTabList"><div class="empty">Belum ada kontak tersimpan.</div></div>
+</div>
+
+<div id="tabFeeds" class="tab-content">
+<div id="addStatusBtn" class="chat-item">
+<div class="chat-avatar" style="background:#00897b;">📶</div>
+<div class="chat-info">
+<div class="chat-contact-name">Status Saya</div>
+<div class="chat-snippet" id="myStatusSnippet">Ketuk untuk memperbarui status</div>
+</div>
+</div>
+<div class="section-title">Pembaruan Kontak (Feeds)</div>
+<div id="feedsList" class="empty">Belum ada pembaruan status kontak.</div>
+</div>
+</div>
+
+<!-- MODAL PROFIL DENGAN KARTU #BBMme QR CODE -->
+<div id="profileModal" class="modal-overlay hidden">
+<div class="modal-card">
+<div class="bbmme-card">
+<div class="bbmme-title">#BBMme</div>
+<div id="qrcodeContainer"></div>
+<div class="bbmme-pin" id="profilePinDisplay">PIN: -</div>
+</div>
+<div style="font-weight:bold;font-size:15px;margin:8px 0 2px;" id="profileNameDisplay">-</div>
+<div style="font-size:12px;color:#78909c;margin-bottom:14px;" id="profileEmailDisplay">-</div>
+<button id="closeProfileBtn" class="bbm-btn" style="background:#005b82;">Tutup</button>
+</div>
+</div>
+
+<div id="contactModal" class="modal-overlay hidden">
+<div class="modal-card" style="text-align:left;">
+<div class="modal-title">Undang Kontak (Invite PIN)</div>
+<input id="newContactName" class="bbm-input" type="text" placeholder="Nama Kontak (Contoh: Budi)" style="color:#263238;">
+<input id="newContactPin" class="bbm-input" type="text" placeholder="Masukkan PIN BBM Teman" style="color:#263238;text-transform:uppercase;">
+<div id="contactError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
+<div style="display:flex;gap:8px;margin-top:12px;">
+<button id="cancelModalBtn" class="bbm-btn secondary-btn" style="flex:1;margin:0;">Batal</button>
+<button id="saveContactBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Kirim Undangan</button>
+</div>
+</div>
+</div>
+
+<div id="statusModal" class="modal-overlay hidden">
+<div class="modal-card" style="text-align:left;">
+<div class="modal-title">Pembaruan Status BBM</div>
+<input id="statusInputText" class="bbm-input" type="text" placeholder="Tulis status baru..." style="color:#263238;" maxlength="100">
+<div id="statusError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
+<div style="display:flex;gap:8px;margin-top:12px;">
+<button id="cancelStatusBtn" class="bbm-btn secondary-btn" style="flex:1;margin:0;">Batal</button>
+<button id="saveStatusBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Perbarui</button>
+</div>
+</div>
+</div>
+
+<div id="chatRoomView" class="hidden">
+<div class="chat-head">
+<div class="chat-head-left">
+<button id="backToList" class="back-btn">←</button>
+<div class="chat-head-info">
+<div id="chatTitle" class="chat-name">Nama Kontak</div>
+<div id="chatStatusSub" class="chat-status">Online</div>
+</div>
+</div>
+<div class="chat-head-actions">
+<button id="pingBtn" style="background:#ff9800;border:0;color:white;padding:4px 8px;border-radius:4px;font-weight:bold;cursor:pointer;font-size:12px;margin-right:4px;">PING!</button>
+📞 🎦
+</div>
+</div>
+
+<div id="messages"><div class="empty">Memuat pesan...</div></div>
+
+<div class="sendrow-wrap">
+<form id="sendForm" class="sendrow">
+<input id="messageInput" type="text" maxlength="2000" placeholder="Ketik pesan..." autocomplete="off">
+<button id="sendBtn" class="send-btn" type="submit">Kirim</button>
+</form>
+<div class="bbm-toolbar">
+<span class="bbm-tool-icon" title="Kamera">📷</span>
+<span class="bbm-tool-icon" title="Kirim Foto">🖼️</span>
+<span class="bbm-tool-icon" title="Kirim Dokumen">📎</span>
+<span class="bbm-tool-icon" title="Kirim Lokasi">📍</span>
+<span class="bbm-tool-icon" title="Voice Note">🎤</span>
+<span class="bbm-tool-icon" title="Emoji">😊</span>
+</div>
+</div>
+</div>
+
+<div id="appError" class="error" style="padding:10px;"></div>
+
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
@@ -87,7 +328,7 @@ try{
       targetEmail = inputVal.toLowerCase().replace(/[^a-z0-9]/g, '') + "@nyachatt.app";
     }
     const c = await createUserWithEmailAndPassword(auth, targetEmail, pass);
-    await ensureProfile(c.user, isEmail(inputVal) ? "" : inputVal, isEmail(inputVal) ? "" : isEmail(inputVal) ? "" : inputVal);
+    await ensureProfile(c.user, isEmail(inputVal) ? "" : inputVal, isEmail(inputVal) ? "" : inputVal);
   } else {
     if(!isEmail(inputVal)){
       const usersRef = collection(db, "users");
@@ -516,7 +757,7 @@ $("chatTitle").textContent=person.displayName||"Chat";
 $("messages").innerHTML='<div class="empty">Memuat pesan...</div>';
 
 if(stopMessages)stopMessages();
-let lastMessageCount = 0; // Untuk mendeteksi pesan baru masuk secara real-time
+let lastMessageCount = 0;
 const id=conversationId(currentUser.uid,person.id),ref=doc(db,"conversations",id);
 
 try{
@@ -528,7 +769,6 @@ const area=$("messages");area.innerHTML="";
 if(result.empty){area.innerHTML='<div class="empty">Mulai percakapan dengan PING! atau pesan teks.</div>';return}
 
 let docsArray = result.docs;
-// Periksa apakah ada pesan masuk baru dari lawan jenis/lawan bicara (sender bukan kita)
 if(docsArray.length > lastMessageCount && lastMessageCount > 0){
   const latestMsg = docsArray[docsArray.length - 1].data();
   if(latestMsg.senderId !== currentUser.uid && latestMsg.text === "⚡ PING! ⚡"){
@@ -591,7 +831,6 @@ $("mainAppView").classList.remove("hidden");
 loadActiveChats();
 };
 
-// Tombol PING! sekarang hanya mengirim pesan ke database, HP pengirim tidak bergetar
 $("pingBtn").onclick=async()=>{
   if(!currentUser || !selectedPerson) return;
   try{
@@ -626,3 +865,5 @@ try{
 }
 };
 </script>
+</body>
+</html>
