@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - BBM Friend Request Edition</title>
+<title>NyaChatt - BBM Direct Connect Edition</title>
 <!-- Pustaka QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -15,7 +15,6 @@
 .bbm-input{width:100%;padding:12px 14px;border:1px solid #4fc3f7;border-radius:6px;margin:8px 0;background:rgba(255,255,255,0.9);color:#263238;font-size:14px;text-align:left}
 .bbm-btn{width:100%;padding:12px;border:0;border-radius:6px;background:linear-gradient(to bottom, #37474f, #212121);color:white;font-weight:bold;cursor:pointer;margin:6px 0;box-shadow:0 2px 4px rgba(0,0,0,0.4);font-size:14px}
 .bbm-btn.secondary-btn{background:linear-gradient(to bottom, #546e7a, #37474f)}
-.bbm-btn.accept-btn{background:#25d366;color:white;padding:6px 12px;font-size:12px;width:auto;margin:0}
 .bbm-btn:disabled{opacity:0.6}
 .bbm-error{color:#ff8a80;font-size:13px;margin:8px 0}
 
@@ -145,15 +144,9 @@ BBM-Style Secure Messenger
 <div id="openAddContactModal" class="chat-item">
 <div class="chat-avatar" style="background:#00897b;">📶+</div>
 <div class="chat-info">
-<div class="chat-contact-name">Undang Kontak (Kirim Permintaan PIN)</div>
-<div class="chat-snippet">Kirim undangan pertemanan via PIN BBM</div>
+<div class="chat-contact-name">Tambah Kontak (Cari via PIN)</div>
+<div class="chat-snippet">Hubungkan teman langsung menggunakan PIN BBM</div>
 </div>
-</div>
-
-<!-- Bagian Undangan Masuk (Friend Requests) -->
-<div id="requestsSection" class="hidden">
-<div class="section-title" style="background:#e0f2f1;color:#00796b;">Permintaan Pertanyaan Masuk</div>
-<div id="requestsList"></div>
 </div>
 
 <div class="section-title">Daftar Kontak Saya</div>
@@ -187,16 +180,16 @@ BBM-Style Secure Messenger
 </div>
 </div>
 
-<!-- MODAL KIRIM UNDANGAN PIN -->
+<!-- MODAL TAMBAH KONTAK -->
 <div id="contactModal" class="modal-overlay hidden">
 <div class="modal-card" style="text-align:left;">
-<div class="modal-title" id="modalTitleText">Kirim Undangan PIN</div>
-<input id="newContactName" class="bbm-input" type="text" placeholder="Nama Panggilan Teman (Contoh: Budi)" style="color:#263238;">
-<input id="newContactPin" class="bbm-input" type="text" placeholder="Masukkan PIN BBM Tujuan" style="color:#263238;text-transform:uppercase;">
+<div class="modal-title" id="modalTitleText">Tambah Kontak PIN</div>
+<input id="newContactName" class="bbm-input" type="text" placeholder="Nama Kontak (Contoh: Budi)" style="color:#263238;">
+<input id="newContactPin" class="bbm-input" type="text" placeholder="Masukkan PIN BBM Teman" style="color:#263238;text-transform:uppercase;">
 <div id="contactError" class="bbm-error" style="color:#d32f2f;font-size:12px;"></div>
 <div style="display:flex;gap:8px;margin-top:12px;">
 <button id="cancelModalBtn" class="bbm-btn secondary-btn" style="flex:1;margin:0;">Batal</button>
-<button id="saveContactBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Kirim Undangan</button>
+<button id="saveContactBtn" class="bbm-btn" style="flex:1;margin:0;background:#005b82;">Simpan Kontak</button>
 </div>
 </div>
 </div>
@@ -415,7 +408,6 @@ try{
   await ensureProfile(user);
   await loadActiveChats();
   await loadContactsTab();
-  await loadFriendRequests();
   await loadMyStatus();
   await loadFeeds();
 }catch(e){showError("appError",e)}
@@ -431,7 +423,6 @@ tab.onclick=()=>{
     loadActiveChats();
   } else if(tab.dataset.target === "tabContacts"){
     loadContactsTab();
-    loadFriendRequests();
   } else if(tab.dataset.target === "tabFeeds"){
     loadMyStatus();
     loadFeeds();
@@ -488,7 +479,7 @@ try{
   }
 
   if(activeChats.length === 0){
-    box.innerHTML=`<div class="empty">Belum ada percakapan aktif.<br>Undang kontak via PIN terlebih dahulu untuk mulai chat.</div>`;
+    box.innerHTML=`<div class="empty">Belum ada percakapan aktif.<br>Tambah kontak via PIN untuk mulai chat.</div>`;
     return;
   }
 
@@ -547,7 +538,7 @@ $("openAddContactModal").onclick=openModal;
 $("cancelModalBtn").onclick=closeModal;
 $("fabNewChatBtn").onclick=()=>document.querySelector("[data-target='tabContacts']").click();
 
-// 1. KIRIM PERMINTAAN PERTEMANAN (FRIEND REQUEST) KE AKUN TUJUAN
+// SIMPAN KONTAK AMAN DI AKUN SENDIRI (TANPA ERROR PERMISSION)
 $("saveContactBtn").onclick=async()=>{
 $("contactError").textContent="";
 const name=$("newContactName").value.trim();
@@ -568,111 +559,27 @@ try{
     return;
   }
 
-  const targetUserDoc = snapPin.docs[0];
-  const targetUserData = targetUserDoc.data();
-  const targetUid = targetUserDoc.id;
-
-  if(targetUid === currentUser.uid){
+  const targetUserData = snapPin.docs[0].data();
+  if(targetUserData.uid === currentUser.uid){
     $("contactError").textContent="Tidak dapat menambahkan PIN Anda sendiri!";
     return;
   }
 
-  // Ambil profil saya untuk dikirimkan dalam request
-  const myDoc = await getDoc(doc(db, "users", currentUser.uid));
-  const myData = myDoc.data();
-
-  // Simpan ke subkoleksi friendRequests milik akun tujuan (targetUid)
-  await addDoc(collection(db, "users", targetUid, "friendRequests"), {
-    senderUid: currentUser.uid,
-    senderName: name, // Nama panggilan yang diatur pengirim
-    senderPin: myData.bbmPin,
-    createdAt: serverTimestamp()
+  // Simpan langsung ke database kontak milik akun sendiri
+  await addDoc(collection(db, "users", currentUser.uid, "contacts"), { 
+    name: name, 
+    bbmPin: pinInput, 
+    createdAt: serverTimestamp() 
   });
 
-  alert("Undangan pertemanan berhasil dikirim ke PIN " + pinInput + "!");
   closeModal();
+  await loadContactsTab();
+  await loadActiveChats();
+  alert("Kontak " + name + " berhasil ditambahkan!");
 }catch(e){
-  $("contactError").textContent="Gagal mengirim undangan: "+e.message;
+  $("contactError").textContent="Gagal menyimpan: "+e.message;
 }
 };
-
-// 2. LOAD & TERIMA FRIEND REQUEST
-async function loadFriendRequests(){
-  const section = $("requestsSection");
-  const list = $("requestsList");
-  try{
-    const reqsSnap = await getDocs(collection(db, "users", currentUser.uid, "friendRequests"));
-    if(reqsSnap.empty){
-      section.classList.add("hidden");
-      return;
-    }
-
-    section.classList.remove("hidden");
-    list.innerHTML = "";
-
-    reqsSnap.forEach(reqDoc => {
-      const r = reqDoc.data();
-      const reqId = reqDoc.id;
-
-      const item = document.createElement("div");
-      item.className = "chat-item";
-
-      const av = document.createElement("div");
-      av.className = "chat-avatar";
-      av.textContent = r.senderName.charAt(0).toUpperCase();
-
-      const info = document.createElement("div");
-      info.className = "chat-info";
-
-      const nameRow = document.createElement("div");
-      nameRow.className = "chat-name-row";
-
-      const nameEl = document.createElement("div");
-      nameEl.className = "chat-contact-name";
-      nameEl.textContent = r.senderName;
-      nameRow.appendChild(nameEl);
-
-      // Tombol Terima
-      const acceptBtn = document.createElement("button");
-      acceptBtn.className = "bbm-btn accept-btn";
-      acceptBtn.textContent = "Terima";
-      acceptBtn.onclick = async (e) => {
-        e.stopPropagation();
-        try {
-          // A. Masukkan pengirim ke daftar kontak kita
-          await addDoc(collection(db, "users", currentUser.uid, "contacts"), {
-            name: r.senderName,
-            bbmPin: r.senderPin,
-            createdAt: serverTimestamp()
-          });
-
-          // B. Hapus request dari database
-          await deleteDoc(doc(db, "users", currentUser.uid, "friendRequests", reqId));
-
-          alert("Undangan diterima! Kontak telah ditambahkan.");
-          await loadContactsTab();
-          await loadFriendRequests();
-          await loadActiveChats();
-        } catch(err) {
-          alert("Gagal menerima undangan: " + err.message);
-        }
-      };
-
-      nameRow.appendChild(acceptBtn);
-      info.appendChild(nameRow);
-
-      const snippet = document.createElement("div");
-      snippet.className = "chat-snippet";
-      snippet.textContent = "PIN: " + r.senderPin + " ingin berteman.";
-      info.appendChild(snippet);
-
-      item.append(av, info);
-      list.appendChild(item);
-    });
-  } catch(e) {
-    section.classList.add("hidden");
-  }
-}
 
 async function deleteContact(contactId, event){
   event.stopPropagation();
@@ -692,7 +599,7 @@ try{
   const snapContacts = await getDocs(collection(db, "users", currentUser.uid, "contacts"));
   
   if(snapContacts.empty){
-    box.innerHTML='<div class="empty">Belum ada kontak tersimpan.<br>Ketuk "Undang Kontak" di atas untuk mengirim undangan via PIN.</div>';
+    box.innerHTML='<div class="empty">Belum ada kontak tersimpan.<br>Ketuk "Tambah Kontak" di atas untuk menambahkan teman via PIN BBM.</div>';
     return;
   }
 
