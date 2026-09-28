@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NyaChatt - BBM Chats</title>
+<title>NyaChatt - Full Features</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#e5f0f5;color:#263238}
 header{background:#005b82;color:white;padding:14px 18px;font-size:20px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
@@ -15,9 +15,16 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 .auth-actions{display:flex;gap:10px;margin-top:8px}.auth-actions button{flex:1}.muted{color:#78909c;font-size:13px}
 .error{color:#d32f2f;white-space:pre-wrap;margin:8px 0}
 
-/* BBM Main Chats List */
-.chats-header{background:#005b82;color:white;padding:10px 16px;font-size:16px;font-weight:bold;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #004d6e}
-.chat-item{display:flex;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #f0f4f5;cursor:pointer;gap:12px;text-decoration:none;color:inherit}
+/* Navigasi Tab Utama */
+.nav-tabs{display:flex;background:#005b82;border-top:1px solid #004d6e;overflow-x:auto}
+.nav-tab{flex:1;text-align:center;padding:12px 6px;color:#b3e5fc;font-size:12px;font-weight:bold;cursor:pointer;background:transparent;border:0;white-space:nowrap}
+.nav-tab.active{color:white;border-bottom:3px solid white;background:rgba(0,0,0,0.1)}
+
+.tab-content{display:none;background:white;min-height:75vh}
+.tab-content.active{display:block}
+
+/* Daftar Item Tab */
+.chat-item{display:flex;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #f0f4f5;cursor:pointer;gap:12px}
 .chat-item:hover{background:#f5f7f8}
 .chat-avatar{width:45px;height:45px;background:#78909c;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;flex-shrink:0}
 .chat-info{flex:1;min-width:0}
@@ -26,7 +33,7 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 .chat-time{font-size:11px;color:#78909c}
 .chat-snippet{font-size:13px;color:#78909c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* BBM Chat Room View */
+/* Ruang Chat Privat */
 #chatRoomView{display:flex;flex-direction:column;height:100vh;max-height:100vh;background:#f5f7f8}
 .chat-head{background:#005b82;color:white;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-weight:bold;min-height:54px}
 .chat-head-left{display:flex;align-items:center;gap:10px}
@@ -44,9 +51,10 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 .bubble-text{margin-bottom:2px}
 .bubble-footer{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:2px}
 .time{font-size:10px;color:#78909c}
-.bbm-check{font-size:10px;color:#2e7d32;font-weight:bold}
+.bbm-check{font-size:11px;color:#78909c;font-weight:bold}
+.bbm-check.read{color:#00c853} /* Hijau jika sudah dibaca/dilihat */
 
-/* BBM Toolbar Bawah */
+/* Toolbar Bawah Chat */
 .sendrow-wrap{background:#eceff1;border-top:1px solid #cfd8dc;padding:6px}
 .sendrow{display:flex;align-items:center;gap:6px}
 .sendrow input{margin:0;flex:1;background:white;border-radius:6px;padding:10px;font-size:13px;border:1px solid #b0bec5}
@@ -59,7 +67,7 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 </head>
 <body>
 
-<!-- KARTU LOGIN / AUTENTIKASI -->
+<!-- KARTU LOGIN -->
 <div id="authCard" class="auth-container">
 <h2>Masuk ke NyaChatt</h2><p class="muted">Gunakan email dan kata sandi akun kamu.</p>
 <input id="email" type="email" placeholder="Email" autocomplete="email">
@@ -68,27 +76,65 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 <div id="authError" class="error"></div>
 </div>
 
-<!-- HALAMAN UTAMA: DAFTAR CHAT TERBARU (BBM CHATS STYLE) -->
-<div id="chatsListView" class="wrap hidden">
+<!-- HALAMAN UTAMA DENGAN TAB -->
+<div id="mainAppView" class="wrap hidden">
 <header>
-<span>BBM Chats</span>
+<span>NyaChatt</span>
 <button id="logoutBtn" class="secondary" style="padding:6px 10px;font-size:12px;">Logout</button>
 </header>
-<div class="chats-header">
-<span>Semua Kontak & Percakapan</span>
-<span>🔍</span>
+
+<!-- Navigasi Tab -->
+<div class="nav-tabs">
+<button class="nav-tab active" data-target="tabChats">Chats</button>
+<button class="nav-tab" data-target="tabUpdates">Pembaruan</button>
+<button class="nav-tab" data-target="tabCommunities">Komunitas</button>
+<button class="nav-tab" data-target="tabCalls">Panggilan</button>
 </div>
+
+<!-- 1. TAB CHATS -->
+<div id="tabChats" class="tab-content active">
 <div id="chatsList"><div class="empty">Memuat daftar chat...</div></div>
 </div>
 
-<!-- HALAMAN RUANG CHAT PRIVAT -->
+<!-- 2. TAB PEMBARUAN -->
+<div id="tabUpdates" class="tab-content">
+<div class="chat-item">
+<div class="chat-avatar" style="background:#00897b;">+</div>
+<div class="chat-info">
+<div class="chat-contact-name">Status Saya</div>
+<div class="chat-snippet">Ketuk untuk menambahkan pembaruan status</div>
+</div>
+</div>
+<div style="padding:10px 16px;font-size:12px;font-weight:bold;color:#78909c;background:#f5f7f8;">Pembaruan Kontak</div>
+<div id="updatesList"><div class="empty">Belum ada pembaruan status dari kontak lain.</div></div>
+</div>
+
+<!-- 3. TAB KOMUNITAS -->
+<div id="tabCommunities" class="tab-content">
+<div class="chat-item">
+<div class="chat-avatar" style="background:#5e35b1;">👥</div>
+<div class="chat-info">
+<div class="chat-contact-name">Komunitas NyaChatt Official</div>
+<div class="chat-snippet">Grup diskusi umum pengguna aplikasi</div>
+</div>
+</div>
+<div class="empty">Fitur komunitas dan grup terbuka lainnya akan segera hadir di sini.</div>
+</div>
+
+<!-- 4. TAB PANGGILAN -->
+<div id="tabCalls" class="tab-content">
+<div class="empty">Belum ada riwayat panggilan suara atau video.</div>
+</div>
+</div>
+
+<!-- RUANG CHAT PRIVAT -->
 <div id="chatRoomView" class="hidden">
 <div class="chat-head">
 <div class="chat-head-left">
 <button id="backToList" class="back-btn">←</button>
 <div class="chat-head-info">
 <div id="chatTitle" class="chat-name">Nama Kontak</div>
-<div class="chat-status">Available</div>
+<div id="chatStatusSub" class="chat-status">Online</div>
 </div>
 </div>
 <div class="chat-head-actions">📞 🎦 ⋮</div>
@@ -103,7 +149,7 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 </form>
 <div class="bbm-toolbar">
 <span class="bbm-tool-icon" title="Kamera">📷</span>
-<span class="bbm-tool-icon" title="Kirim File/Foto">🖼️</span>
+<span class="bbm-tool-icon" title="Kirim Foto">🖼️</span>
 <span class="bbm-tool-icon" title="Kirim Dokumen">📎</span>
 <span class="bbm-tool-icon" title="Kirim Lokasi">📍</span>
 <span class="bbm-tool-icon" title="Voice Note">🎤</span>
@@ -117,7 +163,7 @@ button:disabled{opacity:.5;cursor:default}.secondary{background:#eceff1;color:#3
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyB-uAsXsCILD1gshsEDueU__AP15bfVjv4",
@@ -133,7 +179,7 @@ const $=id=>document.getElementById(id);
 let currentUser=null,selectedPerson=null,stopMessages=null;
 
 function showError(id,e){
-const map={"auth/invalid-credential":"Email atau kata sandi salah.","auth/user-not-found":"Akun tidak ditemukan.","auth/wrong-password":"Kata sandi salah.","auth/email-already-in-use":"Email sudah terdaftar.","auth/weak-password":"Kata sandi minimal 6 karakter.","auth/invalid-email":"Format email tidak valid.","auth/network-request-failed":"Koneksi internet bermasalah."};
+const map={"auth/invalid-credential":"Email atau kata sandi salah.","auth/user-not-found":"Akun tidak ditemukan.","auth/wrong-password":"Kata sandi salah.","auth/email-already-in-use":"Email sudah terdaftar.","auth/weak-password":"Kata sandi minimal 6 karakter.","auth/invalid-email":"Format email tidak valid."};
 $(id).textContent=map[e?.code]||e?.message||"Terjadi kesalahan.";
 }
 
@@ -150,7 +196,7 @@ onAuthStateChanged(auth,async user=>{
 currentUser=user;$("authError").textContent="";$("appError").textContent="";
 if(!user){
   $("authCard").classList.remove("hidden");
-  $("chatsListView").classList.add("hidden");
+  $("mainAppView").classList.add("hidden");
   $("chatRoomView").classList.add("hidden");
   if(stopMessages)stopMessages();
   selectedPerson=null;
@@ -158,14 +204,24 @@ if(!user){
 }
 $("authCard").classList.add("hidden");
 $("chatRoomView").classList.add("hidden");
-$("chatsListView").classList.remove("hidden");
+$("mainAppView").classList.remove("hidden");
 try{
   await ensureProfile(user);
   await loadBbmChats();
 }catch(e){showError("appError",e)}
 });
 
-// Memuat daftar kontak/chat ala BBM Chats tab
+// Sistem Navigasi Antar Tab
+document.querySelectorAll(".nav-tab").forEach(tab=>{
+tab.onclick=()=>{
+  document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
+  tab.classList.add("active");
+  $(tab.dataset.target).classList.add("active");
+};
+});
+
+// Muat Daftar Chat
 async function loadBbmChats(){
 const box=$("chatsList");
 box.innerHTML='<div class="empty">Memuat daftar chat...</div>';
@@ -175,17 +231,15 @@ try{
   
   box.innerHTML="";
   if(!people.length){
-    box.innerHTML='<div class="empty">Belum ada kontak lain yang terdaftar.</div>';
+    box.innerHTML='<div class="empty">Belum ada kontak lain.</div>';
     return;
   }
 
   for(const p of people){
     const item=document.createElement("div");
     item.className="chat-item";
-    
     const nameStr=p.displayName||p.email||"Pengguna";
     
-    // Avatar inisial huruf depan
     const av=document.createElement("div");
     av.className="chat-avatar";
     av.textContent=nameStr.charAt(0).toUpperCase();
@@ -205,7 +259,7 @@ try{
     
     const snippet=document.createElement("div");
     snippet.className="chat-snippet";
-    snippet.textContent=p.email || "Ketuk untuk mulai percakapan";
+    snippet.textContent=p.email || "Ketuk untuk chat";
     info.appendChild(snippet);
     
     item.append(av,info);
@@ -221,7 +275,7 @@ function conversationId(a,b){return[a,b].sort().join("_")}
 
 async function openChat(person){
 selectedPerson=person;
-$("chatsListView").classList.add("hidden");
+$("mainAppView").classList.add("hidden");
 $("chatRoomView").classList.remove("hidden");
 $("chatTitle").textContent=person.displayName||person.email||"Chat";
 $("messages").innerHTML='<div class="empty">Memuat pesan...</div>';
@@ -273,33 +327,48 @@ if(m.createdAt?.toDate){
   footer.appendChild(timeSpan);
 }
 
+// Indikator Status Pesan (Terkirim / Dibaca)
 if(isMine){
   const check=document.createElement("span");
-  check.className="bbm-check";
-  check.textContent="★";
+  // Jika pesan sudah dibaca/dilihat oleh lawan bicara, tandai kelas 'read'
+  const isRead=m.read === true;
+  check.className="bbm-check" + (isRead ? " read" : "");
+  check.textContent=isRead ? "✓✓" : "✓"; // ✓ = Terkirim/Terlihat, ✓✓ = Dibaca
   footer.appendChild(check);
 }
 
 bubble.appendChild(footer);
 row.appendChild(bubble);
 area.appendChild(row);
+
+// Tandai pesan dari lawan bicara sebagai "dibaca" jika kita sedang membuka ruang chat ini
+if(!isMine && m.read !== true){
+  updateDoc(doc(db,"conversations",id,"messages",d.id), { read: true }).catch(()=>{});
+}
 });
 area.scrollTop=area.scrollHeight;
 },e=>showError("appError",e));
 }catch(e){showError("appError",e)}
 }
 
-// Tombol kembali ke daftar chat utama
+// Tombol kembali ke daftar menu utama
 $("backToList").onclick=()=>{
 if(stopMessages)stopMessages();
 $("chatRoomView").classList.add("hidden");
-$("chatsListView").classList.remove("hidden");
+$("mainAppView").classList.remove("hidden");
 loadBbmChats();
 };
 
 $("sendForm").onsubmit=async event=>{
 event.preventDefault();const text=$("messageInput").value.trim();if(!text||!currentUser||!selectedPerson)return;
-$("sendBtn").disabled=true;try{const id=conversationId(currentUser.uid,selectedPerson.id); await addDoc(collection(db,"conversations",id,"messages"),{senderId:currentUser.uid,text,createdAt:serverTimestamp()});$("messageInput").value="";
+$("sendBtn").disabled=true;try{const id=conversationId(currentUser.uid,selectedPerson.id);
+await addDoc(collection(db,"conversations",id,"messages"),{
+  senderId:currentUser.uid,
+  text,
+  read:false, // Status awal belum dibaca
+  createdAt:serverTimestamp()
+});
+$("messageInput").value="";
 }catch(e){showError("appError",e)}finally{$("sendBtn").disabled=false}
 };
 </script>
